@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
+    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics, when Adobe Analytics is added, remove next line -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119267218-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119267218-1');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Deploying Kubevirt On A Single Ovirt Vm</title>
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="https://www.kubevirt.io//2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="position: absolute; top: 0; background-image: linear-gradient(to top, #3accc5, #00aab2); width: 100%;">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" height="30" class="d-inline-block align-top" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <section style="margin-top: 60px;">
+      <div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="post blogContent">
+
+        <header class="post-header">
+          <h1></h1>
+          <h1 class="post-title">Deploying Kubevirt On A Single Ovirt Vm</h1>
+          <span class="blogAuthor">by awels - </span><span class="post-meta">May 4, 2018  </span>
+        </header>
+        <article class="post-content">
+          <p>In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed Centos 7.4 minimal on it. I also have nested virtualization
+enabled on my hosts, so any VMs I create can run VMs inside them. These instructions are specific to oVirt, however if you are running another virtualization
+platform that can nested virtualization this will also work.</p>
+
+<p>For this example I chose to use a single VM for everything, but I could have done different VMs for my master/nodes/storage/etc, for simplicity I used a single
+VM.</p>
+
+<h2 id="preparing-the-vm">Preparing the VM</h2>
+
+<p>First we will need to enable epel and install some needed tools, like git to get at the source, and ansible to do the deploy:</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yum <span class="nt">-y</span> <span class="nb">install </span>epel-release
+<span class="nv">$ </span>yum <span class="nt">-y</span> <span class="nb">install </span>ansible git wget
+</code></pre></div></div>
+<p><em>optional</em>
+<em>Install ovirt-guest-agent so you can see information in your oVirt admin view.</em></p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yum <span class="nt">-y</span> <span class="nb">install </span>ovirt-guest-agent
+<span class="nv">$ </span>systemctl start ovirt-guest-agent
+<span class="nv">$ </span>systemctl <span class="nb">enable </span>ovirt-guest-agent
+</code></pre></div></div>
+<p><em>Make a template out of the VM, so if something goes wrong you have a good starting point to try again.</em></p>
+
+<p>Make sure the VM has a fully qualified domain name, using either DNS or editing /etc/hosts.</p>
+
+<p>As we are going to install openshift we will need to install the openshift client tooling from <a href="https://github.com/openshift/origin/releases">openshift github</a>
+in this article I opted to simply copy the oc command into /usr/bin, but anywhere in your path will do. Alternatively you can add oc to your PATH.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget https://github.com/openshift/origin/releases/download/v3.9.0/openshift-origin-client-tools-v3.9.0-191fece-linux-64bit.tar.gz
+<span class="nv">$ </span><span class="nb">tar </span>zxvf openshift-origin-client-tools-v3.9.0-191fece-linux-64bit.tar.gz
+<span class="nv">$ </span><span class="nb">cp </span>openshift-origin-client-tools-v3.9.0-191fece-linux-64bit/oc /usr/bin
+</code></pre></div></div>
+
+<p>Next we will install docker and configure it for use with open shift.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yum <span class="nt">-y</span> <span class="nb">install </span>docker
+</code></pre></div></div>
+
+<p>We need to setup an insecure registry in docker before we can start open shift. To do this we must add:
+<strong>INSECURE_REGISTRY=”–insecure-registry 172.30.0.0/16”</strong>
+to the end of /etc/sysconfig/docker</p>
+
+<p>Now we can start docker.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>systemctl start docker
+<span class="nv">$ </span>systemctl <span class="nb">enable </span>docker
+</code></pre></div></div>
+
+<p>Now we are ready to test if we can bring our cluster to up.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>oc cluster up
+</code></pre></div></div>
+
+<h2 id="installing-kube-virt-with-ansible">Installing kube virt with ansible</h2>
+<p>Now that we have everything configured we can the rest as a regular user. Also note that if you had an existing cluster you can could have skipped the previous section.</p>
+
+<p>Clone the kube-virt ansible repo, and setup the ansible galaxy roles needed to deploy.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git clone https://github.com/kubevirt/kubevirt-ansible
+<span class="nv">$ </span><span class="nb">cd </span>kubevirt-ansible
+<span class="nv">$ </span><span class="nb">mkdir</span> <span class="nv">$HOME</span>/galaxy-roles
+<span class="nv">$ </span>ansible-galaxy <span class="nb">install</span> <span class="nt">-p</span> <span class="nv">$HOME</span>/galaxy-roles <span class="nt">-r</span> requirements.yml
+<span class="nv">$ </span><span class="nb">export </span><span class="nv">ANSIBLE_ROLES_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/galaxy-roles
+</code></pre></div></div>
+
+<p>Now that we are in the kubevirt-ansible directory, we have to edit the inventory file on where we are going to deploy the different open shift nodes.
+Because we opted to install everything on a single VM the FQDN we enter is the same as the one we defined for our VM. Had we had different nodes we would
+enter the FQDN of each in the inventory file. Lets assume our VMs FQDN is kubevirt.demo, we would changed the inventory file as follows:</p>
+
+<p>As <em>user</em>:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[masters]
+kubevirt.demo
+[etcd]
+kubevirt.demo
+[nodes]
+kubevirt.demo openshift_node_labels="{'region': 'infra','zone': 'default'}" openshift_schedulable=true
+[nfs]
+kubevirt.demo
+</code></pre></div></div>
+
+<p>In order to allow ansible to ssh into the box using ssh keys instead of a password we will need to generate some, assuming we don’t have these
+configured already:</p>
+
+<p>As <em>root</em>:</p>
+<pre><code class="language-base">$ ssh-keygen -t rsa
+</code></pre>
+
+<p>Fill out the information in the questions, which will generate two files in /root/.ssh, id_rsa and id_rsa.pub. The id_rsa.pub is the public key which will allow
+ssh to verify your identify when you ssh into a machine. Since we are doing all of this on the same machine, we can simply append the contents of
+id_rsa.pub to authorized_keys in /root/.ssh. If that file doesn’t exist you can simply copy id_rsa.pub to authorized_keys. If you are deploying to multiple hosts
+you need to append the contents of id_rsa.pub on each host.</p>
+
+<p>Next we need to configure docker storage, one can write a whole book about how to do that, so I will post a <a href="https://docs.openshift.org/latest/install_config/install/host_preparation.html#configuring-docker-storage">link</a> to the installation document and for now go with the defaults which are not recommended for production, but since this is an introduction its fine.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>docker-storage-setup
+</code></pre></div></div>
+
+<p>Lets double check the cluster is up before we start running the ansible play books.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>oc cluster up
+</code></pre></div></div>
+
+<p>Install kubernetes.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory playbooks/cluster/kubernetes/config.yml
+</code></pre></div></div>
+
+<p>Disable selinux on all hosts, this hopefully won’t be needed in the future.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory playbooks/selinux.yml
+</code></pre></div></div>
+
+<p>log in as admin to give developer user rights.</p>
+
+<p>As <em>root</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>oc login <span class="nt">-u</span> system:admin
+<span class="nv">$ </span>oc adm policy add-cluster-role-to-user cluster-admin developer
+</code></pre></div></div>
+
+<p>Log in as the developer user.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>oc login <span class="nt">-u</span> developer
+</code></pre></div></div>
+<p>The password for the developer user is developer. Now finally deploy kubevirt.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> localhost playbooks/kubevirt.yml <span class="nt">-e</span>@vars/all.yml
+</code></pre></div></div>
+
+<p>Verify that the pods are running, you should be in the kube-system namespace, if not switch with oc project kube-system.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl get pods
+NAME                               READY     STATUS    RESTARTS   AGE
+virt-api-747745669-mswk8           1/1       Running   0          10m
+virt-api-747745669-t9dsp           1/1       Running   0          10m
+virt-controller-648945bbcb-ln7dv   1/1       Running   0          10m
+virt-controller-648945bbcb-nxrj8   0/1       Running   0          10m
+virt-handler-6zh77                 1/1       Running   0          10m
+</code></pre></div></div>
+
+<p>Now that we have kube virt up and running we are ready to try and start a VM. Lets install virtctl to make it easier to
+start and stop VMs. The latest available version while writing this was 0.4.1.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">export </span><span class="nv">VERSION</span><span class="o">=</span>v0.4.1
+<span class="nv">$ </span>curl <span class="nt">-L</span> <span class="nt">-o</span> virtctl <span class="se">\</span>
+    https://github.com/kubevirt/kubevirt/releases/download/<span class="nv">$VERSION</span>/virtctl-<span class="nv">$VERSION</span><span class="nt">-linux-amd64</span>
+<span class="nv">$ </span><span class="nb">chmod</span> +x virtctl
+</code></pre></div></div>
+
+<p>Lets grab the demo VM specification from the kubevirt github page.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl apply <span class="nt">-f</span> https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
+</code></pre></div></div>
+
+<p>Now we can start the VM.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./virtctl start testvm
+</code></pre></div></div>
+
+<p>Now a new pod will be running that is controlling the VM.</p>
+
+<p>As <em>user</em>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl get pods
+NAME                               READY     STATUS    RESTARTS   AGE
+virt-api-747745669-mswk8           1/1       Running   0          15m
+virt-api-747745669-t9dsp           1/1       Running   0          15m
+virt-controller-648945bbcb-ln7dv   1/1       Running   0          15m
+virt-controller-648945bbcb-nxrj8   0/1       Running   0          15m
+virt-handler-6zh77                 1/1       Running   0          15m
+virt-launcher-testvm-gv5nt         2/2       Running   0          23s
+</code></pre></div></div>
+
+<p>Congratulations you now have a VM running in openshift using kubevirt inside an oVirt VM.</p>
+
+<h2 id="usefule-resources">Usefule resources</h2>
+<ul>
+  <li><a href="https://github.com/kubevirt/kubevirt"><strong>KubeVirt</strong></a></li>
+  <li><a href="https://github.com/kubevirt/kubevirt-ansible"><strong>KubeVirt Ansible</strong></a></li>
+  <li><a href="https://github.com/kubevirt/demo"><strong>Minikube kubevirt Demo</strong></a></li>
+  <li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-native-package-management"><strong>Kubectl installation</strong></a></li>
+</ul>
+
+        </article>
+
+        
+
+<a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Deploying Kubevirt On A Single Ovirt Vm&url=/2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html"><span>Tweet</span></a>
+<hr/>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 align-self-start">
+      &copy; 2018 KubeVirt | <a href="/privacy">Privacy Statement</a>
+    </div>
+    <div class="col-sm-12 col-md-6 align-self-end social-link">
+      <a href="https://twitter.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-twitter fa-lg"></i>
+      </a>
+      <a href="https://github.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" style="margin-right: 1rem;">
+        <i class="fas fa-envelope fa-lg"></i>
+      </a>
+      <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT">
+        <i class="fas fa-calendar fa-lg"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<!--
+
+
+    <h1>kubevirt.io</h1>
+
+
+    <a href="https://twitter.com/kubevirt" class="btn btn-secondary footerIcon" title="Twitter">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#fff" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+          c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://github.com/kubevirt"  class="btn btn-secondary footerIcon" title="Github">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+        </svg>
+      </span>
+    </a>
+
+    <a href="https://kiwiirc.com/client/irc.freenode.net/kubevirt" class="btn btn-secondary footerIcon" title="Mailing List" style="padding-top: 18px;">
+      <span >IRC</span>
+    </a>
+
+
+    <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" class="btn btn-secondary footerIcon">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path style="fill:currentColor;fill-opacity:1;stroke:none" d="M 0 2 L 0 14 L 16 14 L 16 2 L 0 2 z M 1.4140625 3 L 14.585938 3 L 8 9.5859375 L 1.4140625 3 z M 1 4 L 5 8 L 1 12 L 1 4 z M 15 4 L 15 12 L 11 8 L 15 4 z M 5.7070312 8.7070312 L 8 11 L 10.292969 8.7070312 L 14.585938 13 L 1.4140625 13 L 5.7070312 8.7070312 z " id="rect4144" class="ColorScheme-Text"></path>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT" class="btn btn-secondary footerIcon" title="Upcoming and past events">
+      <span class="icon">
+        <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 -256 1850 1850" id="svg3025" version="1.1" inkscape:version="0.48.3.1 r9886" width="100%" height="100%" sodipodi:docname="calendar_font_awesome.svg">
+          <metadata id="metadata3035">
+            <rdf:RDF>
+              <cc:Work rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+              </cc:Work>
+            </rdf:RDF>
+          </metadata>
+          <defs id="defs3033"/>
+          <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="640" inkscape:window-height="480" id="namedview3031" showgrid="false" inkscape:zoom="0.13169643" inkscape:cx="896" inkscape:cy="896" inkscape:window-x="0" inkscape:window-y="25" inkscape:window-maximized="0" inkscape:current-layer="svg3025"/>
+          <g transform="matrix(1,0,0,-1,91.118644,1297.8644)" id="g3027">
+            <path d="M 128,-128 H 416 V 160 H 128 v -288 z m 352,0 H 800 V 160 H 480 V -128 z M 128,224 H 416 V 544 H 128 V 224 z m 352,0 H 800 V 544 H 480 V 224 z M 128,608 H 416 V 896 H 128 V 608 z m 736,-736 h 320 V 160 H 864 V -128 z M 480,608 H 800 V 896 H 480 V 608 z m 768,-736 h 288 V 160 H 1248 V -128 z M 864,224 h 320 V 544 H 864 V 224 z m -352,864 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 Q 384,1389 384,1376 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 736,-864 h 288 V 544 H 1248 V 224 z M 864,608 h 320 V 896 H 864 V 608 z m 384,0 h 288 V 896 H 1248 V 608 z m 32,480 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 -9.5,-9.5 -9.5,-22.5 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 384,64 V -128 q 0,-52 -38,-90 -38,-38 -90,-38 H 128 q -52,0 -90,38 -38,38 -38,90 v 1280 q 0,52 38,90 38,38 90,38 h 128 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 384 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 128 q 52,0 90,-38 38,-38 38,-90 z" id="path3029" inkscape:connector-curvature="0" style="fill:currentColor"/>
+          </g>
+        </svg>
+      </span>
+    </a>
+
+  </div>
+</footer> -->
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+          _satellite.pageBottom();
+      }
+    </script>
+  </body>
+</html>

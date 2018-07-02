@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
+    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics, when Adobe Analytics is added, remove next line -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119267218-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119267218-1');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Deploying Vms On Kubernetes Glusterfs Kubevirt</title>
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="https://www.kubevirt.io//2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="position: absolute; top: 0; background-image: linear-gradient(to top, #3accc5, #00aab2); width: 100%;">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" height="30" class="d-inline-block align-top" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <section style="margin-top: 60px;">
+      <div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="post blogContent">
+
+        <header class="post-header">
+          <h1></h1>
+          <h1 class="post-title">Deploying Vms On Kubernetes Glusterfs Kubevirt</h1>
+          <span class="blogAuthor">by rwsu - </span><span class="post-meta">May 7, 2018  </span>
+        </header>
+        <article class="post-content">
+          <p>Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs.</p>
+
+<h2 id="contents">Contents</h2>
+
+<ul>
+  <li>Prerequisites</li>
+  <li>Known Issues</li>
+  <li>Installing Kubernetes</li>
+  <li>Installing GlusterFS and Heketi using gk-deploy</li>
+  <li>Installing KubeVirt</li>
+  <li>Deploying Virtual Machines</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>You should have access to at least three baremetal servers. One server will be the master Kubernetes node and other two servers will be the worker nodes. Each server should have a block device attached for GlusterFS, this is in addition to the ones used by the OS.</p>
+
+<p>You may use virtual machines in lieu of baremetal servers. Performance may suffer and you will need to ensure your hardware supports nested virtualization and that the relevant kernel modules are loaded in the OS.</p>
+
+<p>For reference, I used the following components and versions:</p>
+
+<ul>
+  <li>baremetal servers with CentOS version 7.4 as the base OS</li>
+  <li>latest version of Kubernetes (at the time v1.10.1)</li>
+  <li>Weave Net as the Container Network Interface (CNI), v2.3.0</li>
+  <li><a href="https://github.com/gluster/gluster-kubernetes">gluster-kubernetes</a> master commit 2a2a68ce5739524802a38f3871c545e4f57fa20a</li>
+  <li>KubeVirt v0.4.1.</li>
+</ul>
+
+<h2 id="known-issues">Known Issues</h2>
+
+<ul>
+  <li>You may need to set SELinux to permissive mode prior to running “kubeadm init” if you see failures attributed to etcd in /var/log/audit.log.</li>
+  <li>Prior to installing GlusterFS, you may need to disable firewalld until this issue is resolved: https://github.com/gluster/gluster-kubernetes/issues/471</li>
+  <li>kubevirt-ansible install may fail in storage-glusterfs role: https://github.com/kubevirt/kubevirt-ansible/issues/219</li>
+</ul>
+
+<h2 id="installing-kubernetes">Installing Kubernetes</h2>
+
+<p>Create the Kubernetes cluster by using kubeadm. Detailed instructions can be found at https://kubernetes.io/docs/setup/independent/install-kubeadm/.</p>
+
+<p>Use Weave Net as the CNI. Other CNIs may work, but I have only tested Weave Net.</p>
+
+<p>If you are using only 2 servers as workers, then you will need to allow scheduling of pods on the master node because GlusterFS requires at least three nodes. To schedule pods on the master node, see “Master Isolation” in the kubeadm guide or execute this command:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl taint nodes --all node-role.kubernetes.io/master-
+</code></pre></div></div>
+
+<p>Move onto the next step when your master and worker nodes are Ready.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get nodes
+NAME                     STATUS    ROLES     AGE       VERSION
+master.somewhere.com     Ready     master    6d        v1.10.1
+worker1.somewhere.com    Ready     &lt;none&gt;    6d        v1.10.1
+worker2.somewhere.com    Ready     &lt;none&gt;    6d        v1.10.1
+</code></pre></div></div>
+
+<p>And all of the pods in the kube-system namespace are Running.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get pods -n kube-system
+NAME                                           READY     STATUS    RESTARTS   AGE
+etcd-master.somewhere.com                      1/1       Running   0          6d
+kube-apiserver-master.somewhere.com            1/1       Running   0          6d
+kube-controller-manager-master.somewhere.com   1/1       Running   0          6d
+kube-dns-86f4d74b45-glv4k                      3/3       Running   0          6d
+kube-proxy-b6ksg                               1/1       Running   0          6d
+kube-proxy-jjxs5                               1/1       Running   0          6d
+kube-proxy-kw77k                               1/1       Running   0          6d
+kube-scheduler-master.somewhere.com            1/1       Running   0          6d
+weave-net-ldlh7                                2/2       Running   0          6d
+weave-net-pmhlx                                2/2       Running   1          6d
+weave-net-s4dp6                                2/2       Running   0          6d
+</code></pre></div></div>
+
+<h3 id="installing-glusterfs-and-heketi-using-gluster-kubernetes">Installing GlusterFS and Heketi using gluster-kubernetes</h3>
+
+<p>The next step is to deploy GlusterFS and Heketi onto Kubernetes.</p>
+
+<p><a href="https://github.com/gluster/glusterfs">GlusterFS</a> provides the storage system on which the virtual machine images are stored. <a href="https://github.com/heketi/heketi">Heketi</a> provides the REST API that Kubernetes uses to provision GlusterFS volumes. The <a href="https://github.com/gluster/gluster-kubernetes">gk-deploy tool</a> is used to deploy both of these components as pods in the Kubernetes cluster.</p>
+
+<p>There is a detailed <a href="https://github.com/gluster/gluster-kubernetes/blob/master/docs/setup-guide.md">setup guide for gk-deploy</a>. Note each node must have a raw block device that is reserved for use by heketi and they must not contain any data or be pre-formatted. You can reset your block device to a useable state by running:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wipefs -a &lt;path to device&gt;
+</code></pre></div></div>
+
+<p>To aid you, below are the commands you will need to run if you are following the setup guide.</p>
+
+<p>On all nodes:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Open ports for GlusterFS communications
+sudo iptables -I INPUT 1 -p tcp --dport 2222 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 24007 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 24008 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 49152:49251 -j ACCEPT
+# Load kernel modules
+sudo modprobe dm_snapshot
+sudo modprobe dm_thin_pool
+sudo modprobe dm_mirror
+# Install glusterfs-fuse and git packages
+sudo yum install -y glusterfs-fuse git
+</code></pre></div></div>
+
+<p>On the master node:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># checkout gluster-kubernetes repo
+git clone https://github.com/gluster/gluster-kubernetes
+cd gluster-kubernetes/deploy
+</code></pre></div></div>
+
+<p>Before running the gk-deploy script, we need to first create a topology.json file that maps the nodes present in the GlusterFS cluster and the block devices attached to each node. The block devices should be raw and unformatted. Below is a sample topology.json file for a 3 node cluster all operating in the same zone. The gluster-kubernetes/deploy directory also contains a sample topology.json file.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span><span class="w"> </span><span class="err">topology.json</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="s2">"clusters"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"node"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"hostnames"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"manage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"master.somewhere.com"</span><span class="w">
+              </span><span class="p">],</span><span class="w">
+              </span><span class="s2">"storage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"192.168.10.100"</span><span class="w">
+              </span><span class="p">]</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"zone"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"devices"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="s2">"/dev/vdb"</span><span class="w">
+          </span><span class="p">]</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"node"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"hostnames"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"manage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"worker1.somewhere.com"</span><span class="w">
+              </span><span class="p">],</span><span class="w">
+              </span><span class="s2">"storage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"192.168.10.101"</span><span class="w">
+              </span><span class="p">]</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"zone"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"devices"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="s2">"/dev/vdb"</span><span class="w">
+          </span><span class="p">]</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"node"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"hostnames"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"manage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"worker2.somewhere.com"</span><span class="w">
+              </span><span class="p">],</span><span class="w">
+              </span><span class="s2">"storage"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"192.168.10.102"</span><span class="w">
+              </span><span class="p">]</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"zone"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"devices"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="s2">"/dev/vdb"</span><span class="w">
+          </span><span class="p">]</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Under “hostnames”, the node’s hostname is listed under “manage” and its IP address is listed under “storage”. Multiple block devices can be listed under “devices”. If you are using VMs, the second block device attached to the VM will usually be /dev/vdb. For multi-path, the device path will usually be /dev/mapper/mpatha. If you are using a second disk drive, the device path will usually be /dev/sdb.</p>
+
+<p>Once you have your topology.json file and saved it in gluster-kubernetes/deploy, we can execute gk-deploy to create the GlusterFS and Heketi pods. You will need to specify an admin-key which will be used in the next step and will be discovered during the KubeVirt installation.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># from gluster-kubernetes/deploy
+./gk-deploy -g -v -n kube-system --admin-key my-admin-key
+</code></pre></div></div>
+
+<p>Add the end of the installation, you will see:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>heketi is now running and accessible via http://10.32.0.4:8080 . To run
+administrative commands you can install 'heketi-cli' and use it as follows:
+
+  # heketi-cli -s http://10.32.0.4:8080 --user admin --secret '&lt;ADMIN_KEY&gt;' cluster list
+
+You can find it at https://github.com/heketi/heketi/releases . Alternatively,
+use it from within the heketi pod:
+
+  # /usr/bin/kubectl -n kube-system exec -i heketi-b96c7c978-dcwlw -- heketi-cli -s http://localhost:8080 --user admin --secret '&lt;ADMIN_KEY&gt;' cluster list
+
+For dynamic provisioning, create a StorageClass similar to this:\
+</code></pre></div></div>
+
+<p>Take note of the URL for Heketi which will be used next step.</p>
+
+<p>If successful, 4 additional pods will be shown as Running in the kube-system namespace.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master deploy]# kubectl get pods -n kube-system
+NAME                                                              READY     STATUS    RESTARTS   AGE
+...snip...
+glusterfs-h4nwf                                                   1/1       Running   0          6d
+glusterfs-kfvjk                                                   1/1       Running   0          6d
+glusterfs-tjm2f                                                   1/1       Running   0          6d
+heketi-b96c7c978-dcwlw                                            1/1       Running   0          6d
+...snip...
+</code></pre></div></div>
+
+<h3 id="installing-kubevirt-and-setting-up-storage">Installing KubeVirt and setting up storage</h3>
+
+<p>The final component to install and which will enable us to deploy VMs on Kubernetes is KubeVirt.
+We will use <a href="https://github.com/kubevirt/kubevirt-ansible/">kubevirt-ansible</a> to deploy KubeVirt which will also help us configure a Secret and a StorageClass that will allow us to provision Persistent Volume Claims (PVCs) on GlusterFS.</p>
+
+<p>Let’s first clone the kubevirt-ansible repo.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/kubevirt/kubevirt-ansible
+cd kubevirt-ansible
+</code></pre></div></div>
+
+<p>Edit the <a href="https://github.com/kubevirt/kubevirt-ansible/blob/master/inventory">inventory</a> file in the kubevirt-ansible checkout. Modify the section that starts with “#BEGIN CUSTOM SETTINGS”. As an example using the servers from above:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># BEGIN CUSTOM SETTINGS
+[masters]
+# Your master FQDN
+master.somewhere.com
+
+[etcd]
+# Your etcd FQDN
+master.somewhere.com
+
+[nodes]
+# Your nodes FQDN's
+worker1.somewhere.com
+worker2.somewhere.com
+
+[nfs]
+# Your nfs server FQDN
+
+[glusterfs]
+# Your glusterfs nodes FQDN
+# Each node should have the "glusterfs_devices" variable, which
+# points to the block device that will be used by gluster.
+master.somewhere.com
+worker1.somewhere.com
+worker1.somewhere.com
+
+#
+# If you run openshift deployment
+# You can add your master as schedulable node with option openshift_schedulable=true
+# Add at least one node with lable to run on it router and docker containers
+# openshift_node_labels="{'region': 'infra','zone': 'default'}"
+# END CUSTOM SETTINGS
+</code></pre></div></div>
+
+<p>Now let’s run the kubevirt.yml playbook:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ansible-playbook -i inventory playbooks/kubevirt.yml -e cluster=k8s -e storage_role=storage-glusterfs -e namespace=kube-system -e glusterfs_namespace=kube-system -e glusterfs_name= -e heketi_url=http://10.32.0.4:8080 -v
+</code></pre></div></div>
+
+<p>If successful, we should see 7 additional pods as Running in the kube-system namespace.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master kubevirt-ansible]# kubectl get pods -n kube-system
+NAME                                                              READY     STATUS    RESTARTS   AGE
+virt-api-785fd6b4c7-rdknl                                         1/1       Running   0          6d
+virt-api-785fd6b4c7-rfbqv                                         1/1       Running   0          6d
+virt-controller-844469fd89-c5vrc                                  1/1       Running   0          6d
+virt-controller-844469fd89-vtjct                                  0/1       Running   0          6d
+virt-handler-78wsb                                                1/1       Running   0          6d
+virt-handler-csqbl                                                1/1       Running   0          6d
+virt-handler-hnlqn                                                1/1       Running   0          6d
+</code></pre></div></div>
+
+<h2 id="deploying-virtual-machines">Deploying Virtual Machines</h2>
+
+<p>To deploy a VM, we must first grab a VM image in raw format, place the image into a PVC, define the VM in a yaml file, source the VM definition into Kubernetes, and then start the VM.</p>
+
+<p>The <a href="https://github.com/kubevirt/containerized-data-importer">containerized data importer (CDI)</a> is usually used to import VM images into Kubernetes, but there are some patches and additional testing to be done before the CDI can work smoothly with GlusterFS. For now, we will be placing the image into the PVC using a Pod that curls the image from the local filesystem using httpd.</p>
+
+<p>On master or on a node where kubectl is configured correctly install and start httpd.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo yum install -y httpd
+sudo systemctl start httpd
+</code></pre></div></div>
+
+<p>Download the cirros cloud image and convert it into raw format.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img -o /var/www/html/cirros-0.4.0-x86_64-disk.img
+sudo yum install -y qemu-img
+qemu-img convert /var/www/html/cirros-0.4.0-x86_64-disk.img /var/www/html/cirros-0.4.0-x86_64-disk.raw
+</code></pre></div></div>
+
+<p>Create the PVC to store the cirros image.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">cat &lt;&lt;EOF | kubectl create -f -</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolumeClaim</span>
+<span class="na">metadata</span><span class="pi">:</span>
+ <span class="na">name</span><span class="pi">:</span> <span class="s">gluster-pvc-cirros</span>
+ <span class="na">annotations</span><span class="pi">:</span>
+   <span class="s">volume.beta.kubernetes.io/storage-class</span><span class="pi">:</span> <span class="s">kubevirt</span>
+<span class="na">spec</span><span class="pi">:</span>
+ <span class="na">accessModes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">ReadWriteOnce</span>
+ <span class="na">resources</span><span class="pi">:</span>
+   <span class="na">requests</span><span class="pi">:</span>
+     <span class="na">storage</span><span class="pi">:</span> <span class="s">5Gi</span>
+<span class="s">EOF</span>
+</code></pre></div></div>
+
+<p>Check the PVC was created and has “Bound” status.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get pvc
+NAME                 STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+gluster-pvc-cirros   Bound     pvc-843bd508-4dbf-11e8-9e4e-149ecfc53021   5Gi        RWO            kubevirt       2m
+</code></pre></div></div>
+
+<p>Create a Pod to curl the cirros image into the PVC.
+Note: You will need to substitute <hostname> with actual hostname or IP address.</hostname></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">cat &lt;&lt;EOF | kubectl create -f -</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">image-importer-cirros</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">restartPolicy</span><span class="pi">:</span> <span class="s">OnFailure</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">image-importer-cirros</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">kubevirtci/disk-importer</span>
+    <span class="na">env</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">CURL_OPTS</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">-L"</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">INSTALL_TO</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s">/storage/disk.img</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">URL</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s">http://&lt;hostname&gt;/cirros-0.4.0-x86_64-disk.raw</span>
+    <span class="na">volumeMounts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">storage</span>
+      <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/storage</span>
+  <span class="na">volumes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">storage</span>
+    <span class="na">persistentVolumeClaim</span><span class="pi">:</span>
+      <span class="na">claimName</span><span class="pi">:</span> <span class="s">gluster-pvc-cirros</span>
+<span class="s">EOF</span>
+</code></pre></div></div>
+
+<p>Check and wait for the image-importer-cirros Pod to complete.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get pods
+NAME                         READY     STATUS      RESTARTS   AGE
+image-importer-cirros        0/1       Completed   0          28s
+</code></pre></div></div>
+
+<p>Create a Offline Virtual Machine definition for your VM and source it into Kubernetes.
+Note the PVC containing the cirros image must be listed as the first disk under spec.domain.devices.disks.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">cat &lt;&lt;EOF | kubectl create -f -</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubevirt.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">OfflineVirtualMachine</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="s">kubevirt.io/ovm</span><span class="pi">:</span> <span class="s">cirros</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">cirros</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">running</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="s">kubevirt.io/ovm</span><span class="pi">:</span> <span class="s">cirros</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">domain</span><span class="pi">:</span>
+        <span class="na">devices</span><span class="pi">:</span>
+          <span class="na">disks</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">disk</span><span class="pi">:</span>
+              <span class="na">bus</span><span class="pi">:</span> <span class="s">virtio</span>
+            <span class="na">name</span><span class="pi">:</span> <span class="s">pvcdisk</span>
+            <span class="na">volumeName</span><span class="pi">:</span> <span class="s">cirros-pvc</span>
+          <span class="pi">-</span> <span class="na">disk</span><span class="pi">:</span>
+              <span class="na">bus</span><span class="pi">:</span> <span class="s">virtio</span>
+            <span class="na">name</span><span class="pi">:</span> <span class="s">cloudinitdisk</span>
+            <span class="na">volumeName</span><span class="pi">:</span> <span class="s">cloudinitvolume</span>
+        <span class="na">machine</span><span class="pi">:</span>
+          <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+        <span class="na">resources</span><span class="pi">:</span>
+          <span class="na">requests</span><span class="pi">:</span>
+            <span class="na">memory</span><span class="pi">:</span> <span class="s">64M</span>
+      <span class="na">terminationGracePeriodSeconds</span><span class="pi">:</span> <span class="s">0</span>
+      <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">cloudInitNoCloud</span><span class="pi">:</span>
+          <span class="na">userDataBase64</span><span class="pi">:</span> <span class="s">IyEvYmluL3NoCgplY2hvICdwcmludGVkIGZyb20gY2xvdWQtaW5pdCB1c2VyZGF0YScK</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">cloudinitvolume</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">cirros-pvc</span>
+        <span class="na">persistentVolumeClaim</span><span class="pi">:</span>
+          <span class="na">claimName</span><span class="pi">:</span> <span class="s">gluster-pvc-cirros</span>
+<span class="na">status</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+
+<p>Finally start the VM.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export VERSION=v0.4.1
+curl -L -o virtctl https://github.com/kubevirt/kubevirt/releases/download/$VERSION/virtctl-$VERSION-linux-amd64
+chmod +x virtctl
+./virtctl start cirros
+</code></pre></div></div>
+
+<p>Wait for the VM to be in “Running” status.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get pods
+NAME                         READY     STATUS      RESTARTS   AGE
+image-importer-cirros        0/1       Completed   0          28s
+virt-launcher-cirros-krvv2   0/1       Running     0          13s
+</code></pre></div></div>
+
+<p>Once it is running, we can then connect to its console.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./virtctl console cirros
+</code></pre></div></div>
+
+<p>Press enter if a login prompt doesn’t appear.</p>
+
+        </article>
+
+        
+
+<a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Deploying Vms On Kubernetes Glusterfs Kubevirt&url=/2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html"><span>Tweet</span></a>
+<hr/>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 align-self-start">
+      &copy; 2018 KubeVirt | <a href="/privacy">Privacy Statement</a>
+    </div>
+    <div class="col-sm-12 col-md-6 align-self-end social-link">
+      <a href="https://twitter.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-twitter fa-lg"></i>
+      </a>
+      <a href="https://github.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" style="margin-right: 1rem;">
+        <i class="fas fa-envelope fa-lg"></i>
+      </a>
+      <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT">
+        <i class="fas fa-calendar fa-lg"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<!--
+
+
+    <h1>kubevirt.io</h1>
+
+
+    <a href="https://twitter.com/kubevirt" class="btn btn-secondary footerIcon" title="Twitter">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#fff" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+          c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://github.com/kubevirt"  class="btn btn-secondary footerIcon" title="Github">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+        </svg>
+      </span>
+    </a>
+
+    <a href="https://kiwiirc.com/client/irc.freenode.net/kubevirt" class="btn btn-secondary footerIcon" title="Mailing List" style="padding-top: 18px;">
+      <span >IRC</span>
+    </a>
+
+
+    <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" class="btn btn-secondary footerIcon">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path style="fill:currentColor;fill-opacity:1;stroke:none" d="M 0 2 L 0 14 L 16 14 L 16 2 L 0 2 z M 1.4140625 3 L 14.585938 3 L 8 9.5859375 L 1.4140625 3 z M 1 4 L 5 8 L 1 12 L 1 4 z M 15 4 L 15 12 L 11 8 L 15 4 z M 5.7070312 8.7070312 L 8 11 L 10.292969 8.7070312 L 14.585938 13 L 1.4140625 13 L 5.7070312 8.7070312 z " id="rect4144" class="ColorScheme-Text"></path>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT" class="btn btn-secondary footerIcon" title="Upcoming and past events">
+      <span class="icon">
+        <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 -256 1850 1850" id="svg3025" version="1.1" inkscape:version="0.48.3.1 r9886" width="100%" height="100%" sodipodi:docname="calendar_font_awesome.svg">
+          <metadata id="metadata3035">
+            <rdf:RDF>
+              <cc:Work rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+              </cc:Work>
+            </rdf:RDF>
+          </metadata>
+          <defs id="defs3033"/>
+          <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="640" inkscape:window-height="480" id="namedview3031" showgrid="false" inkscape:zoom="0.13169643" inkscape:cx="896" inkscape:cy="896" inkscape:window-x="0" inkscape:window-y="25" inkscape:window-maximized="0" inkscape:current-layer="svg3025"/>
+          <g transform="matrix(1,0,0,-1,91.118644,1297.8644)" id="g3027">
+            <path d="M 128,-128 H 416 V 160 H 128 v -288 z m 352,0 H 800 V 160 H 480 V -128 z M 128,224 H 416 V 544 H 128 V 224 z m 352,0 H 800 V 544 H 480 V 224 z M 128,608 H 416 V 896 H 128 V 608 z m 736,-736 h 320 V 160 H 864 V -128 z M 480,608 H 800 V 896 H 480 V 608 z m 768,-736 h 288 V 160 H 1248 V -128 z M 864,224 h 320 V 544 H 864 V 224 z m -352,864 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 Q 384,1389 384,1376 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 736,-864 h 288 V 544 H 1248 V 224 z M 864,608 h 320 V 896 H 864 V 608 z m 384,0 h 288 V 896 H 1248 V 608 z m 32,480 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 -9.5,-9.5 -9.5,-22.5 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 384,64 V -128 q 0,-52 -38,-90 -38,-38 -90,-38 H 128 q -52,0 -90,38 -38,38 -38,90 v 1280 q 0,52 38,90 38,38 90,38 h 128 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 384 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 128 q 52,0 90,-38 38,-38 38,-90 z" id="path3029" inkscape:connector-curvature="0" style="fill:currentColor"/>
+          </g>
+        </svg>
+      </span>
+    </a>
+
+  </div>
+</footer> -->
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+          _satellite.pageBottom();
+      }
+    </script>
+  </body>
+</html>

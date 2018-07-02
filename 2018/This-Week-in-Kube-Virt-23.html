@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
+    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics, when Adobe Analytics is added, remove next line -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119267218-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119267218-1');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>This Week In Kube Virt 23</title>
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="https://www.kubevirt.io//2018/This-Week-in-Kube-Virt-23.html">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="position: absolute; top: 0; background-image: linear-gradient(to top, #3accc5, #00aab2); width: 100%;">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" height="30" class="d-inline-block align-top" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <section style="margin-top: 60px;">
+      <div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="post blogContent">
+
+        <header class="post-header">
+          <h1></h1>
+          <h1 class="post-title">This Week In Kube Virt 23</h1>
+          <span class="blogAuthor">by fabiand - </span><span class="post-meta">Apr 27, 2018  </span>
+        </header>
+        <article class="post-content">
+          <p>This is a close-to weekly update from the KubeVirt team.</p>
+
+<p>In general there is now more work happening outside of the core kubevirt
+repository.</p>
+
+<p>We are currently driven by</p>
+
+<ul>
+  <li>
+    <p>Closing a lot of loose ends</p>
+  </li>
+  <li>
+    <p>Stepping back to identify gaps for 1.0</p>
+  </li>
+</ul>
+
+<p>Within the last two weeks we achieved to:</p>
+
+<ul>
+  <li>
+    <p>Release KubeVirt v0.4.1 to address some shutdown issues</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/releases/tag/v0.4.1">https://github.com/kubevirt/kubevirt/releases/tag/v0.4.1</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Many VM life-cycle and guarantee fixes (@rmohr @vossel)</p>
+
+    <ul>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/951">https://github.com/kubevirt/kubevirt/pull/951</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/948">https://github.com/kubevirt/kubevirt/pull/948</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/935">https://github.com/kubevirt/kubevirt/pull/935</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/838">https://github.com/kubevirt/kubevirt/pull/838</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/907">https://github.com/kubevirt/kubevirt/pull/907</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/883">https://github.com/kubevirt/kubevirt/pull/883</a></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Pass labels from VM to pod for better Service integration (@rmohr)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/939">https://github.com/kubevirt/kubevirt/pull/939</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Packaging preparations (@rmohr)</p>
+
+    <ul>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/941">https://github.com/kubevirt/kubevirt/pull/941</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/issues/924">https://github.com/kubevirt/kubevirt/issues/924</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/950">https://github.com/kubevirt/kubevirt/pull/950</a></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Controller readiness clarifications (@rmohr)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/901">https://github.com/kubevirt/kubevirt/pull/901</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Validation improvements using CRD scheme and webhooks (@vossel)</p>
+
+    <ul>
+      <li>
+        <p>Webhook: <a href="https://github.com/kubevirt/kubevirt/pull/911">https://github.com/kubevirt/kubevirt/pull/911</a></p>
+      </li>
+      <li>
+        <p>Scheme: <a href="https://github.com/kubevirt/kubevirt/pull/850">https://github.com/kubevirt/kubevirt/pull/850</a></p>
+      </li>
+      <li>
+        <p><a href="https://github.com/kubevirt/kubevirt/pull/917">https://github.com/kubevirt/kubevirt/pull/917</a></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Add Windows tests (@alukiano)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/809">https://github.com/kubevirt/kubevirt/pull/809</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Improve PVC tests (@petrkotas)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/862">https://github.com/kubevirt/kubevirt/pull/862</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Enable SELinux in OpenShift CI environment</p>
+  </li>
+  <li>
+    <p>Tests to run KubeVirt on Kubernetes 1.10</p>
+  </li>
+</ul>
+
+<p>In addition to this, we are also working on:</p>
+
+<ul>
+  <li>
+    <p>virtctl expose convenience verb (@yuvalif)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/962">https://github.com/kubevirt/kubevirt/pull/962</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>CRIO support in CI</p>
+  </li>
+  <li>
+    <p>virtctl bash/zsh completion (@rmohr)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/916">https://github.com/kubevirt/kubevirt/pull/916</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Improved error messages from virtctl (@fromanirh)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/934">https://github.com/kubevirt/kubevirt/pull/934</a></li>
+    </ul>
+  </li>
+  <li>
+    <p>Improved validation feedback (@vossel)</p>
+
+    <ul>
+      <li><a href="https://github.com/kubevirt/kubevirt/pull/960">https://github.com/kubevirt/kubevirt/pull/960</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Take a look at the pulse, to get an overview over all changes of this
+week: <a href="https://github.com/kubevirt/kubevirt/pulse">https://github.com/kubevirt/kubevirt/pulse</a></p>
+
+<p>Finally you can view our open issues at
+<a href="https://github.com/kubevirt/kubevirt/issues">https://github.com/kubevirt/kubevirt/issues</a></p>
+
+<p>And keep track of events at our calendar
+<a href="https://calendar.google.com/embed?src=&lt;link xl:href=">18pc0jur01k8f2cccvn5j04j1g@group.calendar.google.com</a>“&gt;https://calendar.google.com/embed?src=<a href="mailto:18pc0jur01k8f2cccvn5j04j1g@group.calendar.google.com">18pc0jur01k8f2cccvn5j04j1g@group.calendar.google.com</a>&lt;/link&gt;</p>
+
+<p>If you need some help or want to chat you can find us on
+&lt;irc://irc.freenode.net/#kubevirt&gt;</p>
+
+        </article>
+
+        
+
+<a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=This Week In Kube Virt 23&url=/2018/This-Week-in-Kube-Virt-23.html"><span>Tweet</span></a>
+<hr/>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 align-self-start">
+      &copy; 2018 KubeVirt | <a href="/privacy">Privacy Statement</a>
+    </div>
+    <div class="col-sm-12 col-md-6 align-self-end social-link">
+      <a href="https://twitter.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-twitter fa-lg"></i>
+      </a>
+      <a href="https://github.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" style="margin-right: 1rem;">
+        <i class="fas fa-envelope fa-lg"></i>
+      </a>
+      <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT">
+        <i class="fas fa-calendar fa-lg"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<!--
+
+
+    <h1>kubevirt.io</h1>
+
+
+    <a href="https://twitter.com/kubevirt" class="btn btn-secondary footerIcon" title="Twitter">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#fff" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+          c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://github.com/kubevirt"  class="btn btn-secondary footerIcon" title="Github">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+        </svg>
+      </span>
+    </a>
+
+    <a href="https://kiwiirc.com/client/irc.freenode.net/kubevirt" class="btn btn-secondary footerIcon" title="Mailing List" style="padding-top: 18px;">
+      <span >IRC</span>
+    </a>
+
+
+    <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" class="btn btn-secondary footerIcon">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path style="fill:currentColor;fill-opacity:1;stroke:none" d="M 0 2 L 0 14 L 16 14 L 16 2 L 0 2 z M 1.4140625 3 L 14.585938 3 L 8 9.5859375 L 1.4140625 3 z M 1 4 L 5 8 L 1 12 L 1 4 z M 15 4 L 15 12 L 11 8 L 15 4 z M 5.7070312 8.7070312 L 8 11 L 10.292969 8.7070312 L 14.585938 13 L 1.4140625 13 L 5.7070312 8.7070312 z " id="rect4144" class="ColorScheme-Text"></path>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT" class="btn btn-secondary footerIcon" title="Upcoming and past events">
+      <span class="icon">
+        <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 -256 1850 1850" id="svg3025" version="1.1" inkscape:version="0.48.3.1 r9886" width="100%" height="100%" sodipodi:docname="calendar_font_awesome.svg">
+          <metadata id="metadata3035">
+            <rdf:RDF>
+              <cc:Work rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+              </cc:Work>
+            </rdf:RDF>
+          </metadata>
+          <defs id="defs3033"/>
+          <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="640" inkscape:window-height="480" id="namedview3031" showgrid="false" inkscape:zoom="0.13169643" inkscape:cx="896" inkscape:cy="896" inkscape:window-x="0" inkscape:window-y="25" inkscape:window-maximized="0" inkscape:current-layer="svg3025"/>
+          <g transform="matrix(1,0,0,-1,91.118644,1297.8644)" id="g3027">
+            <path d="M 128,-128 H 416 V 160 H 128 v -288 z m 352,0 H 800 V 160 H 480 V -128 z M 128,224 H 416 V 544 H 128 V 224 z m 352,0 H 800 V 544 H 480 V 224 z M 128,608 H 416 V 896 H 128 V 608 z m 736,-736 h 320 V 160 H 864 V -128 z M 480,608 H 800 V 896 H 480 V 608 z m 768,-736 h 288 V 160 H 1248 V -128 z M 864,224 h 320 V 544 H 864 V 224 z m -352,864 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 Q 384,1389 384,1376 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 736,-864 h 288 V 544 H 1248 V 224 z M 864,608 h 320 V 896 H 864 V 608 z m 384,0 h 288 V 896 H 1248 V 608 z m 32,480 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 -9.5,-9.5 -9.5,-22.5 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 384,64 V -128 q 0,-52 -38,-90 -38,-38 -90,-38 H 128 q -52,0 -90,38 -38,38 -38,90 v 1280 q 0,52 38,90 38,38 90,38 h 128 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 384 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 128 q 52,0 90,-38 38,-38 38,-90 z" id="path3029" inkscape:connector-curvature="0" style="fill:currentColor"/>
+          </g>
+        </svg>
+      </span>
+    </a>
+
+  </div>
+</footer> -->
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+          _satellite.pageBottom();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
+    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics, when Adobe Analytics is added, remove next line -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119267218-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119267218-1');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Research Run Vms With Istio Service Mesh</title>
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="https://www.kubevirt.io//2018/Research-run-VMs-with-istio-service-mesh.html">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="position: absolute; top: 0; background-image: linear-gradient(to top, #3accc5, #00aab2); width: 100%;">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" height="30" class="d-inline-block align-top" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <section style="margin-top: 60px;">
+      <div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="post blogContent">
+
+        <header class="post-header">
+          <h1></h1>
+          <h1 class="post-title">Research Run Vms With Istio Service Mesh</h1>
+          <span class="blogAuthor">by SchSeba - </span><span class="post-meta">Jun 3, 2018  </span>
+        </header>
+        <article class="post-content">
+          <h1 id="introduction">Introduction</h1>
+
+<p>In this blog post we are going to talk about istio and virtual machines on top of Kubernetes. Some of the components we are going to use are <a href="https://istio.io/docs/concepts/what-is-istio/overview/">istio</a>, <a href="https://libvirt.org/index.html">libvirt</a>, <a href="http://ebtables.netfilter.org/">ebtables</a>, <a href="https://en.wikipedia.org/wiki/Iptables">iptables</a>, and <a href="https://github.com/LiamHaworth/go-tproxy">tproxy</a>. Please review the links provided for an overview and deeper dive into each technology</p>
+
+<h1 id="research-explanation">Research explanation</h1>
+<p>Our research goal was to give virtual machines running inside pods (kubevirt project) all the benefits kubernetes have to offer, one of them is a service mesh like istio.</p>
+
+<h2 id="iptables-only-with-dnat-and-source-nat-configuration">Iptables only with dnat and source nat configuration</h2>
+<p><span style="color:red;">This configuration is istio only!</span></p>
+
+<p>For this solution we created the following architecture</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/Iptables-diagram.png" alt="Iptables-Diagram" /></p>
+
+<p>With the follow yaml configuration</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apiVersion: v1
+kind: Service
+metadata:
+  name: application-devel
+  labels:
+    app: libvirtd-devel
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: libvirtd-devel
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libvirtd-client-devel
+  labels:
+    app: libvirtd-devel
+spec:
+  ports:
+  - port: 16509
+    name: client-connection
+  - port: 5900
+    name: spice
+  - port: 22
+    name: ssh
+  selector:
+    app: libvirtd-devel
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: libvirtd-devel
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"43466efda2266e066fb5ad36f2d1658de02fc9411f6db00ccff561300a2a3c78","initContainers":["istio-init","enable-core-dump"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"]}'
+      creationTimestamp: null
+      labels:
+        app: libvirtd-devel
+    spec:
+      containers:
+      - image: docker.io/sebassch/mylibvirtd:devel
+        imagePullPolicy: Always
+        name: compute
+        ports:
+        - containerPort: 9080
+        - containerPort: 16509
+        - containerPort: 5900
+        - containerPort: 22
+        securityContext:
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          runAsUser: 0
+        volumeMounts:
+          - mountPath: /var/lib/libvirt/images
+            name: test-volume
+          - mountPath: /host-dev
+            name: host-dev
+          - mountPath: /host-sys
+            name: host-sys
+        resources: {}
+        env:
+          - name: LIBVIRTD_DEFAULT_NETWORK_DEVICE
+            value: "eth0"
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - productpage
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15005
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-mixer.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - MUTUAL_TLS
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: docker.io/istio/proxy:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources: {}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        image: docker.io/istio/proxy_init:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+      - args:
+        - -c
+        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t &amp;&amp; ulimit -c
+          unlimited
+        command:
+        - /bin/sh
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: enable-core-dump
+        resources: {}
+        securityContext:
+          privileged: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+      - name: host-dev
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: host-sys
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: test-volume
+        hostPath:
+          # directory location on host
+          path: /bricks/brick1/volume/Images
+          # this field is optional
+          type: Directory
+status: {}
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway-devel
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /devel-myvm
+        backend:
+          serviceName: application-devel
+          servicePort: 9080
+</code></pre></div></div>
+
+<p>When the my-libvirt container starts it runs an entry point script for iptables configuration.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. iptables -t nat -D PREROUTING 1
+2. iptables -t nat -A PREROUTING -p tcp -m comment --comment "Kubevirt Spice"  --dport 5900 -j ACCEPT 
+3. iptables -t nat -A PREROUTING -p tcp -m comment --comment "Kubevirt virt-manager"  --dport 16509 -j ACCEPT
+4. iptables -t nat  -A PREROUTING -d 10.96.0.0/12 -m comment --comment "istio/redirect-ip-range-10.96.0.0/12-service cidr" -j ISTIO_REDIRECT
+5. iptables -t nat  -A PREROUTING -d 192.168.0.0/16 -m comment --comment "istio/redirect-ip-range-192.168.0.0/16-Pod cidr" -j ISTIO_REDIRECT
+6. iptables -t nat  -A OUTPUT -d 127.0.0.1/32 -p tcp -m comment --comment "Kubevirt mesh application port" --dport 9080 -j DNAT --to-destination 10.0.0.2
+7. iptables -t nat  -A POSTROUTING -s 127.0.0.1/32 -d 10.0.0.2/32 -m comment --comment "Kubevirt VM Forward" -j SNAT --to-source `ifconfig eth0 | grep inet | awk '{print $2}'
+</code></pre></div></div>
+
+<p>Now lets explain every one of this lines:</p>
+
+<ol>
+  <li>Remove istio ingress connection rule that send all the ingress traffic directly to the envoy proxy (our vm traffic is ingress traffic for our pod)</li>
+  <li>Allow ingress connection with spice port to get our libvirt process running in the pod</li>
+  <li>Allow ingress connection with virt-manager port to get our libvirt process running in the pod</li>
+  <li>Redirect all the traffic that came from the k8s clusters services to the envoy process</li>
+  <li>Redirect all the traffic that came from the k8s clusters pods to the envoy process</li>
+  <li>Send all the traffic that came from envoy process to our vm by changing the destination ip address to ur vm ip address</li>
+  <li>Change the source ip address of the packet send by envoy from localhost to the pod ip address so the virtual machine can return the connection</li>
+</ol>
+
+<h3 id="iptables-configuration-conclusions">Iptables configuration conclusions</h3>
+<p>With this configuration all the traffic that exit the virtual machine to a k8s service will pass the envoy process and will enter the istio service mash.
+Also all the traffic that came into the pod will be pass to envoy and after that it will be send to our virtual machine</p>
+
+<p>Egress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/iptables-egress.png" alt="iptables-egress-traffic" /></p>
+
+<p>Ingress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/iptables-ingress.png" alt="iptables-ingress-traffic" /></p>
+
+<p>Pros:</p>
+<ul>
+  <li>No external modules needed</li>
+  <li>No external process needed</li>
+  <li>All the traffic is handled by the kernel user space not involved</li>
+</ul>
+
+<p>Cons:</p>
+<ul>
+  <li><span style="color:red;">Istio dedicated solution!</span></li>
+  <li>Not other process can change the iptables rules</li>
+</ul>
+
+<h2 id="iptables-with-a-nat-proxy-process">Iptables with a nat-proxy process</h2>
+<p>For this solution a created the following architecture</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/nat-proxy.png" alt="nat-proxy-Diagram" /></p>
+
+<p>With the follow yaml configuration</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apiVersion: v1
+kind: Service
+metadata:
+  name: application-nat-proxt
+  labels:
+    app: libvirtd-nat-proxt
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: libvirtd-nat-proxt
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libvirtd-client-nat-proxt
+  labels:
+    app: libvirtd-nat-proxt
+spec:
+  ports:
+  - port: 16509
+    name: client-connection
+  - port: 5900
+    name: spice
+  - port: 22
+    name: ssh
+  selector:
+    app: libvirtd-nat-proxt
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: libvirtd-nat-proxt
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"43466efda2266e066fb5ad36f2d1658de02fc9411f6db00ccff561300a2a3c78","initContainers":["istio-init","enable-core-dump"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"]}'
+      creationTimestamp: null
+      labels:
+        app: libvirtd-nat-proxt
+    spec:
+      containers:
+      - image: docker.io/sebassch/mylibvirtd:devel
+        imagePullPolicy: Always
+        name: compute
+        ports:
+        - containerPort: 9080
+        - containerPort: 16509
+        - containerPort: 5900
+        - containerPort: 22
+        securityContext:
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          runAsUser: 0
+        volumeMounts:
+          - mountPath: /var/lib/libvirt/images
+            name: test-volume
+          - mountPath: /host-dev
+            name: host-dev
+          - mountPath: /host-sys
+            name: host-sys
+        resources: {}
+        env:
+          - name: LIBVIRTD_DEFAULT_NETWORK_DEVICE
+            value: "eth0"
+      - image: docker.io/sebassch/mynatproxy:devel
+        imagePullPolicy: Always
+        name: proxy
+        resources: {}
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - productpage
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15005
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-mixer.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - MUTUAL_TLS
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: docker.io/istio/proxy:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources: {}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -i
+        - 10.96.0.0/12,192.168.0.0/16
+        image: docker.io/istio/proxy_init:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+      - args:
+        - -c
+        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t &amp;&amp; ulimit -c
+          unlimited
+        command:
+        - /bin/sh
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: enable-core-dump
+        resources: {}
+        securityContext:
+          privileged: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+      - name: host-dev
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: host-sys
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: test-volume
+        hostPath:
+          # directory location on host
+          path: /bricks/brick1/volume/Images
+          # this field is optional
+          type: Directory
+status: {}
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway-nat-proxt
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /nat-proxt-myvm
+        backend:
+          serviceName: application-nat-proxt
+          servicePort: 9080
+</code></pre></div></div>
+
+<p>When the mynatproxy container starts it runs an entry point script for iptables configuration.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. iptables -t nat -I PREROUTING 1 -p tcp -s 10.0.1.2 -m comment --comment "nat-proxy redirect" -j REDIRECT --to-ports 8080
+2. iptables -t nat -I OUTPUT 1 -p tcp -s 10.0.1.2 -j ACCEPT
+3. iptables -t nat -I POSTROUTING 1 -s 10.0.1.2 -p udp -m comment --comment "nat udp connections" -j MASQUERADE
+</code></pre></div></div>
+
+<p>Now lets explain every one of this lines:</p>
+
+<ol>
+  <li>Redirect all the tcp traffic that came from the virtual machine to our proxy on port 8080</li>
+  <li>Accept all the traffic that go from the pod to the virtual machine</li>
+  <li>Nat all the udp praffic that came from the virtual machine</li>
+</ol>
+
+<p>This solution uses a container I created that has two processes inside, one for the egress traffic of the virtual machine and one for the ingress traffic.
+For the egress traffic i used a program writed in golang, and for the ingress traffic I used haproxy.</p>
+
+<p>The nat-proxy used a system call to get the original destination address and port that its been redirected to us from the iptable rules I created.</p>
+
+<p>The extract function:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func getOriginalDst(clientConn *net.TCPConn) (ipv4 string, port uint16, newTCPConn *net.TCPConn, err error) {
+    if clientConn == nil {
+        log.Printf("copy(): oops, dst is nil!")
+        err = errors.New("ERR: clientConn is nil")
+        return
+    }
+
+    // test if the underlying fd is nil
+    remoteAddr := clientConn.RemoteAddr()
+    if remoteAddr == nil {
+        log.Printf("getOriginalDst(): oops, clientConn.fd is nil!")
+        err = errors.New("ERR: clientConn.fd is nil")
+        return
+    }
+
+    srcipport := fmt.Sprintf("%v", clientConn.RemoteAddr())
+
+    newTCPConn = nil
+    // net.TCPConn.File() will cause the receiver's (clientConn) socket to be placed in blocking mode.
+    // The workaround is to take the File returned by .File(), do getsockopt() to get the original
+    // destination, then create a new *net.TCPConn by calling net.Conn.FileConn().  The new TCPConn
+    // will be in non-blocking mode.  What a pain.
+    clientConnFile, err := clientConn.File()
+    if err != nil {
+        log.Printf("GETORIGINALDST|%v-&gt;?-&gt;FAILEDTOBEDETERMINED|ERR: could not get a copy of the client connection's file object", srcipport)
+        return
+    } else {
+        clientConn.Close()
+    }
+
+    // Get original destination
+    // this is the only syscall in the Golang libs that I can find that returns 16 bytes
+    // Example result: &amp;{Multiaddr:[2 0 31 144 206 190 36 45 0 0 0 0 0 0 0 0] Interface:0}
+    // port starts at the 3rd byte and is 2 bytes long (31 144 = port 8080)
+    // IPv4 address starts at the 5th byte, 4 bytes long (206 190 36 45)
+    addr, err := syscall.GetsockoptIPv6Mreq(int(clientConnFile.Fd()), syscall.IPPROTO_IP, SO_ORIGINAL_DST)
+    log.Printf("getOriginalDst(): SO_ORIGINAL_DST=%+v\n", addr)
+    if err != nil {
+        log.Printf("GETORIGINALDST|%v-&gt;?-&gt;FAILEDTOBEDETERMINED|ERR: getsocketopt(SO_ORIGINAL_DST) failed: %v", srcipport, err)
+        return
+    }
+    newConn, err := net.FileConn(clientConnFile)
+    if err != nil {
+        log.Printf("GETORIGINALDST|%v-&gt;?-&gt;%v|ERR: could not create a FileConn fron clientConnFile=%+v: %v", srcipport, addr, clientConnFile, err)
+        return
+    }
+    if _, ok := newConn.(*net.TCPConn); ok {
+        newTCPConn = newConn.(*net.TCPConn)
+        clientConnFile.Close()
+    } else {
+        errmsg := fmt.Sprintf("ERR: newConn is not a *net.TCPConn, instead it is: %T (%v)", newConn, newConn)
+        log.Printf("GETORIGINALDST|%v-&gt;?-&gt;%v|%s", srcipport, addr, errmsg)
+        err = errors.New(errmsg)
+        return
+    }
+
+    ipv4 = itod(uint(addr.Multiaddr[4])) + "." +
+        itod(uint(addr.Multiaddr[5])) + "." +
+        itod(uint(addr.Multiaddr[6])) + "." +
+        itod(uint(addr.Multiaddr[7]))
+    port = uint16(addr.Multiaddr[2])&lt;&lt;8 + uint16(addr.Multiaddr[3])
+
+    return
+}
+</code></pre></div></div>
+
+<p>After we get the original destination address and port we start a connection to it and copy all the packets.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var streamWait sync.WaitGroup
+streamWait.Add(2)
+
+streamConn := func(dst io.Writer, src io.Reader) {
+    io.Copy(dst, src)
+    streamWait.Done()
+}
+
+go streamConn(remoteConn, VMconn)
+go streamConn(VMconn, remoteConn)
+
+streamWait.Wait()
+</code></pre></div></div>
+
+<p>The Haproxy help us with the ingress traffic with the follow configuration</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults
+  mode tcp
+frontend main
+  bind *:9080
+  default_backend guest
+backend guest
+  server guest 10.0.1.2:9080 maxconn 2048
+</code></pre></div></div>
+
+<p>It send all the traffic to our virtual machine on the service port the machine is listening.</p>
+
+<p><a href="https://github.com/SchSeba/NatProxy">Code repository</a></p>
+
+<h3 id="nat-proxy-conclusions">nat proxy conclusions</h3>
+<p>This solution is a general solution, not a dedicated solution to istio only. Its make the vm traffic look like a regular process inside the pod so it will work with any sidecars projects</p>
+
+<p>Egress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/nat-proxy-egress-traffic.png" alt="nat-proxy-egress-traffic" /></p>
+
+<p>Ingress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/nat-proxy-ingress.png" alt="nat-proxy-ingress-traffic" /></p>
+
+<p>Pros:</p>
+<ul>
+  <li>No external modules needed</li>
+  <li>Works with any sidecar solution</li>
+</ul>
+
+<p>Cons:</p>
+<ul>
+  <li>Not other process can change the iptables rules</li>
+  <li>External process needed</li>
+  <li>The traffic is passed to user space</li>
+  <li>Only support ingress TCP connection</li>
+</ul>
+
+<h2 id="iptables-with-a-trasperent-proxy-process">Iptables with a trasperent-proxy process</h2>
+<p>This is the last solution I used in my research, it use a kernel module named TPROXY The <a href="https://www.kernel.org/doc/Documentation/networking/tproxy.txt">official documentation</a> from the linux kernel documentation.</p>
+
+<p>For this solution a created the following architecture</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/semi-tproxy-diagram.png" alt="semi-tproxy-Diagram" /></p>
+
+<p>With the follow yaml configuration</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apiVersion: v1
+kind: Service
+metadata:
+  name: application-devel
+  labels:
+    app: libvirtd-devel
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: libvirtd-devel
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libvirtd-client-devel
+  labels:
+    app: libvirtd-devel
+spec:
+  ports:
+  - port: 16509
+    name: client-connection
+  - port: 5900
+    name: spice
+  - port: 22
+    name: ssh
+  selector:
+    app: libvirtd-devel
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: libvirtd-devel
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"43466efda2266e066fb5ad36f2d1658de02fc9411f6db00ccff561300a2a3c78","initContainers":["istio-init","enable-core-dump"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"]}'
+      creationTimestamp: null
+      labels:
+        app: libvirtd-devel
+    spec:
+      containers:
+      - image: docker.io/sebassch/mylibvirtd:devel
+        imagePullPolicy: Always
+        name: compute
+        ports:
+        - containerPort: 9080
+        - containerPort: 16509
+        - containerPort: 5900
+        - containerPort: 22
+        securityContext:
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          runAsUser: 0
+        volumeMounts:
+          - mountPath: /var/lib/libvirt/images
+            name: test-volume
+          - mountPath: /host-dev
+            name: host-dev
+          - mountPath: /host-sys
+            name: host-sys
+        resources: {}
+        env:
+          - name: LIBVIRTD_DEFAULT_NETWORK_DEVICE
+            value: "eth0"
+      - image: docker.io/sebassch/mytproxy:devel
+        imagePullPolicy: Always
+        name: proxy
+        resources: {}
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - productpage
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15005
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-mixer.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - MUTUAL_TLS
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: docker.io/istio/proxy:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources: {}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -i
+        - 10.96.0.0/12,192.168.0.0/16
+        image: docker.io/istio/proxy_init:0.7.1
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+      - args:
+        - -c
+        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t &amp;&amp; ulimit -c
+          unlimited
+        command:
+        - /bin/sh
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: enable-core-dump
+        resources: {}
+        securityContext:
+          privileged: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+      - name: host-dev
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: host-sys
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: test-volume
+        hostPath:
+          # directory location on host
+          path: /bricks/brick1/volume/Images
+          # this field is optional
+          type: Directory
+status: {}
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway-devel
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /devel-myvm
+        backend:
+          serviceName: application-devel
+          servicePort: 9080
+</code></pre></div></div>
+
+<p>When the tproxy container starts it runs an entry point script for iptables configuration but this time the proxy redirect came in the mangle table and not in the nat table that because TPROXY module avilable only in the mangle table.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TPROXY
+This target is only valid in the mangle table, in the 
+PREROUTING chain and user-defined chains which are only 
+called from this chain.  It redirects the packet to a local 
+socket without changing the packet header in any way. It can
+also change the mark value which can then be used in 
+advanced routing rules. 
+</code></pre></div></div>
+
+<p>iptables rules:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iptables -t mangle -vL
+iptables -t mangle -N KUBEVIRT_DIVERT
+iptables -t mangle -A KUBEVIRT_DIVERT -j MARK --set-mark 8
+iptables -t mangle -A KUBEVIRT_DIVERT -j ACCEPT
+
+table=mangle
+iptables -t ${table} -N KUBEVIRT_INBOUND
+iptables -t ${table} -A PREROUTING -p tcp -m comment --comment "Kubevirt Spice"  --dport 5900 -j RETURN
+iptables -t ${table} -A PREROUTING -p tcp -m comment --comment "Kubevirt virt-manager"  --dport 16509 -j RETURN
+iptables -t ${table} -A PREROUTING -p tcp -i vnet0 -j KUBEVIRT_INBOUND
+
+iptables -t ${table} -N KUBEVIRT_TPROXY
+iptables -t ${table} -A KUBEVIRT_TPROXY ! -d 127.0.0.1/32 -p tcp -j TPROXY --tproxy-mark 8/0xffffffff --on-port 9401
+#iptables -t mangle -A KUBEVIRT_TPROXY ! -d 127.0.0.1/32 -p udp -j TPROXY --tproxy-mark 8/0xffffffff --on-port 8080
+
+# If an inbound packet belongs to an established socket, route it to the
+# loopback interface.
+iptables -t ${table} -A KUBEVIRT_INBOUND -p tcp -m socket -j KUBEVIRT_DIVERT
+#iptables -t mangle -A KUBEVIRT_INBOUND -p udp -m socket -j KUBEVIRT_DIVERT
+
+# Otherwise, it's a new connection. Redirect it using TPROXY.
+iptables -t ${table} -A KUBEVIRT_INBOUND -p tcp -j KUBEVIRT_TPROXY
+#iptables -t mangle -A KUBEVIRT_INBOUND -p udp -j KUBEVIRT_TPROXY
+iptables -t ${table} -I OUTPUT 1 -d 10.0.1.2 -j ACCEPT
+
+table=nat
+# Remove vm Connection from iptables rules
+iptables -t ${table} -I PREROUTING 1 -s 10.0.1.2 -j ACCEPT
+iptables -t ${table} -I OUTPUT 1 -d 10.0.1.2 -j ACCEPT
+
+# Allow guest -&gt; world -- using nat for UDP
+iptables -t ${table} -I POSTROUTING 1 -s 10.0.1.2 -p udp -j MASQUERADE
+</code></pre></div></div>
+
+<p>For this solution we also need to load the bridge kernel module</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modprobe bridge
+</code></pre></div></div>
+
+<p>And create some ebtables rules so egress and ingress traffict from the virtial machine will exit the l2 rules and pass to the l3 rules:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ebtables -t broute -F # Flush the table
+    # inbound traffic
+    ebtables -t broute -A BROUTING -p IPv4 --ip-dst 10.0.1.2 \
+    -j redirect --redirect-target DROP
+    # returning outbound traffic
+    ebtables -t broute -A BROUTING -p IPv4 --ip-src 10.0.1.2 \
+    -j redirect --redirect-target DROP
+</code></pre></div></div>
+
+<p>We also need to disable rp_filter on the virtual machine interface and the libvirt bridge interface</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo 0 &gt; /proc/sys/net/ipv4/conf/virbr0/rp_filter
+echo 0 &gt; /proc/sys/net/ipv4/conf/virbr0-nic/rp_filter
+echo 0 &gt; /proc/sys/net/ipv4/conf/vnet0/rp_filter
+</code></pre></div></div>
+
+<p>After this configuration the container start the semi-tproxy process for egress traffic and the haproxy process for the ingress traffic.</p>
+
+<p>The semi-tproxy program is a golag program,binding a listener socket with the IP_TRANSPARENT socket option
+Preparing a socket to receive connections with TProxy is really no different than what is normally done when setting up a socket to listen for connections. The only difference in the process is before the socket is bound, the IP_TRANSPARENT socket option.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>syscall.SetsockoptInt(fileDescriptor, syscall.SOL_IP, syscall.IP_TRANSPARENT, 1)
+</code></pre></div></div>
+
+<p>About IP_TRANSPARENT</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IP_TRANSPARENT (since Linux 2.6.24)
+Setting this boolean option enables transparent proxying on
+this socket.  This socket option allows the calling applica‐
+tion to bind to a nonlocal IP address and operate both as a
+client and a server with the foreign address as the local
+end‐point.  NOTE: this requires that routing be set up in
+a way that packets going to the foreign address are routed 
+through the TProxy box (i.e., the system hosting the 
+application that employs the IP_TRANSPARENT socket option).
+Enabling this socket option requires superuser privileges
+(the CAP_NET_ADMIN capability).
+
+TProxy redirection with the iptables TPROXY target also
+requires that this option be set on the redirected socket.
+</code></pre></div></div>
+
+<p>Then we set the IP_TRANSPARENT socket option on outbound connections
+Same goes for making connections to a remote host pretending to be the client, the IP_TRANSPARENT socket option is set and the Linux kernel will allow the bind so along as a connection was intercepted with those details being used for the bind.</p>
+
+<p>When the process get a new connection we start a connection to the real destination address and copy the traffic between both sockets</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var streamWait sync.WaitGroup
+streamWait.Add(2)
+
+streamConn := func(dst io.Writer, src io.Reader) {
+    io.Copy(dst, src)
+    streamWait.Done()
+}
+
+go streamConn(remoteConn, VMconn)
+go streamConn(VMconn, remoteConn)
+
+streamWait.Wait()
+</code></pre></div></div>
+
+<p>The Haproxy helps us with the ingress traffic with the follow configuration</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults
+  mode tcp
+frontend main
+  bind *:9080
+  default_backend guest
+backend guest
+  server guest 10.0.1.2:9080 maxconn 2048
+</code></pre></div></div>
+
+<p>It send all the traffic to our virtual machine on the service port the machine is listening.</p>
+
+<p><a href="https://github.com/SchSeba/SemiTrasperentProxy">Code repository</a></p>
+
+<h3 id="tproxy-conclusions">tproxy conclusions</h3>
+<p>This solution is a general solution, not a dedicated solution to istio only. Its make the vm traffic look like a regular process inside the pod so it will work with any sidecars projects</p>
+
+<p>Egress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/semi-tproxy-egress.png" alt="tproxy-egress-traffic" /></p>
+
+<p>Ingress data flow in this solution:</p>
+
+<p><img src="../assets/2018-06-03-Research-run-VMs-with-istio-service-mesh/nat-proxy-ingress.png" alt="tproxy-ingress-traffic" /></p>
+
+<p>Pros:</p>
+<ul>
+  <li>other process can change the nat table (this solution works on the mangle table)</li>
+  <li>better preformance comparing to nat-proxy</li>
+  <li>Works with any sidecar solution</li>
+</ul>
+
+<p>Cons:</p>
+<ul>
+  <li>Need NET_ADMIN capability for the docker</li>
+  <li>External process needed</li>
+  <li>The traffic is passed to user space</li>
+  <li>Only support ingress TCP connection</li>
+</ul>
+
+<h1 id="research-conclustion">Research Conclustion</h1>
+<p>Kubevirt shows it is possible to run virtual machines inside a kubernetes cluster, and this post shows that the virtual machine can also get the benefit of it.</p>
+
+        </article>
+
+        
+
+<a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Research Run Vms With Istio Service Mesh&url=/2018/Research-run-VMs-with-istio-service-mesh.html"><span>Tweet</span></a>
+<hr/>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 align-self-start">
+      &copy; 2018 KubeVirt | <a href="/privacy">Privacy Statement</a>
+    </div>
+    <div class="col-sm-12 col-md-6 align-self-end social-link">
+      <a href="https://twitter.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-twitter fa-lg"></i>
+      </a>
+      <a href="https://github.com/kubevirt" style="margin-right: 1rem;">
+        <i class="fab fa-github fa-lg"></i>
+      </a>
+      <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" style="margin-right: 1rem;">
+        <i class="fas fa-envelope fa-lg"></i>
+      </a>
+      <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT">
+        <i class="fas fa-calendar fa-lg"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<!--
+
+
+    <h1>kubevirt.io</h1>
+
+
+    <a href="https://twitter.com/kubevirt" class="btn btn-secondary footerIcon" title="Twitter">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#fff" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+          c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://github.com/kubevirt"  class="btn btn-secondary footerIcon" title="Github">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+        </svg>
+      </span>
+    </a>
+
+    <a href="https://kiwiirc.com/client/irc.freenode.net/kubevirt" class="btn btn-secondary footerIcon" title="Mailing List" style="padding-top: 18px;">
+      <span >IRC</span>
+    </a>
+
+
+    <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" class="btn btn-secondary footerIcon">
+      <span class="icon">
+        <svg viewBox="0 0 16 16">
+          <path style="fill:currentColor;fill-opacity:1;stroke:none" d="M 0 2 L 0 14 L 16 14 L 16 2 L 0 2 z M 1.4140625 3 L 14.585938 3 L 8 9.5859375 L 1.4140625 3 z M 1 4 L 5 8 L 1 12 L 1 4 z M 15 4 L 15 12 L 11 8 L 15 4 z M 5.7070312 8.7070312 L 8 11 L 10.292969 8.7070312 L 14.585938 13 L 1.4140625 13 L 5.7070312 8.7070312 z " id="rect4144" class="ColorScheme-Text"></path>
+        </svg>
+      </span>
+    </a>
+
+
+    <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT" class="btn btn-secondary footerIcon" title="Upcoming and past events">
+      <span class="icon">
+        <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 -256 1850 1850" id="svg3025" version="1.1" inkscape:version="0.48.3.1 r9886" width="100%" height="100%" sodipodi:docname="calendar_font_awesome.svg">
+          <metadata id="metadata3035">
+            <rdf:RDF>
+              <cc:Work rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+              </cc:Work>
+            </rdf:RDF>
+          </metadata>
+          <defs id="defs3033"/>
+          <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="640" inkscape:window-height="480" id="namedview3031" showgrid="false" inkscape:zoom="0.13169643" inkscape:cx="896" inkscape:cy="896" inkscape:window-x="0" inkscape:window-y="25" inkscape:window-maximized="0" inkscape:current-layer="svg3025"/>
+          <g transform="matrix(1,0,0,-1,91.118644,1297.8644)" id="g3027">
+            <path d="M 128,-128 H 416 V 160 H 128 v -288 z m 352,0 H 800 V 160 H 480 V -128 z M 128,224 H 416 V 544 H 128 V 224 z m 352,0 H 800 V 544 H 480 V 224 z M 128,608 H 416 V 896 H 128 V 608 z m 736,-736 h 320 V 160 H 864 V -128 z M 480,608 H 800 V 896 H 480 V 608 z m 768,-736 h 288 V 160 H 1248 V -128 z M 864,224 h 320 V 544 H 864 V 224 z m -352,864 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 Q 384,1389 384,1376 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 736,-864 h 288 V 544 H 1248 V 224 z M 864,608 h 320 V 896 H 864 V 608 z m 384,0 h 288 V 896 H 1248 V 608 z m 32,480 v 288 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 h -64 q -13,0 -22.5,-9.5 -9.5,-9.5 -9.5,-22.5 v -288 q 0,-13 9.5,-22.5 9.5,-9.5 22.5,-9.5 h 64 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 384,64 V -128 q 0,-52 -38,-90 -38,-38 -90,-38 H 128 q -52,0 -90,38 -38,38 -38,90 v 1280 q 0,52 38,90 38,38 90,38 h 128 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 384 v 96 q 0,66 47,113 47,47 113,47 h 64 q 66,0 113,-47 47,-47 47,-113 v -96 h 128 q 52,0 90,-38 38,-38 38,-90 z" id="path3029" inkscape:connector-curvature="0" style="fill:currentColor"/>
+          </g>
+        </svg>
+      </span>
+    </a>
+
+  </div>
+</footer> -->
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+          _satellite.pageBottom();
+      }
+    </script>
+  </body>
+</html>
