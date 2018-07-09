@@ -91,7 +91,7 @@ body {
 */
 pre,
 code {
-  font-size: 15px;
+  font-size: 1rem;
   border: 1px solid #b1b1b1;
   border-radius: 3px;
   background-color: #f5f5f5; }
@@ -117,6 +117,8 @@ pre {
   .nav-item:hover {
     margin-bottom: -8px;
     border-bottom: 3px solid #fed476; }
+    .nav-item:hover a.nav-link {
+      color: rgba(255, 255, 255, 0.75); }
   .nav-item.active {
     margin-bottom: -8px;
     border-bottom: 3px solid #00aab2; }
@@ -195,6 +197,9 @@ pre {
 .page-title {
   margin-bottom: 30px; }
 
+.community-page .page-title {
+  margin-bottom: 0; }
+
 .posts {
   list-style: none; }
   .posts-date {
@@ -207,7 +212,7 @@ pre {
   margin-bottom: 30px; }
 .post-info {
   margin-bottom: 10px; }
-.post-author, .post-meta {
+.post-author, .post-meta, .post-category-name {
   color: #72767b; }
 
 .readmore {
