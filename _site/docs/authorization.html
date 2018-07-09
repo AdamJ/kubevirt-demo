@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
+    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+    <title>Authorization</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css"">
+    <link rel="canonical" href="https://www.kubevirt.io//docs/authorization">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" class="navbar-brand-image d-inline-block align-top" alt="KubeVirt.io">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item active" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <main role="main" style="margin-top: 60px;">
+      <div class="container">
+  <div class="row">
+    <h1>Authorization</h1>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-3">
+      
+        
+          
+          <ul class="docs-navigation">
+            <!-- <h3></h3> -->
+            
+              <li class="docs-navigation--item">
+                <a href="/docs.html" class="docs-navigation--item_link">
+                  Introduction
+                </a>
+                
+              </li>
+            
+          </ul>
+          
+        
+          
+          <ul class="docs-navigation">
+            <!-- <h3></h3> -->
+            
+              <li class="docs-navigation--item">
+                <a href="/docs/installation.html" class="docs-navigation--item_link">
+                  Installation
+                </a>
+                
+              </li>
+            
+              <li class="docs-navigation--item">
+                <a href="/docs/usage.html" class="docs-navigation--item_link">
+                  Usage
+                </a>
+                
+              </li>
+            
+              <li class="docs-navigation--item">
+                <a href="/docs/authorization.html" class="docs-navigation--item_link active">
+                  Authorization
+                </a>
+                
+              </li>
+            
+              <li class="docs-navigation--item">
+                <a href="/docs/workloads.html" class="docs-navigation--item_link">
+                  Workloads
+                </a>
+                
+              </li>
+            
+              <li class="docs-navigation--item">
+                <a href="/docs/additional-resources.html" class="docs-navigation--item_link">
+                  Additional Resources
+                </a>
+                
+              </li>
+            
+          </ul>
+          
+        
+      
+    </div>
+    <div class="col-sm-12 col-md-9 docs">
+      <p>
+        KubeVirt authorization is performed using Kubernete's Resource Based Authorization Control system (RBAC). RBAC allows cluster admins to grant access to cluster resources by binding RBAC roles to users.
+      </p>
+      <p>
+        For example, an admin creates an RBAC role that represents the permissions required to create a VirtualMachineInstance. The admin can then bind that role to users in order to grant them the permissions required to launch a VirtualMachineInstance.
+      </p>
+      <p>
+        With RBAC roles, admins can grant users targeted access to various KubeVirt features.
+      </p>
+
+      <h2>KubeVirt Default RBAC ClusterRoles</h2>
+      <p>
+      KubeVirt comes with a set of predefined RBAC ClusterRoles that can be used to grant users permissions to access KubeVirt Resources.
+      </p>
+
+      <h3>Default View Role</h3>
+      <p>
+        The <strong>kubevirt.io:view</strong> ClusterRole gives users permissions to view all KubeVirt resources in the cluster. The permissions to create, delete, modify or access any KubeVirt resources beyond viewing the resource's spec are not included in this role. This means a user with this role could see that a VirtualMachineInstance is running, but neither shutdown nor gain access to that VirtualMachineInstance via console/VNC.
+      </p>
+
+      <h3>Default Edit Role</h3>
+      <p>
+        The <strong>kubevirt.io:edit</strong> ClusterRole gives users permissions to modify all KubeVirt resources in the cluster. For example, a user with this role can create new VirtualMachineInstances, delete VirtualMachineInstances, and gain access to both console and VNC.
+      </p>
+
+      <h3>Default Admin Role</h3>
+      <p>
+        The <strong>kubevirt.io:admin</strong> ClusterRole grants users full permissions to all KubeVirt resources, including the ability to delete collections of resources.
+      </p>
+      <p>
+        The admin role also grants users access to view and modify the KubeVirt runtime config. This config exists within a configmap called <strong>kubevirt-config</strong> in the namespace the KubeVirt components are running.
+      </p>
+      <p>
+        <i>NOTE</i> Users are only guaranteed the ability to modify the kubevirt runtime configuration if a ClusterRoleBinding is used. A RoleBinding will work to provide kubevirt-config access only if the RoleBinding targets the same namespace the kubevirt-config exists in.
+      </p>
+
+      <h3>Binding Default ClusterRoles to Users</h3>
+      <p>
+        The KubeVirt default ClusterRoles are granted to users by creating either a ClusterRoleBinding or RoleBinding object.
+      </p>
+
+      <h4>Binding within All Namespaces</h4>
+      <p>
+        With a ClusterRoleBinding, users receive the permissions granted by the role across all namespaces.
+      </p>
+
+      <h4>Binding within Single Namespace</h4>
+      <p>
+      With a RoleBinding, users receive the permissions granted by the role only within a targeted namespace.
+      </p>
+
+      <h2>Extending Kubernetes Default Roles with KubeVirt permissions</h2>
+      <p>
+        The aggregated ClusterRole Kubernetes feature facilitates combining multiple ClusterRoles into a single aggregated ClusterRole. This feature is commonly used to extend the default Kubernetes roles with permissions to access custom resources that do not exist in the Kubernetes core.
+      </p>
+      <p>
+        In order to extend the default Kubernetes roles to provide permission to access KubeVirt resources, we need to add the following labels to the KubeVirt ClusterRoles.
+      </p>
+
+      <pre>
+        <code>
+kubectl label clusterrole kubevirt.io:admin rbac.authorization.k8s.io/aggregate-to-admin=true
+kubectl label clusterrole kubevirt.io:edit rbac.authorization.k8s.io/aggregate-to-edit=true
+kubectl label clusterrole kubevirt.io:view rbac.authorization.k8s.io/aggregate-to-view=true
+        </code>
+      </pre>
+      <p>
+        By adding these labels, any user with a RoleBinding or ClusterRoleBinding involving one of the default Kubernetes roles will automatically gain access to the equivalent KubeVirt roles as well.
+      </p>
+      <p>
+        More information about aggregated cluster roles can be found [here](https://kubernetes.io/docs/admin/authorization/rbac/#aggregated-clusterroles)
+      </p>
+      <h2>Creating Custom RBAC Roles</h2>
+      <p>
+      If the default KubeVirt ClusterRoles are not expressive enough, admins can
+      create their own custom RBAC roles to grant user access to KubeVirt resources.
+      The creation of a RBAC role is inclusive only, meaning there's no way to deny
+      access. Instead access is only granted.
+      </p>
+      <p>
+      Below is an example of what KubeVirt's default admin ClusterRole looks like.
+      A custom RBAC role can be created by reducing the permissions in this example
+      role.
+      </p>
+
+      <pre>
+      <code>
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: my-custom-rbac-role
+  labels:
+    kubevirt.io: ""
+rules:
+  - apiGroups:
+      - subresources.kubevirt.io
+    resources:
+      - virtualmachineinstances/console
+      - virtualmachineinstances/vnc
+    verbs:
+      - get
+  - apiGroups:
+      - kubevirt.io
+    resources:
+      - virtualmachineinstances
+      - virtualmachines
+      - virtualmachineinstancepresets
+      - virtualmachineinstancereplicasets
+    verbs:
+      - get
+      - delete
+      - create
+      - update
+      - patch
+      - list
+      - watch
+      - deletecollection
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    resourceNames:
+      - kubevirt-config
+    verbs:
+      - update
+      - get
+      - patch
+      </code>
+      </pre>
+    </div>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-md-5 offset-md-1 align-self-start">
+      <p class="privacy-statement text-sm-left" style="text-align: center;">
+        &copy; 2018 KubeVirt | <a href="/privacy" class="privacy-statement-link">Privacy Statement</a>
+      </p>
+    </div>
+    <div class="col-sm-12 col-md-5 align-self-end text-sm-right" style="text-align: center;">
+      <p class="text-md-right">
+        <a href="https://twitter.com/kubevirt" aria-label="Visit us on Twitter" class="link-social-twitter">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+        <a href="https://github.com/kubevirt" aria-label="View our repo on GitHub" class="link-social-github">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" aria-label="Send us an email" class="link-social-mail">
+          <i class="fas fa-envelope fa-lg"></i>
+        </a>
+        <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT"
+            aria-label="See our calendar"
+            class="link-social-calendar">
+          <i class="fas fa-calendar fa-lg"></i>
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+            _satellite.pageBottom();
+        }
+    </script>
+  </body>
+</html>
