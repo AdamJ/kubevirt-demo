@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css"">
-    <link rel="canonical" href="http://localhost:4000/get_kubevirt/">
+    <link rel="canonical" href="https://www.kubevirt.io//get_kubevirt/">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
 </head>
@@ -83,12 +83,12 @@ internet. Use <code class="highlighter-rouge">watch kubectl get --all-namespaces
 
 <p>On OpenShift Origin, the following <a href="https://docs.openshift.com/container-platform/3.9/admin_guide/manage_scc.html">SCCs</a> need to be added prior kubevirt.yaml deployment:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-privileged
-$ oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-controller
-$ oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-infra
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-privileged
+<span class="nv">$ </span>oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-controller
+<span class="nv">$ </span>oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-infra
 
-$ export VERSION=v0.7.0-alpha.2
-$ oc apply -f https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/kubevirt.yaml
+<span class="nv">$ </span><span class="nb">export </span><span class="nv">VERSION</span><span class="o">=</span>v0.7.0-alpha.2
+<span class="nv">$ </span>oc apply <span class="nt">-f</span> https://github.com/kubevirt/kubevirt/releases/download/<span class="k">${</span><span class="nv">VERSION</span><span class="k">}</span>/kubevirt.yaml
 </code></pre></div></div>
 
 <h3 id="install-virtctl">Install virtctl</h3>
@@ -132,12 +132,12 @@ The tool is called <code class="highlighter-rouge">virtctl</code> and can be ret
 
 <h3 id="accessing-vms-serial-console--spice">Accessing VMs (serial console &amp; spice)</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Connect to the serial console
-$ ./virtctl console testvm
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Connect to the serial console</span>
+<span class="nv">$ </span>./virtctl console testvm
 
-# Connect to the graphical display
-# Note: Requires `remote-viewer` from the `virt-viewer` package.
-$ ./virtctl vnc testvm
+<span class="c"># Connect to the graphical display</span>
+<span class="c"># Note: Requires `remote-viewer` from the `virt-viewer` package.</span>
+<span class="nv">$ </span>./virtctl vnc testvm
 </code></pre></div></div>
 
 <h3 id="user-guide">User Guide</h3>
@@ -147,9 +147,7 @@ $ ./virtctl vnc testvm
 <h2 id="appendix-deploying-minikube">Appendix: Deploying minikube</h2>
 
 <ol>
-  <li>
-    <p>If not installed, install minikube as described <a href="https://github.com/kubernetes/minikube/">here</a></p>
-
+  <li>If not installed, install minikube as described <a href="https://github.com/kubernetes/minikube/">here</a>
     <ol>
       <li>Install the <a href="https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver">kvm2 driver</a></li>
       <li>Verify nested virtualization is enabled on the machine minikube is being installed on:
@@ -169,10 +167,10 @@ $ ./virtctl vnc testvm
  <span class="nt">--network-plugin</span> cni
 </code></pre></div>    </div>
   </li>
-  <li>
-    <h2 id="install-kubectl-via-a-package-manager-or-download-it">Install <code class="highlighter-rouge">kubectl</code> via a package manager or <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl">download</a> it</h2>
-  </li>
+  <li>Install <code class="highlighter-rouge">kubectl</code> via a package manager or <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl">download</a> it</li>
 </ol>
+
+<hr />
 
 <h1 id="install_3">KubeVirt on an existing Kubernetes cluster</h1>
 
@@ -198,31 +196,31 @@ using Ceph and Cinder, that is geared for non-production use. To install
 KubeVirt with the demo storage environment, first edit the inventory file
 and populate the section named “masters”, “etcd”, and “nodes”.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># inventory
-# BEGIN CUSTOM SETTINGS
-[masters]
-# Your master FQDN
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># inventory</span>
+<span class="c"># BEGIN CUSTOM SETTINGS</span>
+<span class="o">[</span>masters]
+<span class="c"># Your master FQDN</span>
 
-[etcd]
-# Your etcd FQDN
+<span class="o">[</span>etcd]
+<span class="c"># Your etcd FQDN</span>
 
-[nodes]
-# Your nodes FQDN's
+<span class="o">[</span>nodes]
+<span class="c"># Your nodes FQDN's</span>
 
-[nfs]
-# Your nfs server FQDN
+<span class="o">[</span>nfs]
+<span class="c"># Your nfs server FQDN</span>
 
-[glusterfs]
-# Your glusterfs nodes FQDN
-# Each node should have the "glusterfs_devices" variable, which
-# points to the block device that will be used by gluster.
+<span class="o">[</span>glusterfs]
+<span class="c"># Your glusterfs nodes FQDN</span>
+<span class="c"># Each node should have the "glusterfs_devices" variable, which</span>
+<span class="c"># points to the block device that will be used by gluster.</span>
 
-#
-# If you run openshift deployment
-# You can add your master as schedulable node with option openshift_schedulable=true
-# Add at least one node with lable to run on it router and docker containers
-# openshift_node_labels="{'region': 'infra','zone': 'default'}"
-# END CUSTOM SETTINGS
+<span class="c">#</span>
+<span class="c"># If you run openshift deployment</span>
+<span class="c"># You can add your master as schedulable node with option openshift_schedulable=true</span>
+<span class="c"># Add at least one node with lable to run on it router and docker containers</span>
+<span class="c"># openshift_node_labels="{'region': 'infra','zone': 'default'}"</span>
+<span class="c"># END CUSTOM SETTINGS</span>
 </code></pre></div></div>
 
 <p>Once you have your inventory file filled in:</p>
@@ -275,16 +273,16 @@ store your VM images.</p>
 <p>Then run this playbook, substituting the namespaces and heketi_url to
 match your environment:</p>
 
-<p><code class="highlighter-rouge">
-ansible-playbook -i inventory -e cluster=k8s -e storage_role=storage-glusterfs -e namespace=kube-system -e glusterfs_namespace=kube-system -e glusterfs_name= -e heketi_url=http://10.32.0.4:8080 playbooks/kubevirt.yml</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ansible-playbook <span class="nt">-i</span> inventory <span class="nt">-e</span> <span class="nv">cluster</span><span class="o">=</span>k8s <span class="nt">-e</span> <span class="nv">storage_role</span><span class="o">=</span>storage-glusterfs <span class="nt">-e</span> <span class="nv">namespace</span><span class="o">=</span>kube-system <span class="nt">-e</span> <span class="nv">glusterfs_namespace</span><span class="o">=</span>kube-system <span class="nt">-e</span> <span class="nv">glusterfs_name</span><span class="o">=</span> <span class="nt">-e</span> <span class="nv">heketi_url</span><span class="o">=</span>http://10.32.0.4:8080 playbooks/kubevirt.yml
+</code></pre></div></div>
 
-<h2 id="how-it-looks-like-in-the-ui">How it looks like in the UI</h2>
+<h2 id="how-it-looks-in-the-ui">How it looks in the UI</h2>
 
 <p>Provided you deployed kubernetes dashboard, you will see this kind of pods for your vms</p>
 
-<p><img src="../assets/images/ui_vm_pod_1.png" alt="vm_pod_1" /></p>
+<p><img src="./../assets/images/ui_vm_pod_1.png" class="text-hide img-fluid" alt="Screenshot of VM Pod 1" /></p>
 
-<p><img src="../assets/images/ui_vm_pod_2.png" alt="vm_pod_2" /></p>
+<p><img src="./../assets/images/ui_vm_pod_2.png" class="text-hide img-fluid" alt="Screenshot of VM Pod 2" /></p>
 
   </article>
 </div>
