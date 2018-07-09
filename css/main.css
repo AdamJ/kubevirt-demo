@@ -271,6 +271,11 @@ pre {
     border: none;
     border-radius: 0; }
 
+.footer-licensing {
+  font-size: .8rem; }
+  .footer-licensing a {
+    font-size: .8rem; }
+
 .footer {
   margin-top: 5rem;
   margin-bottom: 2rem; }
