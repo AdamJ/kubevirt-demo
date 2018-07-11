@@ -193,6 +193,8 @@ pre {
 .row-community-networks {
   min-height: 25vh;
   background-color: #f5f5f5; }
+  .row-community-networks--twitter-feed {
+    background-color: #f5f5f5; }
 
 .page-title {
   margin-bottom: 30px; }
@@ -275,6 +277,19 @@ pre {
   font-size: .8rem; }
   .footer-licensing a {
     font-size: .8rem; }
+
+.timeline-Widget.timeline-Widget--edge {
+  max-width: 100% !important;
+  width: 100% !important; }
+
+.twitter-arrow-up {
+  width: 25px;
+  background: transparent;
+  border-top: 5px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 25px solid #fafafa;
+  border-left: 20px solid transparent;
+  margin-left: 7rem; }
 
 .footer {
   margin-top: 5rem;

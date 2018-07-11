@@ -13,10 +13,10 @@
     <title>kubevirt.io</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/main.css"">
+    <link rel="stylesheet" href="/css/main.css">
     <link rel="canonical" href="https://www.kubevirt.io//community/">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
-    <link rel="shortcut icon" type="image/png" href=/assets/favicon/favicon.png>
+    <link rel="shortcut icon" type="image/png" href="/assets/favicon/favicon.png">
 </head>
 
 
@@ -56,7 +56,17 @@
     </nav>
 
     <main role="main" style="margin-top: 60px;">
-      <div class="container-fluid community-page">
+      <meta
+  name="twitter:widgets:link-color"
+  content="#ff00ff">
+<meta
+  name="twitter:widgets:border-color"
+  content="#f5f5f5">
+<link
+  rel="me"
+  href="https://twitter.com/kubevirt">
+
+<div class="container-fluid community-page">
   <div class="row align-items-center justify-content-center row-community-title">
     <h1 class="page-title">Community</h1>
   </div>
@@ -94,7 +104,7 @@
       </p>
     </div>
   </div>
-  <div class="row align-items-start justify-content-center pt-4 row-community-networks">
+  <div class="row align-items-end justify-content-center pt-4 row-community-networks">
     <div class="col-12">
       <h2 class="text-center">Talk to Us!</h2>
       <p class="text-center mt-4">
@@ -135,11 +145,47 @@
       </p>
     </div>
   </div>
+  <div class="row align-items-start justify-content-left pb-4 row-community-networks--twitter-feed">
+    <div class="col-sm-12 col-md-10 offset-md-1">
+      <div class="twitter-arrow-up"></div>
+      <div style="background-color: #fafafa;">
+        <h2 style="margin-bottom: 0; padding: .5rem 1rem;">
+          <i class="fab fa-twitter"></i> Live Twitter Feed
+          <a href="https://twitter.com/kubevirt" style="float: right; margin-top: .5rem;">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </h2>
+      </div>
+      <div style="background-color: #fff; box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08);">
+        <a class="twitter-timeline"
+            data-height="400"
+            data-width="100%"
+            data-dnt="true"
+            data-theme="light"
+            data-chrome="noheader nofooter noborder transparent"
+            data-link-color="#00797f"
+            data-converstation="none"
+            data-aria-polite="assertive"
+            href="https://twitter.com/kubevirt?ref_src=twsrc%5Etfw">
+            <span class="pl-3">
+              Loading tweets by KubeVirt...
+            </span>
+        </a>
+      </div>
+      <div style="background-color: #fff; height: 70px; display: flex; align-items: center; justify-content: flex-start; box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08);">
+        <div style="background-color: #fafafa; border-radius: 2px; border: 1px solid #f1f0f0; padding-top: .5rem; padding-bottom: .5rem; margin-right: 1rem; margin-left: 1rem; margin-bottom: .5rem; width: 100%;">
+          <span style="padding: 1rem;">
+            <i class="fab fa-twitter fa-lg pr-2" style="color: #1da1f2;"></i> <span style="color: #878787;">Tweet to @kubevirt</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
     </main>
 
-    <footer class="footer" role="contentinfo">
+    <footer class="footer" role="footer">
       <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="col-sm-12 col-md-5">
@@ -180,6 +226,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="/js/kubevirt-io.js"></script>
+    <script id="dsq-count-scr" src="//kubevirt-io.disqus.com/count.js" async></script>
     <script type="text/javascript">
         if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
             _satellite.pageBottom();
