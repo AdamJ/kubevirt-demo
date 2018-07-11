@@ -282,7 +282,7 @@ pre {
   max-width: 100% !important;
   width: 100% !important; }
 
-.twitter-arrow-up {
+.twitter-arrow_up {
   width: 25px;
   background: transparent;
   border-top: 5px solid transparent;
@@ -290,6 +290,38 @@ pre {
   border-bottom: 25px solid #fafafa;
   border-left: 20px solid transparent;
   margin-left: 7rem; }
+.twitter-feed {
+  background-color: #fafafa; }
+  .twitter-feed--title {
+    margin-bottom: 0;
+    padding: .5rem 1rem; }
+  .twitter-feed--icon_share {
+    float: right;
+    margin-top: .5rem; }
+  .twitter-feed--timeline-background {
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08); }
+  .twitter-feed--footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08); }
+    .twitter-feed--footer-wrapper {
+      height: 60px;
+      width: 100%;
+      margin-right: 1rem;
+      margin-left: 1rem;
+      padding: 1rem;
+      background-color: #fafafa;
+      border: 1px solid #f1f0f0;
+      border-radius: 2px; }
+      .twitter-feed--footer-wrapper_inner-icon {
+        color: #1da1f2; }
+      .twitter-feed--footer-wrapper_inner-text {
+        color: #878787; }
 
 .footer {
   margin-top: 5rem;
@@ -459,29 +491,36 @@ pre {
   .highlight .il {
     color: #099; }
 
-.kv-btn-primary {
-  height: 33px;
-  width: 156px;
+.kv-btn {
   margin-top: 5px;
   margin-bottom: 6px;
   padding-bottom: 2rem;
-  background: linear-gradient(to bottom, #ffe986, #fa742b);
-  border: 1px solid transparent;
-  border-radius: 0;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
   color: #006166;
   font-size: 16px;
+  background: #fed476;
+  /* Old browsers */
+  background: linear-gradient(to bottom, #ffe986 0%, #fa742b 100%);
+  border: 1px solid #ffe986;
+  border-radius: 0;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0s, box-shadow 0s; }
-  .kv-btn-primary:hover, .kv-btn-primary:active, .kv-btn-primary:focus {
+  .kv-btn:hover, .kv-btn:active, .kv-btn:focus {
     color: #006166;
-    background: linear-gradient(to bottom, #fcdc4b, #fd5900);
+    background: #fed476;
+    /* Old browsers */
+    background: linear-gradient(to bottom, #fcdc4b 0%, #fd5900 100%);
     background-color: #fa742b !important;
     border-color: #fa742b !important; }
-  .kv-btn-primary:focus {
+  .kv-btn:focus {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8) !important; }
-  .kv-btn-primary.kv-btn-community {
+  .kv-btn-primary {
+    height: 33px;
+    width: 156px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8); }
+  .kv-btn-community {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 70px;
     width: 220px;
     padding: .5rem 1rem;
-    border: 1px solid #ffe986;
     box-shadow: none; }
