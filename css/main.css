@@ -211,6 +211,15 @@ pre {
 .page-paragraph--spacer_bottom {
   margin-bottom: 60px; }
 
+.pagination {
+  margin: 0 auto; }
+  .pagination .btn.btn-outline-light {
+    cursor: default; }
+    .pagination .btn.btn-outline-light:hover {
+      color: #f8f9fa;
+      background-color: transparent;
+      border-color: #f8f9fa; }
+
 .community-page .page-title {
   margin-bottom: 0; }
 

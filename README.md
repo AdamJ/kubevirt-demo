@@ -5,14 +5,6 @@ example
 
 # KubeVirt.io Website
 
-The KubeVirt.io website is a Jekyll site, hosted with GitHub Pages.
-
-All pages are located under `/pages`. Each section of the site is broken out into their respective folders - `/blogs` for the various Blog pages, `/docs` for the Documentation and `/videos` for the videos that are shared.
-
-All site images are located under `/assets/images`. Please do not edit these images.
-
-Images that relate to blog entries are located under `/assets/images/BLOG_POST_TITLE`. The **BLOG_POST_TITLE** should match the name of the markdown file that you added under `/_posts`.
-
 ## Creating a Blog Post
 
 All Blog posts are located in the `/_posts` directory. Each file is a Markdown (`.md`) file.
@@ -75,3 +67,28 @@ Example are `href="{{ site.baseurl }}/assets/images/image1.jpg"` to properly loc
 As part of KubeVirt.io, comments on Blog Posts and connections to Twitter are now enabled. Depending on your content settings, you will see Disqus conversation blocks at the end of each Blog Post, as well as a "Tweet" button, enabling you to post a Tweet a link to the Post, the Title and tag the @kubevirt account.
 
 Under the Community page, depending on your content settings, you will be able to see a live feed of the @kubevirt account.
+
+## Test your changes in a local container
+
+### selinux labelling
+
+```
+# sudo chcon -Rt svirt_sandbox_file_t .
+```
+
+### Run a jekyll container
+
+```
+sudo docker run -d --name kubevirtio -p 4000:4000 -v $(pwd):/srv/jekyll jekyll/jekyll serve --watch
+```
+
+### View the site
+
+Visit `http://0.0.0.0:4000` in your local browser.
+The KubeVirt.io website is a Jekyll site, hosted with GitHub Pages.
+
+All pages are located under `/pages`. Each section of the site is broken out into their respective folders - `/blogs` for the various Blog pages, `/docs` for the Documentation and `/videos` for the videos that are shared.
+
+All site images are located under `/assets/images`. Please do not edit these images.
+
+Images that relate to blog entries are located under `/assets/images/BLOG_POST_TITLE`. The **BLOG_POST_TITLE** should match the name of the markdown file that you added under `/_posts`.

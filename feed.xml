@@ -6,10 +6,396 @@
 </description>
     <link>https://www.kubevirt.io//</link>
     <atom:link href="https://www.kubevirt.io//feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 13 Jul 2018 11:36:26 -0400</pubDate>
-    <pubYear>Fri, 13 Jul 2018 11:36:26 -0400</pubYear>
-    <lastBuildDate>Fri, 13 Jul 2018 11:36:26 -0400</lastBuildDate>
+    <pubDate>Fri, 13 Jul 2018 17:22:36 -0400</pubDate>
+    <pubYear>Fri, 13 Jul 2018 17:22:36 -0400</pubYear>
+    <lastBuildDate>Fri, 13 Jul 2018 17:22:36 -0400</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>Unit Test Howto</title>
+        <description>&lt;p&gt;There are &lt;a href=&quot;https://blog.codinghorror.com/i-pity-the-fool-who-doesnt-write-unit-tests/&quot;&gt;way too many reasons&lt;/a&gt; to write unit tests, but my favorite one is: the freedom to hack, modify and improve the code without fear, and get quick feedback that you are on the right track.&lt;/p&gt;
+
+&lt;p&gt;Of course, writing good integration tests (the stuff under the &lt;a href=&quot;https://github.com/kubevirt/kubevirt/tree/master/tests&quot;&gt;tests&lt;/a&gt; directory) is the best way to validate that everything works, but unit tests has great value as:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;They are much faster to run (~30 seconds in our case)&lt;/li&gt;
+  &lt;li&gt;You get nice coverage reports with &lt;a href=&quot;https://coveralls.io/github/kubevirt/kubevirt&quot;&gt;coveralls&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;No need to: &lt;code class=&quot;highlighter-rouge&quot;&gt;make cluster up/sync&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Cover corner cases and easier to debug&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Some Notes:&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;We use same frameworks (ginkgo, gomega) for unit testing and integration testing, which means that with the same learning curve, you can develop much more!&lt;/li&gt;
+    &lt;li&gt;“Bang for the Buck” - it usually takes 20% of the time to get to 80% coverage, and 80% of the time to get to 100%. Which mean that you have to use common sense when improving coverage - some code is just fine with 80% coverage (e.g. large files calling some other APIs with little logic), and other would benefit from getting close to 100% (e.g. complex core functionality handling lots of error cases)&lt;/li&gt;
+    &lt;li&gt;Follow the &lt;a href=&quot;http://programmer.97things.oreilly.com/wiki/index.php/The_Boy_Scout_Rule&quot;&gt;“boy (or girl) scout rule”&lt;/a&gt; - every time you enhance/fix some code, add more testing around the existing code as well&lt;/li&gt;
+    &lt;li&gt;Avoid “white box testing”, as this will cause endless maintenance of the test code. Best way to assure that, is to put the test code under a different package than the code under test&lt;/li&gt;
+    &lt;li&gt;Explore coveralls. Not only it will show you the coverage and the overall trend, it will also help you understand which tests are missing. When drilling down into a file, you can see hits per line, and make better decision on what needs to be covered next&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&quot;frameworks&quot;&gt;Frameworks&lt;/h1&gt;
+&lt;p&gt;There are several frameworks we use to write unit tests:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The tests themselves are written using &lt;a href=&quot;https://github.com/onsi/ginkgo&quot;&gt;ginkgo&lt;/a&gt;, which is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Behavior-driven_development&quot;&gt;Behavior-Driven Development (BDD)&lt;/a&gt; framework&lt;/li&gt;
+  &lt;li&gt;The library used for assertions in the tests is &lt;a href=&quot;https://github.com/onsi/gomega&quot;&gt;gomega&lt;/a&gt;. It has a very rich set of matchers, so, before you write you own code around the “equal” matcher, check &lt;a href=&quot;http://onsi.github.io/gomega/#provided-matchers&quot;&gt;here&lt;/a&gt; to see if there is a more expressive assertion you can use&lt;/li&gt;
+  &lt;li&gt;We use &lt;a href=&quot;https://github.com/golang/mock&quot;&gt;GoMock&lt;/a&gt; to generate mocks for the different kubevirt interfaces and objects. The command &lt;code class=&quot;highlighter-rouge&quot;&gt;make generate&lt;/code&gt; will (among other things) create a &lt;a href=&quot;https://github.com/kubevirt/kubevirt/blob/master/pkg/kubecli/generated_mock_kubevirt.go&quot;&gt;file&lt;/a&gt; holding the mocked version of our objects and interfaces
+    &lt;ul&gt;
+      &lt;li&gt;Many examples exist in our code on how to use this framework&lt;/li&gt;
+      &lt;li&gt;Also see &lt;a href=&quot;https://github.com/golang/mock/tree/master/sample&quot;&gt;here&lt;/a&gt; for sample code from GoMock&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;If you need mocks for k8s objects and interfaces, use their framework. They have a tool called &lt;a href=&quot;https://github.com/kubernetes/code-generator&quot;&gt;client-gen&lt;/a&gt;, which generates both the code and the mocks based on the defined APIs
+    &lt;ul&gt;
+      &lt;li&gt;The generated mock interfaces and objects of the k8s client are &lt;a href=&quot;https://github.com/kubernetes/client-go/blob/master/kubernetes/fake/clientset_generated.go&quot;&gt;here&lt;/a&gt;. Note that they a use a different mechanism to control the mocked behavior than the one used in GoMock&lt;/li&gt;
+      &lt;li&gt;Mocked actions are more are &lt;a href=&quot;https://github.com/kubernetes/client-go/tree/master/testing&quot;&gt;here&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Unit test utilities are placed under &lt;a href=&quot;https://github.com/kubevirt/kubevirt/tree/master/pkg/testutils&quot;&gt;testutils&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Some integration test utilities are also useful for unit testing, see this &lt;a href=&quot;https://github.com/kubevirt/kubevirt/blob/master/tests/utils.go&quot;&gt;file&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;When testing interfaces, a mock HTTP server is usually needed. For that we use the &lt;a href=&quot;https://golang.org/pkg/net/http/httptest/&quot;&gt;golang httptest package&lt;/a&gt;
+    &lt;ul&gt;
+      &lt;li&gt;gomega also has a package called &lt;a href=&quot;http://onsi.github.io/gomega/#ghttp-testing-http-clients&quot;&gt;ghttp&lt;/a&gt; that could be used for same purpose&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;best-practices-and-tips&quot;&gt;Best Practices and Tips&lt;/h1&gt;
+&lt;h2 id=&quot;ginkgo&quot;&gt;ginkgo&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Don’t mix setup and tests, use BeforeEach/JustBeforeEach for setup and It/Specify for tests&lt;/li&gt;
+  &lt;li&gt;Don’t write setup/cleanup code under Describe/Context clause, which is not inside BeforeEach/AfterEach etc.&lt;/li&gt;
+  &lt;li&gt;Make sure that any state change inside an “It” clause, that may impact other tests, is reverted in “AfterEach”&lt;/li&gt;
+  &lt;li&gt;Don’t assume the “It” clauses, which are at the same level, are invoked in any specific order
+    &lt;h2 id=&quot;gomega&quot;&gt;gomega&lt;/h2&gt;
+    &lt;p&gt;Be verbose and use specific matchers. For example, to check that an array has N elements, you can use:&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Expect(len(arr)).To(Equal(N))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;But a better way would be:&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Expect(arr).To(HaveLen(N))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;h2 id=&quot;function-override&quot;&gt;Function Override&lt;/h2&gt;
+    &lt;p&gt;Sometimes the code under test is invoking a function which is not mocked. In most cases, this is an indication that the code needs to be refactored, so this function, or its return values, will be passed as part of the API of the code being tested.
+However, if this refactoring is not possible (or too costly), you can inject your own implementation of this function. The original function should be defined as a closure, and assigned to a global variable. Since functions are 1st class citizens in go, you can assign your implementation to that function variable. More detailed example is &lt;a href=&quot;https://gist.github.com/yuvalif/006c48c563f264041f4ada5f90ddfd0c&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 03 Jul 2018 00:00:00 -0400</pubDate>
+        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
+        <link>https://www.kubevirt.io//2018/Unit-Test-Howto.html</link>
+        <guid isPermaLink="true">https://www.kubevirt.io//2018/Unit-Test-Howto.html</guid>
+        
+        
+        <category>news</category>
+        
+      </item>
+    
+      <item>
+        <title>Run Istio With Kubevirt</title>
+        <description>&lt;p&gt;On this blog post, we are going to deploy virtual machines with the KubeVirt project and insert them into the Istio service mesh.&lt;/p&gt;
+
+&lt;p&gt;Some information about the technologies we are going to use in this blog post.&lt;/p&gt;
+
+&lt;h2 id=&quot;kubernetes&quot;&gt;Kubernetes&lt;/h2&gt;
+
+&lt;p&gt;Production-Grade Container Orchestration.&lt;/p&gt;
+
+&lt;p&gt;Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications.&lt;/p&gt;
+
+&lt;h3 id=&quot;kubeadm&quot;&gt;Kubeadm&lt;/h3&gt;
+
+&lt;p&gt;kubeadm helps you bootstrap a minimum viable Kubernetes cluster that conforms to best practices.&lt;/p&gt;
+
+&lt;h2 id=&quot;calico&quot;&gt;Calico&lt;/h2&gt;
+
+&lt;p&gt;Calico provides secure network connectivity for containers and virtual machine workloads.&lt;/p&gt;
+
+&lt;p&gt;Calico creates and manages a flat layer 3 network, assigning each workload a fully routable IP address. Workloads can communicate without IP encapsulation or network address translation for bare metal performance, easier troubleshooting, and better interoperability. In environments that require an overlay, Calico uses IP-in-IP tunneling or can work with other overlay networking such as flannel.&lt;/p&gt;
+
+&lt;h2 id=&quot;kubevirt&quot;&gt;KubeVirt&lt;/h2&gt;
+
+&lt;p&gt;Virtualization API for kubernetes in order to manage virtual machines&lt;/p&gt;
+
+&lt;p&gt;KubeVirt technology addresses the needs of development teams that have adopted or want to adopt Kubernetes but possess existing Virtual Machine-based workloads that cannot be easily containerized. More specifically, the technology provides a unified development platform where developers can build, modify, and deploy applications residing in both Application Containers as well as Virtual Machines in a common, shared environment.&lt;/p&gt;
+
+&lt;p&gt;Benefits are broad and significant. Teams with a reliance on existing virtual machine-based workloads are empowered to rapidly containerize applications. With virtualized workloads placed directly in development workflows, teams can decompose them over time while still leveraging remaining virtualized components as is comfortably desired.&lt;/p&gt;
+
+&lt;h2 id=&quot;istio&quot;&gt;Istio&lt;/h2&gt;
+
+&lt;p&gt;An open platform to connect, manage, and secure microservices.&lt;/p&gt;
+
+&lt;p&gt;Istio provides an easy way to create a network of deployed services with load balancing, service-to-service authentication, monitoring, and more, without requiring any changes in service code. You add Istio support to services by deploying a special sidecar proxy throughout your environment that intercepts all network communication between microservices, configured and managed using Istio’s control plane functionality.&lt;/p&gt;
+
+&lt;h2 id=&quot;bookinfo-application&quot;&gt;Bookinfo application&lt;/h2&gt;
+
+&lt;p&gt;A simple application that displays information about a book, similar to a single catalog entry of an online book store. Displayed on the page is a description of the book, book details (ISBN, number of pages, and so on), and a few book reviews.&lt;/p&gt;
+
+&lt;p&gt;The Bookinfo application is broken into four separate microservices:&lt;/p&gt;
+
+&lt;p&gt;productpage. The productpage microservice calls the details and reviews microservices to populate the page.&lt;/p&gt;
+
+&lt;p&gt;details. The details microservice contains book information.&lt;/p&gt;
+
+&lt;p&gt;reviews. The reviews microservice contains book reviews. It also calls the ratings microservice.&lt;/p&gt;
+
+&lt;p&gt;ratings. The ratings microservice contains book ranking information that accompanies a book review.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../assets/2019-06-21-Run-Istio-with-kubevirt/Bookinfo.png&quot; alt=&quot;Bookinfo-application&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; This demo is going to be deployed on a kubernetes 1.10 cluster.&lt;/p&gt;
+
+&lt;h1 id=&quot;requirements&quot;&gt;Requirements&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;docker&lt;/li&gt;
+  &lt;li&gt;kubeadm&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Follow this &lt;a href=&quot;https://kubernetes.io/docs/tasks/tools/install-kubeadm/&quot;&gt;document&lt;/a&gt; to install everything we need for the POC&lt;/p&gt;
+
+&lt;h1 id=&quot;deployment&quot;&gt;Deployment&lt;/h1&gt;
+
+&lt;p&gt;For the POC we clone &lt;a href=&quot;https://github.com/SchSeba/kubevirt-istio-poc&quot;&gt;this repo&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The repo contains all the configuration we need to deploy KubeVirt and Istio.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;kubevirt.yaml&lt;/li&gt;
+  &lt;li&gt;istio-demo-auth.yaml&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It also contains the deployment configuration of our sample application.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;bookinfo.yaml&lt;/li&gt;
+  &lt;li&gt;bookinfo-gateway.yaml&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Run the bash script&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd kubevirt-istio-poc
+./deploy-istio-poc.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;demo-application&quot;&gt;Demo application&lt;/h1&gt;
+
+&lt;p&gt;We are going to use the &lt;a href=&quot;https://istio.io/docs/guides/bookinfo/#overview&quot;&gt;bookinfo sample application&lt;/a&gt; from the istio webpage.&lt;/p&gt;
+
+&lt;p&gt;The follow yaml will deploy the bookinfo application with a ‘small’ change the details service will run on a virtual machine inside our kubernetes cluster!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; it will take like 5 minutes for the application to by running inside the virtual machine because we install git and ruby, then clone the istio repo and start the application.&lt;/p&gt;
+
+&lt;h1 id=&quot;poc-details&quot;&gt;POC details&lt;/h1&gt;
+
+&lt;p&gt;Lets start with the bash script:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt;
+
+kubeadm init &lt;span class=&quot;nt&quot;&gt;--pod-network-cidr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;192.168.0.0/16
+
+&lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; /etc/kubernetes/admin.conf &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.kube/config
+
+kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
+
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;kubectl get po &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; kube-system | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;kube-dns | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;Running | &lt;span class=&quot;nb&quot;&gt;wc&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-eq&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;do
+        &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Calico deployment is no ready yet.
+        &lt;span class=&quot;nb&quot;&gt;sleep &lt;/span&gt;5
+&lt;span class=&quot;k&quot;&gt;done
+
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Calico is ready.
+
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Taint the master node.
+
+kubectl taint nodes &lt;span class=&quot;nt&quot;&gt;--all&lt;/span&gt; node-role.kubernetes.io/master-
+
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Deploy kubevirt.
+
+kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; https://github.com/kubevirt/kubevirt/releases/download/v0.7.0/kubevirt.yaml
+
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Deploy istio.
+
+kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; istio-demo-auth.yaml
+
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Add istio-injection to the default namespace.
+
+kubectl label namespace default istio-injection&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;enabled
+
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;kubectl get po &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; istio-system | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;sidecar-injector | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;Running | &lt;span class=&quot;nb&quot;&gt;wc&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-eq&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;do
+        &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Istio deployment is no ready yet.
+        &lt;span class=&quot;nb&quot;&gt;sleep &lt;/span&gt;5
+&lt;span class=&quot;k&quot;&gt;done
+
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Istio is ready.
+
+&lt;span class=&quot;nb&quot;&gt;sleep &lt;/span&gt;20
+
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;Deploy the bookinfo example application
+
+kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; bookinfo.yaml
+
+kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; bookinfo-gateway.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The follow script create a kubernetes cluster using the kubeadm command, deploy calico as a network CNI and taint the master node (have only one node in the cluster).&lt;/p&gt;
+
+&lt;p&gt;After the cluster is up the script deploy both istio with mutual TLS and kubevirt projects, it also add the auto injection to the default namespace.&lt;/p&gt;
+
+&lt;p&gt;At last the script deploy the bookinfo demo application that we change a bit.&lt;/p&gt;
+
+&lt;p&gt;Lets take a closer look in the virtual machine part inside the bookinfo.yaml file&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;##################################################################################################
+# Details service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: details
+  labels:
+    app: details
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: details
+---
+apiVersion: kubevirt.io/v1alpha2
+kind: VirtualMachineInstance
+metadata:
+  creationTimestamp: null
+  labels:
+    special: vmi-details
+    app: details
+    version: v1
+  name: vmi-details
+spec:
+  domain:
+    devices:
+      disks:
+      - disk:
+          bus: virtio
+        name: registrydisk
+        volumeName: registryvolume
+      - disk:
+          bus: virtio
+        name: cloudinitdisk
+        volumeName: cloudinitvolume
+      interfaces:
+      - name: testSlirp
+        slirp: {}
+        ports:
+        - name: http
+          port: 9080
+    machine:
+      type: &quot;&quot;
+    resources:
+      requests:
+        memory: 1024M
+  networks:
+  - name: testSlirp
+    pod: {}
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: registryvolume
+    registryDisk:
+      image: kubevirt/fedora-cloud-registry-disk-demo:latest
+  - cloudInitNoCloud:
+      userData: |-
+        #!/bin/bash
+        echo &quot;fedora&quot; |passwd fedora --stdin
+        yum install git ruby -y
+        git clone https://github.com/istio/istio.git
+        cd istio/samples/bookinfo/src/details/
+        ruby details.rb 9080 &amp;amp;
+    name: cloudinitvolume
+status: {}
+---
+..........
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;details&quot;&gt;Details:&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create a network of type pod&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;networks:
+- name: testSlirp
+  pod: {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create an interface of type slirp and connect it to the pod network by matching the pod network name&lt;/li&gt;
+  &lt;li&gt;Add our application port&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;interfaces:
+- name: testSlirp
+  slirp: {}
+  ports:
+  - name: http
+    port: 9080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use the cloud init script to download install and run the details application&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- cloudInitNoCloud:
+    userData: |-
+        #!/bin/bash
+        echo &quot;fedora&quot; |passwd fedora --stdin
+        yum install git ruby -y
+        git clone https://github.com/istio/istio.git
+        cd istio/samples/bookinfo/src/details/
+        ruby details.rb 9080 &amp;amp;
+    name: cloudinitvolume
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;poc-check&quot;&gt;POC Check&lt;/h1&gt;
+
+&lt;p&gt;After running the bash script the environment should look like this&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NAME                              READY     STATUS    RESTARTS   AGE
+productpage-v1-7bbdd59459-w6nwq   2/2       Running   0          1h
+ratings-v1-76dc7f6b9-6n6s9        2/2       Running   0          1h
+reviews-v1-64545d97b4-tvgl2       2/2       Running   0          1h
+reviews-v2-8cb9489c6-wjp9x        2/2       Running   0          1h
+reviews-v3-6bc884b456-hr5bm       2/2       Running   0          1h
+virt-launcher-vmi-details-94pb6   3/3       Running   0          1h
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Lets find the istio ingress service port&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# kubectl get service -n istio-system  | grep istio-ingressgateway
+istio-ingressgateway       LoadBalancer   10.97.163.91     &amp;lt;pending&amp;gt;     80:31380/TCP,443:31390/TCP,31400:31400/TCP                            3h
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then browse the follow url&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://&amp;lt;k8s-node-ip-address&amp;gt;:&amp;lt;istio-ingress-service-port-exposed-by-k8s&amp;gt;/productpage
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://10.0.0.1:31380/productpage
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;conclusions&quot;&gt;Conclusions&lt;/h1&gt;
+
+&lt;p&gt;This POC show how we can use KubeVirt with Istio to integrate the Istio service mesh to virtual machine workloads running inside our kubernetes cluster.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 21 Jun 2018 00:00:00 -0400</pubDate>
+        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
+        <link>https://www.kubevirt.io//2018/Run-Istio-with-kubevirt.html</link>
+        <guid isPermaLink="true">https://www.kubevirt.io//2018/Run-Istio-with-kubevirt.html</guid>
+        
+        
+        <category>news</category>
+        
+      </item>
     
       <item>
         <title>Kvm Using Device Plugins</title>
@@ -1973,990 +2359,6 @@ user guide &lt;a href=&quot;https://www.kubevirt.io/user-guide/#/authorization&q
         <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
         <link>https://www.kubevirt.io//2018/KubeVirt-API-Access-Control.html</link>
         <guid isPermaLink="true">https://www.kubevirt.io//2018/KubeVirt-API-Access-Control.html</guid>
-        
-        
-        <category>uncategorized</category>
-        
-      </item>
-    
-      <item>
-        <title>Kubevirt Objects</title>
-        <description>&lt;p&gt;The &lt;a href=&quot;https://github.com/kubevirt/kubevirt/&quot;&gt;KubeVirt&lt;/a&gt; project provides extensions to Kubernetes via &lt;a href=&quot;https://kubernetes.io/docs/concepts/api-extension/custom-resources/&quot;&gt;custom resources&lt;/a&gt;.
-These resources are a collection a API objects that defines
-a virtual machine within Kubernetes.&lt;/p&gt;
-
-&lt;p&gt;I think it’s important to point out the two great resources that I used to
-compile information for this post:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/&quot;&gt;user-guide&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/&quot;&gt;api-reference&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;With that let’s take a look at the objects that are available.&lt;/p&gt;
-
-&lt;h1 id=&quot;kubevirt-top-level-objects&quot;&gt;KubeVirt top-level objects&lt;/h1&gt;
-
-&lt;p&gt;Below is a list of the top level API objects and descriptions that KubeVirt provides.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;VirtualMachine (vm[s]) - represents a virtual machine in the runtime environment of Kubernetes.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;OfflineVirtualMachine (ovm[s]) - handles the virtual machines that are not running or are in a stopped state.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;VirtualMachinePreset (vmpreset[s]) - is an extension to general VirtualMachine configuration behaving much like PodPresets from Kubernetes. When a VirtualMachine is created, any applicable VirtualMachinePresets will be applied to the existing spec for the VirtualMachine. This allows for re-use of common settings that should apply to multiple VirtualMachines.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;VirtualMachineReplicaSet (vmrs[s]) - tries to ensures that a specified number of VirtualMachine replicas are running at any time.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_domainspec&quot;&gt;DomainSpec&lt;/a&gt; is listed as a top-level object but is only used within all of the objects above. Currently the &lt;code class=&quot;highlighter-rouge&quot;&gt;DomainSpec&lt;/code&gt; is a subset of what is configurable via &lt;a href=&quot;https://libvirt.org/formatdomain.html&quot;&gt;libvirt domain XML&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;virtualmachine&quot;&gt;VirtualMachine&lt;/h2&gt;
-
-&lt;p&gt;VirtualMachine is mortal object just like a
-&lt;a href=&quot;https://kubernetes.io/docs/concepts/workloads/pods/pod/&quot;&gt;Pod&lt;/a&gt; within Kubernetes.
-It only runs once and cannot be resurrected. This might seem problematic especially
-to an administrator coming from a traditional virtualization background. Fortunately
-later we will discuss OfflineVirtualMachines which will address this.&lt;/p&gt;
-
-&lt;p&gt;First let’s use &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl&lt;/code&gt; to retrieve a list of &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get vms -n nodejs-ex
-NAME      AGE
-mongodb   5d
-nodejs    5d
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;We can also use &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl describe&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl describe vms -n test
-Name:         testvm
-Namespace:    test
-Labels:       guest=testvm
-              kubevirt.io/nodeName=kn2.virtomation.com
-              kubevirt.io/size=small
-...output...
-Events:
-  Type    Reason              Age                From                               Message
-  ----    ------              ----               ----                               -------
-  Normal  SuccessfulCreate    59m                virtualmachine-controller          Created virtual machine pod virt-launcher-testvm-8h927
-  Normal  SuccessfulHandOver  59m                virtualmachine-controller          Pod owner ship transfered to the node virt-launcher-testvm-8h927
-  Normal  Created             59m (x2 over 59m)  virt-handler, kn2.virtomation.com  VM defined.
-  Normal  Started             59m                virt-handler, kn2.virtomation.com  VM started.
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And just in case if you want to return the yaml definition of a &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; object here is an example.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl -o yaml get vms mongodb -n nodejs-ex
-apiVersion: kubevirt.io/v1alpha1
-kind: VirtualMachine
-...output...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;The first object we will annotate is &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt;. The important sections &lt;code class=&quot;highlighter-rouge&quot;&gt;.spec&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineSpec&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;.spec.domain&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;DomainSpec&lt;/code&gt; will be annotated only in this section then referred to in the other object sections.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: kubevirt.io/v1alpha1
-kind: VirtualMachine
-metadata:
-  annotations: {}
-  labels: {}
-  name: string
-  namespace: string
-spec: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;node-placement&quot;&gt;Node Placement&lt;/h3&gt;
-
-&lt;p&gt;Kubernetes has the ability to schedule a pod to specific nodes based on &lt;a href=&quot;https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#node-affinity-beta-feature&quot;&gt;affinity and anti-affinity&lt;/a&gt; rules.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_nodeaffinity&quot;&gt;Node affinity&lt;/a&gt; is also possible with KubeVirt. To &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/assigning-vms-to-nodes?id=affinity-and-anti-affinity&quot;&gt;constrain a virtual machine&lt;/a&gt; to run on a node define a matching expressions using node labels.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - preference:
-          matchExpressions:
-          - key: string
-            operator: string
-            values:
-            - string
-        weight: 0
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: string
-            operator: string
-            values:
-            - string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A virtual machine can also more easily be constrained by using &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/assigning-vms-to-nodes?id=nodeselector&quot;&gt;nodeSelector&lt;/a&gt; which is defined by node’s label and value. Here is an example&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  nodeSelector:
-    kubernetes.io/hostname: kn1.virtomation.com
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;clocks-and-timers&quot;&gt;Clocks and Timers&lt;/h3&gt;
-
-&lt;p&gt;Configures the &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=clock&quot;&gt;virtualize hardware&lt;/a&gt; clock provided by &lt;a href=&quot;https://qemu.weilnetz.de/doc/qemu-doc.html#Debug_002fExpert-options&quot;&gt;QEMU&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  domain:
-    clock:
-      timezone: string
-      utc:
-        offsetSeconds: 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;The &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=timers&quot;&gt;timer&lt;/a&gt; defines the &lt;a href=&quot;https://libvirt.org/formatdomain.html#elementsTime&quot;&gt;type and policy attribute&lt;/a&gt; that determines what action is take when QEMU misses a deadline for injecting a tick to the guest.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  domain:
-    clock:
-      timer:
-        hpet:
-          present: true
-          tickPolicy: string
-        hyperv:
-          present: true
-        kvm:
-          present: true
-        pit:
-          present: true
-          tickPolicy: string
-        rtc:
-          present: true
-          tickPolicy: string
-          track: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;cpu-and-memory&quot;&gt;CPU and Memory&lt;/h3&gt;
-
-&lt;p&gt;The number of &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=cpu&quot;&gt;CPU cores&lt;/a&gt; a virtual machine will be assigned. &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_cpu&quot;&gt;.spec.domain.cpu.cores&lt;/a&gt; will not be used for scheduling use &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.4.1/definitions.html#_v1_resourcerequirements&quot;&gt;.spec.domain.resources.requests.cpu&lt;/a&gt; instead.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    cpu:
-      cores: 1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;There are two supported &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=resources-requests-and-limits&quot;&gt;resource limits and requests&lt;/a&gt;: &lt;code class=&quot;highlighter-rouge&quot;&gt;cpu&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;memory&lt;/code&gt;. A &lt;code class=&quot;highlighter-rouge&quot;&gt;.spec.domain.resources.requests.memory&lt;/code&gt; should be defined to determine the allocation of memory provided to the virtual machine. These values will be used to in scheduling decisions.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    resources:
-      limits: {}
-      requests: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;watchdog-devices&quot;&gt;Watchdog Devices&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_watchdog&quot;&gt;.spec.domain.watchdog&lt;/a&gt; automatically triggers an action via &lt;a href=&quot;https://libvirt.org/formatdomain.html#elementsWatchdog&quot;&gt;Libvirt&lt;/a&gt; and &lt;a href=&quot;https://qemu.weilnetz.de/doc/qemu-doc.html#Debug_002fExpert-options&quot;&gt;QEMU&lt;/a&gt; when the virtual machine operating system hangs or crashes.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      watchdog:
-        i6300esb:
-          action: string
-        name: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;features&quot;&gt;Features&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_features&quot;&gt;.spec.domain.features&lt;/a&gt;
-are hypervisor cpu or machine features that can be enabled.
-After reviewing both Linux and Microsoft QEMU virtual machines managed by
-&lt;a href=&quot;https://libvirt.org/formatdomain.html#elementsFeatures&quot;&gt;Libvirt&lt;/a&gt;
-both acpi and
-&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_featureapic&quot;&gt;apic&lt;/a&gt;
-should be enabled.
-The &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.4.1/definitions.html#_v1_featurehyperv&quot;&gt;hyperv&lt;/a&gt; features should be enabled only for Windows-based virtual machines. For additional information regarding features please visit the &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=features&quot;&gt;virtual hardware configuration&lt;/a&gt; in the kubevirt user guide.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    features:
-      acpi:
-        enabled: true
-      apic:
-        enabled: true
-        endOfInterrupt: true
-      hyperv:
-        relaxed:
-          enabled: true
-        reset:
-          enabled: true
-        runtime:
-          enabled: true
-        spinlocks:
-          enabled: true
-          spinlocks: 0
-        synic:
-          enabled: true
-        synictimer:
-          enabled: true
-        vapic:
-          enabled: true
-        vendorid:
-          enabled: true
-          vendorid: string
-        vpindex:
-          enabled: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;qemu-machine-type&quot;&gt;QEMU Machine Type&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/virtualized-hardware-configuration?id=machine-type&quot;&gt;.spec.domain.machine.type&lt;/a&gt; is the emulated machine architecture provided by &lt;a href=&quot;https://qemu.weilnetz.de/doc/qemu-doc.html#Standard-options&quot;&gt;QEMU&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    machine:
-      type: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Here is an example how to retrieve the supported QEMU machine types.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ qemu-system-x86_64 --machine help
-Supported machines are:
-...output...
-pc                   Standard PC (i440FX + PIIX, 1996) (alias of pc-i440fx-2.10)
-pc-i440fx-2.10       Standard PC (i440FX + PIIX, 1996) (default)
-...output...
-q35                  Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-2.10)
-pc-q35-2.10          Standard PC (Q35 + ICH9, 2009)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;disks-and-volumes&quot;&gt;Disks and Volumes&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_disk&quot;&gt;.spec.domain.devices.disks&lt;/a&gt; configures a &lt;a href=&quot;https://qemu.weilnetz.de/doc/qemu-doc.html#Block-device-options&quot;&gt;QEMU&lt;/a&gt; type of &lt;a href=&quot;https://libvirt.org/formatdomain.html#elementsDisks&quot;&gt;disk&lt;/a&gt; to the virtual machine and assigns a specific &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/disks-and-volumes&quot;&gt;volume and its type to that disk&lt;/a&gt; via the &lt;code class=&quot;highlighter-rouge&quot;&gt;volumeName&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    devices:
-      disks:
-      - cdrom:
-          bus: string
-          readonly: true
-          tray: string
-        disk:
-          bus: string
-          readonly: true
-        floppy:
-          readonly: true
-          tray: string
-        lun:
-          bus: string
-          readonly: true
-        name: string
-        volumeName: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_cloudinitnocloudsource&quot;&gt;cloudInitNoCloud&lt;/a&gt;
-injects scripts and configuration into a virtual machine operating system.
-There are three different parameters that can be used to provide the
-cloud-init coniguration: &lt;code class=&quot;highlighter-rouge&quot;&gt;secretRef&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;userData&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;userDataBase64&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;See the user-guide for examples of how to use &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/startup-scripts?id=cloud-init-examples&quot;&gt;.spec.volumes.cloudInitNoCloud&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  volumes:
-  - cloudInitNoCloud:
-      secretRef:
-        name: string
-      userData: string
-      userDataBase64: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;An &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/disks-and-volumes?id=emptydisk&quot;&gt;emptyDisk volume&lt;/a&gt; creates an extra qcow2 disk that is created with the virtual machine. It will be removed if the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; object is deleted.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    emptyDisk:
-      capacity: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/disks-and-volumes?id=ephemeral&quot;&gt;Ephemeral volume&lt;/a&gt; creates a temporary local copy on write image storage that will be discarded when the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; is removed.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    ephemeral:
-      persistentVolumeClaim:
-        claimName: string
-        readOnly: true
-    name: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/disks-and-volumes?id=persistentvolumeclaim&quot;&gt;persistentVolumeClaim volume&lt;/a&gt; persists after the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; is deleted.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    persistentVolumeClaim:
-      claimName: string
-      readOnly: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/disks-and-volumes?id=registrydisk&quot;&gt;registryDisk volume&lt;/a&gt; type uses a virtual machine disk that is stored in a container image registry.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    registryDisk:
-      image: string
-      imagePullSecret: string
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;virtual-machine-status&quot;&gt;Virtual Machine Status&lt;/h3&gt;
-
-&lt;p&gt;Once the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; object has been created the &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_virtualmachinestatus&quot;&gt;VirtualMachineStatus&lt;/a&gt; will be available. &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.4.1/definitions.html#_v1_virtualmachinestatus&quot;&gt;VirtualMachineStatus&lt;/a&gt; can be used in automation tools such as Ansible to confirm running state, determine where a &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; is running via &lt;code class=&quot;highlighter-rouge&quot;&gt;nodeName&lt;/code&gt; or the &lt;code class=&quot;highlighter-rouge&quot;&gt;ipAddress&lt;/code&gt; of the virtual machine operating system.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl -o yaml get vm mongodb -n nodejs-ex
-
-# ...output...
-status:
-  interfaces:
-  - ipAddress: 10.244.2.7
-  nodeName: kn2.virtomation.com
-  phase: Running
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Example using &lt;code class=&quot;highlighter-rouge&quot;&gt;--template&lt;/code&gt; to retrieve the &lt;code class=&quot;highlighter-rouge&quot;&gt;.status.phase&lt;/code&gt; of the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl get vm mongodb --template {{.status.phase}} -n nodejs-ex
-Running
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;examples&quot;&gt;Examples&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kubevirt.io/user-guide/#/workloads/virtual-machines/creation?id=virtualmachine-api&quot;&gt;https://www.kubevirt.io/user-guide/#/workloads/virtual-machines/creation?id=virtualmachine-api&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;offlinevirtualmachine&quot;&gt;OfflineVirtualMachine&lt;/h2&gt;
-
-&lt;p&gt;An OfflineVirtualMachine is an immortal object within KubeVirt. The VirtualMachine
-described within the spec will be recreated with a start power operation, host issue
-or simply a accidental deletion of the VirtualMachine object.
-For a traditional virtual administrator this object might be appropriate for
-most use-cases.&lt;/p&gt;
-
-&lt;p&gt;Just like &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; we can retrieve the &lt;code class=&quot;highlighter-rouge&quot;&gt;OfflineVirtualMachine&lt;/code&gt; objects.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get ovms -n nodejs-ex
-NAME      AGE
-mongodb   5d
-nodejs    5d
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And display the object in yaml.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl -o yaml get ovms mongodb -n nodejs-ex
-apiVersion: kubevirt.io/v1alpha1
-kind: OfflineVirtualMachine
-metadata:
-...output...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;We continue by annotating &lt;code class=&quot;highlighter-rouge&quot;&gt;OfflineVirtualMachine&lt;/code&gt; object.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: kubevirt.io/v1alpha1
-kind: OfflineVirtualMachine
-metadata:
-  annotations: {}
-  labels: {}
-  name: string
-  namespace: string
-spec:
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;what-is-running-in-offlinevirtualmachine&quot;&gt;What is Running in OfflineVirtualMachine?&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_offlinevirtualmachinespec&quot;&gt;.spec.running&lt;/a&gt; controls whether the associated VirtualMachine object is created. In other words this changes the &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/life-cycle?id=stopping-a-virtual-machine&quot;&gt;power status&lt;/a&gt; of the virtual machine.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  running: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This will create a &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; object which will instantiate and power on a virtual machine.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl patch offlinevirtualmachine mongodb --type merge -p '{&quot;spec&quot;:{&quot;running&quot;:true }}' -n nodejs-ex
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This will delete the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; object which will power off the virtual machine.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl patch offlinevirtualmachine mongodb --type merge -p '{&quot;spec&quot;:{&quot;running&quot;:false }}' -n nodejs-ex
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And if you would rather not have to remember the &lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl patch&lt;/code&gt; command above
-the KubeVirt team has provided a cli tool &lt;code class=&quot;highlighter-rouge&quot;&gt;virtctl&lt;/code&gt; that can start and stop
-a guest.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./virtctl start mongodb -n nodejs-ex
-./virtctl stop mongodb -n nodejs-ex
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;offline-virtual-machine-status&quot;&gt;Offline Virtual Machine Status&lt;/h3&gt;
-
-&lt;p&gt;Once the &lt;code class=&quot;highlighter-rouge&quot;&gt;OfflineVirtualMachine&lt;/code&gt; object has been created the &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_offlinevirtualmachinestatus&quot;&gt;OfflineVirtualMachineStatus&lt;/a&gt; will be available. Like &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineStatus&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;OfflineVirtualMachineStatus&lt;/code&gt; can be used for automation tools such as Ansible.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl -o yaml get ovms mongodb -n nodejs-ex
-
-# ...output...
-status:
-  created: true
-  ready: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Example using &lt;code class=&quot;highlighter-rouge&quot;&gt;--template&lt;/code&gt; to retrieve the &lt;code class=&quot;highlighter-rouge&quot;&gt;.status.conditions[0].type&lt;/code&gt; of &lt;code class=&quot;highlighter-rouge&quot;&gt;OfflineVirtualMachine&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl get ovm mongodb --template &quot;{{.status.ready}}&quot; -n nodejs-ex
-true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;examples-1&quot;&gt;Examples&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kubevirt.io/user-guide/#/workloads/controllers/offline-virtual-machine?id=example&quot;&gt;https://www.kubevirt.io/user-guide/#/workloads/controllers/offline-virtual-machine?id=example&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;virtualmachinereplicaset&quot;&gt;VirtualMachineReplicaSet&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/controllers/virtual-machine-replica-set&quot;&gt;VirtualMachineReplicaSet&lt;/a&gt; is great when you want to run multiple identical virtual machines.&lt;/p&gt;
-
-&lt;p&gt;Just like the other top-level objects we can retrieve &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineReplicaSet&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get vmrs -n nodejs-ex
-NAME      AGE
-replica   1m
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;With the &lt;code class=&quot;highlighter-rouge&quot;&gt;replicas&lt;/code&gt; parameter set to &lt;code class=&quot;highlighter-rouge&quot;&gt;2&lt;/code&gt; the command below displays the two &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects that were created.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get vms -n nodejs-ex
-NAME           AGE
-replicanmgjl   7m
-replicarjhdz   7m
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;pause-rollout&quot;&gt;Pause rollout&lt;/h3&gt;
-
-&lt;p&gt;The &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_vmreplicasetspec&quot;&gt;.spec.paused&lt;/a&gt; parameter if true pauses the deployment of the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineReplicaSet&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  paused: true
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;replica-quantity&quot;&gt;Replica quantity&lt;/h3&gt;
-
-&lt;p&gt;The &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/controllers/virtual-machine-replica-set?id=how-to-use-a-virtualmachinereplicaset&quot;&gt;.spec.replicas&lt;/a&gt; number of &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects that should be created.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  replicas: 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;The &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_labelselector&quot;&gt;selector&lt;/a&gt; must be defined and match labels defined in the template. It is used by the controller to keep track of managed virtual machines.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  selector:
-    matchExpressions:
-    - key: string
-      operator: string
-      values:
-      - string
-    matchLabels: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;virtual-machine-template-spec&quot;&gt;&lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/controllers/virtual-machine-replica-set?id=how-to-use-a-virtualmachinereplicaset&quot;&gt;Virtual Machine Template Spec&lt;/a&gt;&lt;/h3&gt;
-
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;VMTemplateSpec&lt;/code&gt; is the definition of a &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects that will be created.&lt;/p&gt;
-
-&lt;p&gt;In the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; section the &lt;code class=&quot;highlighter-rouge&quot;&gt;.spec&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineSpec&lt;/code&gt; describes the available parameters for that object.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  template:
-    metadata:
-      annotations: {}
-      labels: {}
-      name: string
-      namespace: string
-    spec: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;replica-status&quot;&gt;Replica Status&lt;/h3&gt;
-
-&lt;p&gt;Like the other objects we already have discussed &lt;a href=&quot;http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_vmreplicasetstatus&quot;&gt;VMReplicaSetStatus&lt;/a&gt; is an important object to use for automation.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;status:
-  readyReplicas: 0
-  replicas: 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Example using &lt;code class=&quot;highlighter-rouge&quot;&gt;--template&lt;/code&gt; to retrieve the &lt;code class=&quot;highlighter-rouge&quot;&gt;.status.readyReplicas&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;.status.replicas&lt;/code&gt; of &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachineReplicaSet&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get vmrs replica --template &quot;{{.status.readyReplicas}}&quot; -n nodejs-ex
-2
-$ kubectl get vmrs replica --template &quot;{{.status.replicas}}&quot; -n nodejs-ex
-2
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;examples-2&quot;&gt;Examples&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kubevirt.io/user-guide/#/workloads/controllers/virtual-machine-replica-set?id=example&quot;&gt;https://www.kubevirt.io/user-guide/#/workloads/controllers/virtual-machine-replica-set?id=example&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;virtualmachinepreset&quot;&gt;VirtualMachinePreset&lt;/h2&gt;
-
-&lt;p&gt;This is used to define a &lt;code class=&quot;highlighter-rouge&quot;&gt;DomainSpec&lt;/code&gt; that can be used for multiple virtual machines.&lt;/p&gt;
-
-&lt;p&gt;To configure a &lt;code class=&quot;highlighter-rouge&quot;&gt;DomainSpec&lt;/code&gt; for multiple &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects the &lt;code class=&quot;highlighter-rouge&quot;&gt;selector&lt;/code&gt; defines which &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachinePreset&lt;/code&gt; should be applied to.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ kubectl get vmpreset -n nodejs-ex
-NAME       AGE
-m1.small   17s
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;domain-spec&quot;&gt;Domain Spec&lt;/h3&gt;
-
-&lt;p&gt;See the &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; section above for annotated details of the &lt;code class=&quot;highlighter-rouge&quot;&gt;DomainSpec&lt;/code&gt; object.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spec:
-  domain: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;preset-selector&quot;&gt;Preset Selector&lt;/h3&gt;
-
-&lt;p&gt;The &lt;a href=&quot;http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/presets?id=virtalmachine-selector&quot;&gt;selector&lt;/a&gt; is optional but if not defined will be applied to all &lt;code class=&quot;highlighter-rouge&quot;&gt;VirtualMachine&lt;/code&gt; objects; which is probably not the intended purpose so I recommend always including a selector.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  selector:
-    matchExpressions:
-    - key: string
-      operator: string
-      values:
-      - string
-    matchLabels: {}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;examples-3&quot;&gt;Examples&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kubevirt.io/user-guide/#/workloads/virtual-machines/presets?id=examples&quot;&gt;https://www.kubevirt.io/user-guide/#/workloads/virtual-machines/presets?id=examples&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;We provided an annotated view into the KubeVirt objects - VirtualMachine, OfflineVirtualMachine, VirtualMachineReplicaSet and VirtualMachienPreset. Hopefully this will help a user of KubeVirt to understand the options and parameters that are currently available when creating a virtual machine on Kubernetes.&lt;/p&gt;
-</description>
-        <pubDate>Tue, 08 May 2018 00:00:00 -0400</pubDate>
-        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
-        <link>https://www.kubevirt.io//2018/KubeVirt-objects.html</link>
-        <guid isPermaLink="true">https://www.kubevirt.io//2018/KubeVirt-objects.html</guid>
-        
-        
-        <category>uncategorized</category>
-        
-      </item>
-    
-      <item>
-        <title>Deploying Vms On Kubernetes Glusterfs Kubevirt</title>
-        <description>&lt;p&gt;Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs.&lt;/p&gt;
-
-&lt;h2 id=&quot;contents&quot;&gt;Contents&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Prerequisites&lt;/li&gt;
-  &lt;li&gt;Known Issues&lt;/li&gt;
-  &lt;li&gt;Installing Kubernetes&lt;/li&gt;
-  &lt;li&gt;Installing GlusterFS and Heketi using gk-deploy&lt;/li&gt;
-  &lt;li&gt;Installing KubeVirt&lt;/li&gt;
-  &lt;li&gt;Deploying Virtual Machines&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
-
-&lt;p&gt;You should have access to at least three baremetal servers. One server will be the master Kubernetes node and other two servers will be the worker nodes. Each server should have a block device attached for GlusterFS, this is in addition to the ones used by the OS.&lt;/p&gt;
-
-&lt;p&gt;You may use virtual machines in lieu of baremetal servers. Performance may suffer and you will need to ensure your hardware supports nested virtualization and that the relevant kernel modules are loaded in the OS.&lt;/p&gt;
-
-&lt;p&gt;For reference, I used the following components and versions:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;baremetal servers with CentOS version 7.4 as the base OS&lt;/li&gt;
-  &lt;li&gt;latest version of Kubernetes (at the time v1.10.1)&lt;/li&gt;
-  &lt;li&gt;Weave Net as the Container Network Interface (CNI), v2.3.0&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/gluster/gluster-kubernetes&quot;&gt;gluster-kubernetes&lt;/a&gt; master commit 2a2a68ce5739524802a38f3871c545e4f57fa20a&lt;/li&gt;
-  &lt;li&gt;KubeVirt v0.4.1.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;known-issues&quot;&gt;Known Issues&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;You may need to set SELinux to permissive mode prior to running “kubeadm init” if you see failures attributed to etcd in /var/log/audit.log.&lt;/li&gt;
-  &lt;li&gt;Prior to installing GlusterFS, you may need to disable firewalld until this issue is resolved: https://github.com/gluster/gluster-kubernetes/issues/471&lt;/li&gt;
-  &lt;li&gt;kubevirt-ansible install may fail in storage-glusterfs role: https://github.com/kubevirt/kubevirt-ansible/issues/219&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;installing-kubernetes&quot;&gt;Installing Kubernetes&lt;/h2&gt;
-
-&lt;p&gt;Create the Kubernetes cluster by using kubeadm. Detailed instructions can be found at https://kubernetes.io/docs/setup/independent/install-kubeadm/.&lt;/p&gt;
-
-&lt;p&gt;Use Weave Net as the CNI. Other CNIs may work, but I have only tested Weave Net.&lt;/p&gt;
-
-&lt;p&gt;If you are using only 2 servers as workers, then you will need to allow scheduling of pods on the master node because GlusterFS requires at least three nodes. To schedule pods on the master node, see “Master Isolation” in the kubeadm guide or execute this command:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl taint nodes --all node-role.kubernetes.io/master-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Move onto the next step when your master and worker nodes are Ready.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master ~]# kubectl get nodes
-NAME                     STATUS    ROLES     AGE       VERSION
-master.somewhere.com     Ready     master    6d        v1.10.1
-worker1.somewhere.com    Ready     &amp;lt;none&amp;gt;    6d        v1.10.1
-worker2.somewhere.com    Ready     &amp;lt;none&amp;gt;    6d        v1.10.1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And all of the pods in the kube-system namespace are Running.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master ~]# kubectl get pods -n kube-system
-NAME                                           READY     STATUS    RESTARTS   AGE
-etcd-master.somewhere.com                      1/1       Running   0          6d
-kube-apiserver-master.somewhere.com            1/1       Running   0          6d
-kube-controller-manager-master.somewhere.com   1/1       Running   0          6d
-kube-dns-86f4d74b45-glv4k                      3/3       Running   0          6d
-kube-proxy-b6ksg                               1/1       Running   0          6d
-kube-proxy-jjxs5                               1/1       Running   0          6d
-kube-proxy-kw77k                               1/1       Running   0          6d
-kube-scheduler-master.somewhere.com            1/1       Running   0          6d
-weave-net-ldlh7                                2/2       Running   0          6d
-weave-net-pmhlx                                2/2       Running   1          6d
-weave-net-s4dp6                                2/2       Running   0          6d
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;installing-glusterfs-and-heketi-using-gluster-kubernetes&quot;&gt;Installing GlusterFS and Heketi using gluster-kubernetes&lt;/h3&gt;
-
-&lt;p&gt;The next step is to deploy GlusterFS and Heketi onto Kubernetes.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/gluster/glusterfs&quot;&gt;GlusterFS&lt;/a&gt; provides the storage system on which the virtual machine images are stored. &lt;a href=&quot;https://github.com/heketi/heketi&quot;&gt;Heketi&lt;/a&gt; provides the REST API that Kubernetes uses to provision GlusterFS volumes. The &lt;a href=&quot;https://github.com/gluster/gluster-kubernetes&quot;&gt;gk-deploy tool&lt;/a&gt; is used to deploy both of these components as pods in the Kubernetes cluster.&lt;/p&gt;
-
-&lt;p&gt;There is a detailed &lt;a href=&quot;https://github.com/gluster/gluster-kubernetes/blob/master/docs/setup-guide.md&quot;&gt;setup guide for gk-deploy&lt;/a&gt;. Note each node must have a raw block device that is reserved for use by heketi and they must not contain any data or be pre-formatted. You can reset your block device to a useable state by running:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wipefs -a &amp;lt;path to device&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;To aid you, below are the commands you will need to run if you are following the setup guide.&lt;/p&gt;
-
-&lt;p&gt;On all nodes:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Open ports for GlusterFS communications
-sudo iptables -I INPUT 1 -p tcp --dport 2222 -j ACCEPT
-sudo iptables -I INPUT 1 -p tcp --dport 24007 -j ACCEPT
-sudo iptables -I INPUT 1 -p tcp --dport 24008 -j ACCEPT
-sudo iptables -I INPUT 1 -p tcp --dport 49152:49251 -j ACCEPT
-# Load kernel modules
-sudo modprobe dm_snapshot
-sudo modprobe dm_thin_pool
-sudo modprobe dm_mirror
-# Install glusterfs-fuse and git packages
-sudo yum install -y glusterfs-fuse git
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;On the master node:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# checkout gluster-kubernetes repo
-git clone https://github.com/gluster/gluster-kubernetes
-cd gluster-kubernetes/deploy
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Before running the gk-deploy script, we need to first create a topology.json file that maps the nodes present in the GlusterFS cluster and the block devices attached to each node. The block devices should be raw and unformatted. Below is a sample topology.json file for a 3 node cluster all operating in the same zone. The gluster-kubernetes/deploy directory also contains a sample topology.json file.&lt;/p&gt;
-
-&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;err&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;topology.json&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;clusters&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;nodes&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;node&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;hostnames&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;manage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;master.somewhere.com&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;storage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.10.100&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;zone&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;devices&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/dev/vdb&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;node&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;hostnames&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;manage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;worker1.somewhere.com&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;storage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.10.101&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;zone&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;devices&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/dev/vdb&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;node&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;hostnames&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;manage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;worker2.somewhere.com&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;storage&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.10.102&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-              &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;zone&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;devices&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/dev/vdb&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Under “hostnames”, the node’s hostname is listed under “manage” and its IP address is listed under “storage”. Multiple block devices can be listed under “devices”. If you are using VMs, the second block device attached to the VM will usually be /dev/vdb. For multi-path, the device path will usually be /dev/mapper/mpatha. If you are using a second disk drive, the device path will usually be /dev/sdb.&lt;/p&gt;
-
-&lt;p&gt;Once you have your topology.json file and saved it in gluster-kubernetes/deploy, we can execute gk-deploy to create the GlusterFS and Heketi pods. You will need to specify an admin-key which will be used in the next step and will be discovered during the KubeVirt installation.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# from gluster-kubernetes/deploy
-./gk-deploy -g -v -n kube-system --admin-key my-admin-key
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Add the end of the installation, you will see:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;heketi is now running and accessible via http://10.32.0.4:8080 . To run
-administrative commands you can install 'heketi-cli' and use it as follows:
-
-  # heketi-cli -s http://10.32.0.4:8080 --user admin --secret '&amp;lt;ADMIN_KEY&amp;gt;' cluster list
-
-You can find it at https://github.com/heketi/heketi/releases . Alternatively,
-use it from within the heketi pod:
-
-  # /usr/bin/kubectl -n kube-system exec -i heketi-b96c7c978-dcwlw -- heketi-cli -s http://localhost:8080 --user admin --secret '&amp;lt;ADMIN_KEY&amp;gt;' cluster list
-
-For dynamic provisioning, create a StorageClass similar to this:\
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Take note of the URL for Heketi which will be used next step.&lt;/p&gt;
-
-&lt;p&gt;If successful, 4 additional pods will be shown as Running in the kube-system namespace.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master deploy]# kubectl get pods -n kube-system
-NAME                                                              READY     STATUS    RESTARTS   AGE
-...snip...
-glusterfs-h4nwf                                                   1/1       Running   0          6d
-glusterfs-kfvjk                                                   1/1       Running   0          6d
-glusterfs-tjm2f                                                   1/1       Running   0          6d
-heketi-b96c7c978-dcwlw                                            1/1       Running   0          6d
-...snip...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;installing-kubevirt-and-setting-up-storage&quot;&gt;Installing KubeVirt and setting up storage&lt;/h3&gt;
-
-&lt;p&gt;The final component to install and which will enable us to deploy VMs on Kubernetes is KubeVirt.
-We will use &lt;a href=&quot;https://github.com/kubevirt/kubevirt-ansible/&quot;&gt;kubevirt-ansible&lt;/a&gt; to deploy KubeVirt which will also help us configure a Secret and a StorageClass that will allow us to provision Persistent Volume Claims (PVCs) on GlusterFS.&lt;/p&gt;
-
-&lt;p&gt;Let’s first clone the kubevirt-ansible repo.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/kubevirt/kubevirt-ansible
-cd kubevirt-ansible
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Edit the &lt;a href=&quot;https://github.com/kubevirt/kubevirt-ansible/blob/master/inventory&quot;&gt;inventory&lt;/a&gt; file in the kubevirt-ansible checkout. Modify the section that starts with “#BEGIN CUSTOM SETTINGS”. As an example using the servers from above:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# BEGIN CUSTOM SETTINGS
-[masters]
-# Your master FQDN
-master.somewhere.com
-
-[etcd]
-# Your etcd FQDN
-master.somewhere.com
-
-[nodes]
-# Your nodes FQDN's
-worker1.somewhere.com
-worker2.somewhere.com
-
-[nfs]
-# Your nfs server FQDN
-
-[glusterfs]
-# Your glusterfs nodes FQDN
-# Each node should have the &quot;glusterfs_devices&quot; variable, which
-# points to the block device that will be used by gluster.
-master.somewhere.com
-worker1.somewhere.com
-worker1.somewhere.com
-
-#
-# If you run openshift deployment
-# You can add your master as schedulable node with option openshift_schedulable=true
-# Add at least one node with lable to run on it router and docker containers
-# openshift_node_labels=&quot;{'region': 'infra','zone': 'default'}&quot;
-# END CUSTOM SETTINGS
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now let’s run the kubevirt.yml playbook:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ansible-playbook -i inventory playbooks/kubevirt.yml -e cluster=k8s -e storage_role=storage-glusterfs -e namespace=kube-system -e glusterfs_namespace=kube-system -e glusterfs_name= -e heketi_url=http://10.32.0.4:8080 -v
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If successful, we should see 7 additional pods as Running in the kube-system namespace.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master kubevirt-ansible]# kubectl get pods -n kube-system
-NAME                                                              READY     STATUS    RESTARTS   AGE
-virt-api-785fd6b4c7-rdknl                                         1/1       Running   0          6d
-virt-api-785fd6b4c7-rfbqv                                         1/1       Running   0          6d
-virt-controller-844469fd89-c5vrc                                  1/1       Running   0          6d
-virt-controller-844469fd89-vtjct                                  0/1       Running   0          6d
-virt-handler-78wsb                                                1/1       Running   0          6d
-virt-handler-csqbl                                                1/1       Running   0          6d
-virt-handler-hnlqn                                                1/1       Running   0          6d
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;deploying-virtual-machines&quot;&gt;Deploying Virtual Machines&lt;/h2&gt;
-
-&lt;p&gt;To deploy a VM, we must first grab a VM image in raw format, place the image into a PVC, define the VM in a yaml file, source the VM definition into Kubernetes, and then start the VM.&lt;/p&gt;
-
-&lt;p&gt;The &lt;a href=&quot;https://github.com/kubevirt/containerized-data-importer&quot;&gt;containerized data importer (CDI)&lt;/a&gt; is usually used to import VM images into Kubernetes, but there are some patches and additional testing to be done before the CDI can work smoothly with GlusterFS. For now, we will be placing the image into the PVC using a Pod that curls the image from the local filesystem using httpd.&lt;/p&gt;
-
-&lt;p&gt;On master or on a node where kubectl is configured correctly install and start httpd.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo yum install -y httpd
-sudo systemctl start httpd
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Download the cirros cloud image and convert it into raw format.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img -o /var/www/html/cirros-0.4.0-x86_64-disk.img
-sudo yum install -y qemu-img
-qemu-img convert /var/www/html/cirros-0.4.0-x86_64-disk.img /var/www/html/cirros-0.4.0-x86_64-disk.raw
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Create the PVC to store the cirros image.&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;cat &amp;lt;&amp;lt;EOF | kubectl create -f -&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v1&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;PersistentVolumeClaim&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;metadata&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
- &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gluster-pvc-cirros&lt;/span&gt;
- &lt;span class=&quot;na&quot;&gt;annotations&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;s&quot;&gt;volume.beta.kubernetes.io/storage-class&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;kubevirt&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
- &lt;span class=&quot;na&quot;&gt;accessModes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ReadWriteOnce&lt;/span&gt;
- &lt;span class=&quot;na&quot;&gt;resources&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-   &lt;span class=&quot;na&quot;&gt;requests&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-     &lt;span class=&quot;na&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;5Gi&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;EOF&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Check the PVC was created and has “Bound” status.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master ~]# kubectl get pvc
-NAME                 STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-gluster-pvc-cirros   Bound     pvc-843bd508-4dbf-11e8-9e4e-149ecfc53021   5Gi        RWO            kubevirt       2m
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Create a Pod to curl the cirros image into the PVC.
-Note: You will need to substitute &lt;hostname&gt; with actual hostname or IP address.&lt;/hostname&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;cat &amp;lt;&amp;lt;EOF | kubectl create -f -&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v1&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Pod&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;metadata&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;image-importer-cirros&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;restartPolicy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;OnFailure&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;containers&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;image-importer-cirros&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;kubevirtci/disk-importer&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;CURL_OPTS&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-L&quot;&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;INSTALL_TO&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/storage/disk.img&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;URL&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http://&amp;lt;hostname&amp;gt;/cirros-0.4.0-x86_64-disk.raw&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;volumeMounts&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;storage&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;mountPath&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/storage&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;storage&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;persistentVolumeClaim&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;claimName&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gluster-pvc-cirros&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;EOF&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Check and wait for the image-importer-cirros Pod to complete.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master ~]# kubectl get pods
-NAME                         READY     STATUS      RESTARTS   AGE
-image-importer-cirros        0/1       Completed   0          28s
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Create a Offline Virtual Machine definition for your VM and source it into Kubernetes.
-Note the PVC containing the cirros image must be listed as the first disk under spec.domain.devices.disks.&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s&quot;&gt;cat &amp;lt;&amp;lt;EOF | kubectl create -f -&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;apiVersion&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;kubevirt.io/v1alpha1&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;OfflineVirtualMachine&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;metadata&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;creationTimestamp&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;null&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;kubevirt.io/ovm&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cirros&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cirros&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;running&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;false&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;metadata&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;creationTimestamp&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;null&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;labels&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;s&quot;&gt;kubevirt.io/ovm&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cirros&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;devices&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;disks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;disk&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;bus&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;virtio&lt;/span&gt;
-            &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;pvcdisk&lt;/span&gt;
-            &lt;span class=&quot;na&quot;&gt;volumeName&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cirros-pvc&lt;/span&gt;
-          &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;disk&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;bus&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;virtio&lt;/span&gt;
-            &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cloudinitdisk&lt;/span&gt;
-            &lt;span class=&quot;na&quot;&gt;volumeName&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cloudinitvolume&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;machine&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;resources&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;requests&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;na&quot;&gt;memory&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;64M&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;terminationGracePeriodSeconds&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;0&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;cloudInitNoCloud&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;userDataBase64&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;IyEvYmluL3NoCgplY2hvICdwcmludGVkIGZyb20gY2xvdWQtaW5pdCB1c2VyZGF0YScK&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cloudinitvolume&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cirros-pvc&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;persistentVolumeClaim&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;claimName&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gluster-pvc-cirros&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;{}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Finally start the VM.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;export VERSION=v0.4.1
-curl -L -o virtctl https://github.com/kubevirt/kubevirt/releases/download/$VERSION/virtctl-$VERSION-linux-amd64
-chmod +x virtctl
-./virtctl start cirros
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Wait for the VM to be in “Running” status.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master ~]# kubectl get pods
-NAME                         READY     STATUS      RESTARTS   AGE
-image-importer-cirros        0/1       Completed   0          28s
-virt-launcher-cirros-krvv2   0/1       Running     0          13s
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Once it is running, we can then connect to its console.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./virtctl console cirros
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Press enter if a login prompt doesn’t appear.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 07 May 2018 00:00:00 -0400</pubDate>
-        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
-        <link>https://www.kubevirt.io//2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html</link>
-        <guid isPermaLink="true">https://www.kubevirt.io//2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html</guid>
         
         
         <category>uncategorized</category>

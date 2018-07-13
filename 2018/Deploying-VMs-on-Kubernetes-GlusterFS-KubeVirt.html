@@ -67,7 +67,6 @@
   <div class="row">
     <div class="col">
       <div class="post">
-
         <header class="post-header">
           <h1></h1>
           <h1 class="post-title">Deploying Vms On Kubernetes Glusterfs Kubevirt</h1>
@@ -436,12 +435,12 @@ NAME                         READY     STATUS      RESTARTS   AGE
 image-importer-cirros        0/1       Completed   0          28s
 </code></pre></div></div>
 
-<p>Create a Offline Virtual Machine definition for your VM and source it into Kubernetes.
+<p>Create a Virtual Machine definition for your VM and source it into Kubernetes.
 Note the PVC containing the cirros image must be listed as the first disk under spec.domain.devices.disks.</p>
 
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">cat &lt;&lt;EOF | kubectl create -f -</span>
-<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubevirt.io/v1alpha1</span>
-<span class="na">kind</span><span class="pi">:</span> <span class="s">OfflineVirtualMachine</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubevirt.io/v1alpha2</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">VirtualMachine</span>
 <span class="na">metadata</span><span class="pi">:</span>
   <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
   <span class="na">labels</span><span class="pi">:</span>
@@ -490,7 +489,7 @@ chmod +x virtctl
 ./virtctl start cirros
 </code></pre></div></div>
 
-<p>Wait for the VM to be in “Running” status.</p>
+<p>Wait for the VM pod to be in “Running” status.</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@master ~]# kubectl get pods
 NAME                         READY     STATUS      RESTARTS   AGE

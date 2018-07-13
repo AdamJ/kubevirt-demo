@@ -71,17 +71,6 @@
     <div class="col-sm-12 col-md-3">
       
         <ul class="blogs-navigation">
-          <h3></h3>
-          
-            <li class="blogs-navigation--item">
-              <a href="/blogs" class="blogs-navigation--item_link">
-                Blogs
-              </a>
-            </li>
-          
-        </ul>
-      
-        <ul class="blogs-navigation">
           <h3>Categories</h3>
           
             <li class="blogs-navigation--item">
@@ -146,12 +135,17 @@
         
       
         
+      
+        
+      
+        
           <li>
             <h2 href="/2018/Proxy-vm-conclusion.html" class="posts-title">Proxy VM Conclusion</h2>
             <div class="posts-date">June 13, 2018</div>
-              This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.
+              This is a roadmap blog post for the network implementation in the kubevirt project
+              <!-- This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -166,9 +160,10 @@
           <li>
             <h2 href="/2018/Non-Dockerized-Build.html" class="posts-title">Non Dockerized Build</h2>
             <div class="posts-date">June 07, 2018</div>
-              In this post we will set up an alternative to the existing containerized build system used in KubeVirt.
+              This post tries to unveil some of the internals of our build system, by allowing you to build natively on your host
+              <!-- In this post we will set up an alternative to the existing containerized build system used in KubeVirt.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -183,9 +178,10 @@
           <li>
             <h2 href="/2018/Research-run-VMs-with-istio-service-mesh.html" class="posts-title">Research Run Vms With Istio Service Mesh</h2>
             <div class="posts-date">June 03, 2018</div>
-              In this blog post we are going to talk about istio and virtual machines on top of Kubernetes. Some of the components we are going to use are istio, libvirt, ebtables, iptables, and tproxy. Please review the links provided for an overview and deeper dive into each technology
+              In this post we will deploy a vm on top of kubernetes with istio service mesh
+              <!-- In this blog post we are going to talk about istio and virtual machines on top of Kubernetes. Some of the components we are going to use are istio, libvirt, ebtables, iptables, and tproxy. Please review the links provided for an overview and deeper dive into each technology
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -200,9 +196,10 @@
           <li>
             <h2 href="/2018/Use-VS-Code-for-Kube-Virt-Development.html" class="posts-title">Use Vs Code For Kube Virt Development</h2>
             <div class="posts-date">May 22, 2018</div>
-              In this post we will install and configure Visual studio code (vscode) for KubeVirt development and debug.
+              In this post we will install and configure vscode for KubeVirt development
+              <!-- In this post we will install and configure Visual studio code (vscode) for KubeVirt development and debug.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -217,7 +214,8 @@
           <li>
             <h2 href="/2018/ovn-multi-network-plugin-for-kubernetes-kubetron.html" class="posts-title">Ovn Multi Network Plugin For Kubernetes Kubetron</h2>
             <div class="posts-date">May 16, 2018</div>
-              Kubernetes networking model is suited for containerized applications, based mostly around L4 and L7 services, where all pods are connected to one big network. This is perfectly ok for most use cases. However, sometimes there is a need for fine-grained network configuration with better control. Use-cases such as L2 networks,...
+              OVN Multi-Network Plugin for Kubernetes, Kubetron
+              <!-- Kubernetes networking model is suited for containerized applications, based mostly around L4 and L7 services, where all pods are connected to one big network. This is perfectly ok for most use cases. However, sometimes there is a need for fine-grained network configuration with better control. Use-cases such as L2 networks,... -->
               
               <div class="readmore">
   <a href="
@@ -232,9 +230,10 @@
           <li>
             <h2 href="/2018/Use-GlusterFS-Cloning-with-KubeVirt.html" class="posts-title">Use Glusterfs Cloning With Kubevirt</h2>
             <div class="posts-date">May 16, 2018</div>
-              Gluster seems like a good fit for storage in kubernetes and in particular in kubevirt. Still, as for other storage backends, we will likely need to use a golden set of images and deploy vms from them.
+              A first look at using gluster cloning with kubevirt
+              <!-- Gluster seems like a good fit for storage in kubernetes and in particular in kubevirt. Still, as for other storage backends, we will likely need to use a golden set of images and deploy vms from them.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -249,12 +248,13 @@
           <li>
             <h2 href="/2018/KubeVirt-API-Access-Control.html" class="posts-title">Kubevirt Api Access Control</h2>
             <div class="posts-date">May 16, 2018</div>
-              Access to KubeVirt resources are controlled entirely by Kubernete’s Resource
+              How User Access Control works in KubeVirt
+              <!-- Access to KubeVirt resources are controlled entirely by Kubernete’s Resource
 Based Access Control (RBAC) system. This system allows KubeVirt to tie directly
 into the existing authentication and authorization mechanisms Kubernetes
 already provides to its core api objects.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -269,11 +269,12 @@ already provides to its core api objects.
           <li>
             <h2 href="/2018/KubeVirt-objects.html" class="posts-title">Kubevirt Objects</h2>
             <div class="posts-date">May 08, 2018</div>
-              The KubeVirt project provides extensions to Kubernetes via custom resources.
+              In this post we will go over the objects provided by KubeVirt
+              <!-- The KubeVirt project provides extensions to Kubernetes via custom resources.
 These resources are a collection a API objects that defines
 a virtual machine within Kubernetes.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -288,7 +289,8 @@ a virtual machine within Kubernetes.
           <li>
             <h2 href="/2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html" class="posts-title">Deploying Vms On Kubernetes Glusterfs Kubevirt</h2>
             <div class="posts-date">May 07, 2018</div>
-              Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs....
+              Deploying Virtual Machines on Kubernetes with GlusterFS+Heketi and KubeVirt
+              <!-- Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs.... -->
               
               <div class="readmore">
   <a href="
@@ -303,7 +305,8 @@ a virtual machine within Kubernetes.
           <li>
             <h2 href="/2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html" class="posts-title">Deploying Kubevirt On A Single Ovirt Vm</h2>
             <div class="posts-date">May 04, 2018</div>
-              In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed...
+              Deploying KubeVirt on a single oVirt VM
+              <!-- In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed... -->
               
               <div class="readmore">
   <a href="
@@ -320,9 +323,10 @@ a virtual machine within Kubernetes.
           <li>
             <h2 href="/2018/KubeVirt-Network-Deep-Dive.html" class="posts-title">Kubevirt Network Deep Dive</h2>
             <div class="posts-date">April 25, 2018</div>
-              In this post we will research and discover how KubeVirt networking functions along with Kubernetes objects services and ingress. This should also provide enough technical details to start troubleshooting your own environment if a problem should arise. So with that let’s get started.
+              In this post we will research and discover how KubeVirt networking functions
+              <!-- In this post we will research and discover how KubeVirt networking functions along with Kubernetes objects services and ingress. This should also provide enough technical details to start troubleshooting your own environment if a problem should arise. So with that let’s get started.
 
-
+ -->
               
               <div class="readmore">
   <a href="
@@ -353,11 +357,12 @@ a virtual machine within Kubernetes.
           <li>
             <h2 href="/2018/Some-notes-on-some-highlights-of-v020.html" class="posts-title">Some Notes On Some Highlights Of V020</h2>
             <div class="posts-date">January 05, 2018</div>
-              The very first KubeVirt release of KubeVirt in the new year
+              The very first KubeVirt release of KubeVirt in the new year () had a few notable highlights which were brewing over the last few weeks.
+              <!-- The very first KubeVirt release of KubeVirt in the new year
 (https://github.com/kubevirt/kubevirt/releases/v0.2.0) had a few
 notable highlights which were brewing over the last few weeks.
 
-
+ -->
               
               <div class="readmore">
   <a href="

@@ -73,20 +73,6 @@
         
           
           <ul class="blogs-navigation">
-            <h3></h3>
-            
-              <li class="blogs-navigation--item">
-                <a href="/blogs"  class="blogs-navigation--item_link active" >
-                  Blogs
-                </a>
-                
-              </li>
-            
-          </ul>
-          
-        
-          
-          <ul class="blogs-navigation">
             <h3>Categories</h3>
             
               <li class="blogs-navigation--item">
@@ -161,19 +147,42 @@
       <ul class="posts">
         
           <li>
-            <h2 href="/2018/KVM-Using-Device-Plugins.html" class="posts-title">Kvm Using Device Plugins</h2>
-            <div class="posts-date">June 20, 2018</div>
-            <!-- <p>As of Kubernetes 1.10, the Device Plugins API is now in beta! KubeVirt is now
-using this framework to provide hardware acceleration and network devices to
-virtual machines. The motivation behind this is that virt-launcher pods are no
-longer responsible for creating their own device nodes. Or stated another way:
-virt-launcher pods no longer require excess privileges just for the purpose of
-creating device nodes.</p>
+            <h2 href="/2018/Unit-Test-Howto.html" class="posts-title">Unit Test Howto</h2>
+            <div class="posts-date">July 3, 2018</div>
+            This post tries to demystify some of our unit test mechanism, hopefully will make it easier to write more tests and increase our code coverage!
+            <!-- There are way too many reasons to write unit tests, but my favorite one is: the freedom to hack, modify and improve the code without fear, and get quick feedback that you are on the right track.
 
  -->
-            <!--  -->
-              As of Kubernetes 1.10, the Device Plugins API is now in beta! KubeVirt is now using this framework to provide hardware acceleration and network devices to virtual machines. The motivation behind this is that virt-launcher pods are no longer responsible for creating their own device nodes. Or stated another way:...
-            <!--  -->
+            
+            <div class="readmore">
+  <a href="
+              /2018/Unit-Test-Howto.html
+            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
+</div>
+
+          </li>
+        
+          <li>
+            <h2 href="/2018/Run-Istio-with-kubevirt.html" class="posts-title">Run Istio With Kubevirt</h2>
+            <div class="posts-date">June 21, 2018</div>
+            Use Istio with KubeVirt
+            <!-- On this blog post, we are going to deploy virtual machines with the KubeVirt project and insert them into the Istio service mesh.
+
+ -->
+            
+            <div class="readmore">
+  <a href="
+              /2018/Run-Istio-with-kubevirt.html
+            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
+</div>
+
+          </li>
+        
+          <li>
+            <h2 href="/2018/KVM-Using-Device-Plugins.html" class="posts-title">Kvm Using Device Plugins</h2>
+            <div class="posts-date">June 20, 2018</div>
+            KubeVirt Using Device Plugins For KVM
+            <!-- As of Kubernetes 1.10, the Device Plugins API is now in beta! KubeVirt is now using this framework to provide hardware acceleration and network devices to virtual machines. The motivation behind this is that virt-launcher pods are no longer responsible for creating their own device nodes. Or stated another way:... -->
             
             <div class="readmore">
   <a href="
@@ -186,14 +195,10 @@ creating device nodes.</p>
           <li>
             <h2 href="/2018/Proxy-vm-conclusion.html" class="posts-title">Proxy VM Conclusion</h2>
             <div class="posts-date">June 13, 2018</div>
-            <!-- <p>This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.</p>
+            This is a roadmap blog post for the network implementation in the kubevirt project
+            <!-- This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.
 
  -->
-            <!--  -->
-              This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.
-
-
-            <!--  -->
             
             <div class="readmore">
   <a href="
@@ -206,14 +211,10 @@ creating device nodes.</p>
           <li>
             <h2 href="/2018/Non-Dockerized-Build.html" class="posts-title">Non Dockerized Build</h2>
             <div class="posts-date">June 07, 2018</div>
-            <!-- <p>In this post we will set up an alternative to the existing containerized build system used in KubeVirt.</p>
+            This post tries to unveil some of the internals of our build system, by allowing you to build natively on your host
+            <!-- In this post we will set up an alternative to the existing containerized build system used in KubeVirt.
 
  -->
-            <!--  -->
-              In this post we will set up an alternative to the existing containerized build system used in KubeVirt.
-
-
-            <!--  -->
             
             <div class="readmore">
   <a href="
@@ -223,1618 +224,121 @@ creating device nodes.</p>
 
           </li>
         
-          <li>
-            <h2 href="/2018/Research-run-VMs-with-istio-service-mesh.html" class="posts-title">Research Run Vms With Istio Service Mesh</h2>
-            <div class="posts-date">June 03, 2018</div>
-            <!-- <p>In this blog post we are going to talk about istio and virtual machines on top of Kubernetes. Some of the components we are going to use are <a href="https://istio.io/docs/concepts/what-is-istio/overview/">istio</a>, <a href="https://libvirt.org/index.html">libvirt</a>, <a href="http://ebtables.netfilter.org/">ebtables</a>, <a href="https://en.wikipedia.org/wiki/Iptables">iptables</a>, and <a href="https://github.com/LiamHaworth/go-tproxy">tproxy</a>. Please review the links provided for an overview and deeper dive into each technology</p>
-
- -->
-            <!--  -->
-              In this blog post we are going to talk about istio and virtual machines on top of Kubernetes. Some of the components we are going to use are istio, libvirt, ebtables, iptables, and tproxy. Please review the links provided for an overview and deeper dive into each technology
-
-
-            <!--  -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Research-run-VMs-with-istio-service-mesh.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Use-VS-Code-for-Kube-Virt-Development.html" class="posts-title">Use Vs Code For Kube Virt Development</h2>
-            <div class="posts-date">May 22, 2018</div>
-            <!-- <p>In this post we will install and configure Visual studio code (vscode) for KubeVirt development and debug.</p>
-
- -->
-            <!-- 
-              <p>In this post we will install and configure Visual studio code (vscode) for KubeVirt development and debug.</p>
-
-<p>Visual Studio Code is a source code editor developed by Microsoft for Windows, Linux and macOS.</p>
-
-<p>It includes support for debugging, embedded Git control, syntax highlighting, intelligent code completion, snippets, and code refactoring.</p>
-
-<h1 id="golang-installation">Golang Installation</h1>
-
-<p>GO installation is required, We can find the binaries in <a href="https://golang.org/dl/">golang page</a>.</p>
-
-<h2 id="golang-linux-installation">Golang Linux Installation</h2>
-
-<p>After downloading the binaries extract them with the following command:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
-</code></pre></div></div>
-
-<p>Now lets Add /usr/local/go/bin to the PATH environment variable.</p>
-
-<p>You can do this by adding this line to your /etc/profile (for a system-wide installation) or $HOME/.profile:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH=$PATH:/usr/local/go/bin
-</code></pre></div></div>
-
-<h2 id="golang-windows-installation">Golang Windows Installation</h2>
-
-<p>Open the MSI file and follow the prompts to install the Go tools.</p>
-
-<p>By default, the installer puts the Go distribution in C:\Go.</p>
-
-<p>The installer should put the C:\Go\bin directory in your PATH environment variable.</p>
-
-<p>You may need to restart any open command prompts for the change to take effect.</p>
-
-<h1 id="vscode-installation">VSCODE Installation</h1>
-<p>Now we will install Visual Studio Code in our system.</p>
-
-<h2 id="for-linux-machines">For linux machines</h2>
-<p>We need to choose our linux distribution.</p>
-
-<h3 id="for-rhelcentosfedora">For RHEL/Centos/Fedora</h3>
-<p>The following script will install the key and repository:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" &gt; /etc/yum.repos.d/vscode.repo'
-</code></pre></div></div>
-
-<p>Then update the package cache and install the package using dnf (Fedora 22 and above):</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnf check-update
-sudo dnf install code
-</code></pre></div></div>
-
-<p>Or on older versions using yum:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum check-update
-sudo yum install code
-</code></pre></div></div>
-
-<h3 id="for-debianubuntu">For Debian/Ubuntu</h3>
-<p>We need to download the .deb package from the <a href="https://code.visualstudio.com/Download">vscode download page</a>,
-and from the command line run the package management.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo dpkg -i &lt;file&gt;.deb
-sudo apt-get install -f # Install dependencies
-</code></pre></div></div>
-
-<h1 id="for-windows-machines">For Windows machines</h1>
-<p>Download the <a href="https://go.microsoft.com/fwlink/?LinkID=534107">Visual Studio Code installer</a>, and then run the installer (VSCodeSetup-version.exe)</p>
-
-<h1 id="go-project-struct">Go Project struct</h1>
-<p>Lets create the following structure for our kubevirt project development environment:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── &lt;Go-projects-folder&gt; # Your Golang projects root folder
-│   ├── bin
-│   ├── pkg
-│   ├── src
-│   │   ├── kubevirt.io
-</code></pre></div></div>
-
-<p>Now navigate to kubevirt.io folder and run:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;kubevirt-fork&gt;
-</code></pre></div></div>
-
-<h1 id="install-vscode-extensions">Install VSCODE Extensions</h1>
-<p>Now we are going to install some extensions for a better development experience with the IDE.</p>
-
-<p>Open vscode and select your go project root folder you created in the last step.</p>
-
-<p>On the extensions tab (Ctrl+Shift+X), search for golang and install it.</p>
-
-<p>Now open the command palette (Ctrl+Shift+P) view-&gt;Command Palette and type “Go: install/update tools”, this will install all the requirements for example: delve debugger, etc…</p>
-
-<p>(optional) We can install docker extension for syntax highlighting, commands, etc..</p>
-
-<p><img src="../assets/2018-05-22-Use-VS-Code-for-Kube-Virt-Development/extension-install.png" alt="Extension-Install" /></p>
-
-<h1 id="gopath-and-goroot-configuration">GOPATH and GOROOT configuration</h1>
-<p>Open the vscode configuration file (ctrl+,) file-&gt;preferences-&gt;settings.</p>
-
-<p>Now on the right file we need to add this configuration:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"go.gopath": "&lt;Go-projects-folder&gt;",
-"go.goroot": "/usr/local/go",
-</code></pre></div></div>
-
-<p><img src="../assets/2018-05-22-Use-VS-Code-for-Kube-Virt-Development/settings.png" alt="settings" /></p>
-
-<h1 id="create-debug-configuration">Create debug configuration</h1>
-<p>For the last part we are going to configure the debugger file, open it by Debug-&gt;Open Configurations and add to the configuration list the following structure</p>
-
-<p>** Change the <Go-projects-folder> parameter to your golang projects root directory</Go-projects-folder></p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
-            "name": "Kubevirt",
-            "type": "go",
-            "request": "launch",
-            "mode": "debug",
-            "remotePath": "",
-            "port": 2345,
-            "host": "127.0.0.1",
-            "program": "${fileDirname}",
-            "env": {},
-            "args": ["--kubeconfig", "cluster/k8s-1.9.3/.kubeconfig",
-                     "--port", "1234"],
-            "showLog": true,
-            "cwd": "${workspaceFolder}/src/kubevirt.io/kubevirt",
-            "output": "&lt;Go-projects-folder&gt;/bin/${fileBasenameNoExtension}"
-}
-</code></pre></div></div>
-<p><img src="../assets/2018-05-22-Use-VS-Code-for-Kube-Virt-Development/debug-config.png" alt="debug-config" /></p>
-
-<h1 id="debug-process">Debug Process</h1>
-<p>For debug we need to open the main package we want to debug.</p>
-
-<p>For example if we want to debug the virt-api component, open the main package:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubevirt.io/cmd/virt-api/virt-api.go
-</code></pre></div></div>
-<p><img src="../assets/2018-05-22-Use-VS-Code-for-Kube-Virt-Development/debug-file.png" alt="debug-file" /></p>
-
-<p>Now change to debug view (ctrl+shift+D), check that we are using the kubevirt configuration and hit the play button</p>
-
-<p><img src="../assets/2018-05-22-Use-VS-Code-for-Kube-Virt-Development/debug-view.png" alt="debug-view" /></p>
-
-<h2 id="
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Use-VS-Code-for-Kube-Virt-Development.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/ovn-multi-network-plugin-for-kubernetes-kubetron.html" class="posts-title">Ovn Multi Network Plugin For Kubernetes Kubetron</h2>
-            <div class="posts-date">May 16, 2018</div>
-            <!-- <p>Kubernetes networking model is suited for containerized applications, based mostly around L4 and L7 services, where all pods are connected to one big network. This is perfectly ok for most use cases. However, sometimes there is a need for fine-grained network configuration with better control. Use-cases such as L2 networks, static IP addresses, interfaces dedicated for storage traffic etc. For such needs there is ongoing effort in Kubernetes sig-network to support multiple networks (see <a href="https://docs.google.com/document/d/1Ny03h6IDVy_e_vmElOqR7UdTPAG_RNydhVE1Kx54kFQ">Kubernetes Network CRD De-Facto Standard</a>. There exist many prototypes of plugins providing such functionality. You are reading about one of them.</p>
-
- -->
-            <!-- 
-              <p>Kubernetes networking model is suited for containerized applications, based mostly around L4 and L7 services, where all pods are connected to one big network. This is perfectly ok for most use cases. However, sometimes there is a need for fine-grained network configuration with better control. Use-cases such as L2 networks, static IP addresses, interfaces dedicated for storage traffic etc. For such needs there is ongoing effort in Kubernetes sig-network to support multiple networks (see <a href="https://docs.google.com/document/d/1Ny03h6IDVy_e_vmElOqR7UdTPAG_RNydhVE1Kx54kFQ">Kubernetes Network CRD De-Facto Standard</a>. There exist many prototypes of plugins providing such functionality. You are reading about one of them.</p>
-
-<p>Kubetron (working name, <code class="highlighter-rouge">kubernetes + neutron</code>, quite misleading since we want to support setup without Neutron involved too), allows users to connect their pods to multiple networks configured on OVN. Important part here is, that such networks are configured by an external tool, be it OVN Northbound Database client or higher level tool such as Neutron or oVirt Provider OVN. This allows administrators to configure complicated networks, Kubernetes then only knows enough about the known networks to be able to connect to them - but not all the complexity involved to manage them. Kubetron does not affect default Kubernetes networking at all, default networks will be left intact.</p>
-
-<p>In order to enable the use-cases outlined above, Kubetron can be used to provide multiple interfaces to a pod, further 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/ovn-multi-network-plugin-for-kubernetes-kubetron.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Use-GlusterFS-Cloning-with-KubeVirt.html" class="posts-title">Use Glusterfs Cloning With Kubevirt</h2>
-            <div class="posts-date">May 16, 2018</div>
-            <!-- <p>Gluster seems like a good fit for storage in kubernetes and in particular in kubevirt. Still, as for other storage backends, we will likely need to use a golden set of images and deploy vms from them.</p>
-
- -->
-            <!--  -->
-              Gluster seems like a good fit for storage in kubernetes and in particular in kubevirt. Still, as for other storage backends, we will likely need to use a golden set of images and deploy vms from them.
-
-
-            <!--  -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Use-GlusterFS-Cloning-with-KubeVirt.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/KubeVirt-API-Access-Control.html" class="posts-title">Kubevirt Api Access Control</h2>
-            <div class="posts-date">May 16, 2018</div>
-            <!-- <p>Access to KubeVirt resources are controlled entirely by Kubernete’s Resource
-Based Access Control (RBAC) system. This system allows KubeVirt to tie directly
-into the existing authentication and authorization mechanisms Kubernetes
-already provides to its core api objects.</p>
-
- -->
-            <!--  -->
-              Access to KubeVirt resources are controlled entirely by Kubernete’s Resource
-Based Access Control (RBAC) system. This system allows KubeVirt to tie directly
-into the existing authentication and authorization mechanisms Kubernetes
-already provides to its core api objects.
-
-
-            <!--  -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/KubeVirt-API-Access-Control.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/KubeVirt-objects.html" class="posts-title">Kubevirt Objects</h2>
-            <div class="posts-date">May 08, 2018</div>
-            <!-- <p>The <a href="https://github.com/kubevirt/kubevirt/">KubeVirt</a> project provides extensions to Kubernetes via <a href="https://kubernetes.io/docs/concepts/api-extension/custom-resources/">custom resources</a>.
-These resources are a collection a API objects that defines
-a virtual machine within Kubernetes.</p>
-
- -->
-            <!-- 
-              <p>The <a href="https://github.com/kubevirt/kubevirt/">KubeVirt</a> project provides extensions to Kubernetes via <a href="https://kubernetes.io/docs/concepts/api-extension/custom-resources/">custom resources</a>.
-These resources are a collection a API objects that defines
-a virtual machine within Kubernetes.</p>
-
-<p>I think it’s important to point out the two great resources that I used to
-compile information for this post:</p>
-
-<ul>
-  <li><a href="http://www.kubevirt.io/user-guide/">user-guide</a></li>
-  <li><a href="http://www.kubevirt.io/api-reference/">api-reference</a></li>
-</ul>
-
-<p>With that let’s take a look at the objects that are available.</p>
-
-<h1 id="kubevirt-top-level-objects">KubeVirt top-level objects</h1>
-
-<p>Below is a list of the top level API objects and descriptions that KubeVirt provides.</p>
-
-<ul>
-  <li>
-    <p>VirtualMachine (vm[s]) - represents a virtual machine in the runtime environment of Kubernetes.</p>
-  </li>
-  <li>
-    <p>OfflineVirtualMachine (ovm[s]) - handles the virtual machines that are not running or are in a stopped state.</p>
-  </li>
-  <li>
-    <p>VirtualMachinePreset (vmpreset[s]) - is an extension to general VirtualMachine configuration behaving much like PodPresets from Kubernetes. When a VirtualMachine is created, any applicable VirtualMachinePresets will be applied to the existing spec for the VirtualMachine. This allows for re-use of common settings that should apply to multiple VirtualMachines.</p>
-  </li>
-  <li>
-    <p>VirtualMachineReplicaSet (vmrs[s]) - tries to ensures that a specified number of VirtualMachine replicas are running at any time.</p>
-  </li>
-</ul>
-
-<p><a href="http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_domainspec">DomainSpec</a> is listed as a top-level object but is only used within all of the objects above. Currently the <code class="highlighter-rouge">DomainSpec</code> is a subset of what is configurable via <a href="https://libvirt.org/formatdomain.html">libvirt domain XML</a>.</p>
-
-<h2 id="virtualmachine">VirtualMachine</h2>
-
-<p>VirtualMachine is mortal object just like a
-<a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/">Pod</a> within Kubernetes.
-It only runs once and cannot be resurrected. This might seem problematic especially
-to an administrator coming from a traditional virtualization background. Fortunately
-later we will discuss OfflineVirtualMachines which will address this.</p>
-
-<p>First let’s use <code class="highlighter-rouge">kubectl</code> to retrieve a list of <code class="highlighter-rouge">VirtualMachine</code> objects.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get vms -n nodejs-ex
-NAME      AGE
-mongodb   5d
-nodejs    5d
-</code></pre></div></div>
-
-<p>We can also use <code class="highlighter-rouge">kubectl describe</code></p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl describe vms -n test
-Name:         testvm
-Namespace:    test
-Labels:       guest=testvm
-              kubevirt.io/nodeName=kn2.virtomation.com
-              kubevirt.io/size=small
-...output...
-Events:
-  Type    Reason              Age                From                               Message
-  ----    ------              ----               ----                               -------
-  Normal  SuccessfulCreate    59m                virtualmachine-controller          Created virtual machine pod virt-launcher-testvm-8h927
-  Normal  SuccessfulHandOver  59m                virtualmachine-controller          Pod owner ship transfered to the node virt-launcher-testvm-8h927
-  Normal  Created             59m (x2 over 59m)  virt-handler, kn2.virtomation.com  VM defined.
-  Normal  Started             59m                virt-handler, kn2.virtomation.com  VM started.
-
-</code></pre></div></div>
-
-<p>And just in case if you want to return the yaml definition of a <code class="highlighter-rouge">VirtualMachine</code> object here is an example.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl -o yaml get vms mongodb -n nodejs-ex
-apiVersion: kubevirt.io/v1alpha1
-kind: VirtualMachine
-...output...
-</code></pre></div></div>
-
-<p>The first object we will annotate is <code class="highlighter-rouge">VirtualMachine</code>. The important sections <code class="highlighter-rouge">.spec</code> for <code class="highlighter-rouge">VirtualMachineSpec</code> and <code class="highlighter-rouge">.spec.domain</code> for <code class="highlighter-rouge">DomainSpec</code> will be annotated only in this section then referred to in the other object sections.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apiVersion: kubevirt.io/v1alpha1
-kind: VirtualMachine
-metadata:
-  annotations: {}
-  labels: {}
-  name: string
-  namespace: string
-spec: {}
-</code></pre></div></div>
-
-<h3 id="node-placement">Node Placement</h3>
-
-<p>Kubernetes has the ability to schedule a pod to specific nodes based on <a href="https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#node-affinity-beta-feature">affinity and anti-affinity</a> rules.</p>
-
-<p><a href="http://www.kubevirt.io/api-reference/v0.5.0/definitions.html#_v1_nodeaffinity">Node affinity</a> is also possible with KubeVirt. To <a href="http://www.kubevirt.io/user-guide/#/workloads/virtual-machines/assigning-vms-to-nodes?id=affinity-and-anti-affinity">constrain a virtual machine</a> to run on a node define a matching expressions using node labels.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - preference:
-          matchExpressions:
-          - key: string
-            operator: string
-            values:
-            - string
-        weight: 0
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: string
-            operator: string
-            values:
-            - string
-</code></pre></div></div>
-
-<p>A virtual machine can also 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/KubeVirt-objects.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html" class="posts-title">Deploying Vms On Kubernetes Glusterfs Kubevirt</h2>
-            <div class="posts-date">May 07, 2018</div>
-            <!-- <p>Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs.</p>
-
- -->
-            <!--  -->
-              Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs....
-            <!--  -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html" class="posts-title">Deploying Kubevirt On A Single Ovirt Vm</h2>
-            <div class="posts-date">May 04, 2018</div>
-            <!-- <p>In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed Centos 7.4 minimal on it. I also have nested virtualization
-enabled on my hosts, so any VMs I create can run VMs inside them. These instructions are specific to oVirt, however if you are running another virtualization
-platform that can nested virtualization this will also work.</p>
-
- -->
-            <!--  -->
-              In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed...
-            <!--  -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-23.html" class="posts-title">This Week In Kube Virt 23</h2>
-            <div class="posts-date">April 27, 2018</div>
-            <!-- <p>This is a close-to weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a close-to weekly update from the KubeVirt team.</p>
-
-<p>In general there is now 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-23.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/KubeVirt-Network-Deep-Dive.html" class="posts-title">Kubevirt Network Deep Dive</h2>
-            <div class="posts-date">April 25, 2018</div>
-            <!-- <p>In this post we will research and discover how <a href="https://github.com/kubevirt/kubevirt">KubeVirt</a> networking functions along with Kubernetes objects services and ingress. This should also provide enough technical details to start troubleshooting your own environment if a problem should arise. So with that let’s get started.</p>
-
- -->
-            <!-- 
-              <p>In this post we will research and discover how <a href="https://github.com/kubevirt/kubevirt">KubeVirt</a> networking functions along with Kubernetes objects services and ingress. This should also provide enough technical details to start troubleshooting your own environment if a problem should arise. So with that let’s get started.</p>
-
-<h1 id="component-installation">Component Installation</h1>
-
-<p>We are going to walk through the installation that assisted me to write this post. I have created three CentOS 7.4 with nested virtualization enabled where Kubernetes will be installed, which is up next.</p>
-
-<h2 id="kubernetes">Kubernetes</h2>
-
-<p>I am rehashing what is available in <a href="https://kubernetes.io/docs/setup/independent/install-kubeadm/">Kubernetes documentation</a> just to make it easier to follow along and provide an identical environment that I used to research KubeVirt networking.</p>
-
-<h3 id="packages">Packages</h3>
-
-<p>Add the Kubernetes repository</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
-</code></pre></div></div>
-
-<p>Update and install prerequisites.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum update -y
-yum install kubelet-1.9.4 \
-            kubeadm-1.9.4 \
-            kubectl-1.9.4 \
-            docker \
-            ansible \
-            git \
-            curl \
-            wget -y
-</code></pre></div></div>
-
-<h3 id="docker-prerequisites">Docker prerequisites</h3>
-
-<p>For docker storage we will use a new disk <code class="highlighter-rouge">vdb</code> formatted XFS using the Overlay driver.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat &lt;&lt;EOF &gt; /etc/sysconfig/docker-storage-setup
-STORAGE_DRIVER=overlay2
-DEVS=/dev/vdb
-CONTAINER_ROOT_LV_NAME=dockerlv
-CONTAINER_ROOT_LV_SIZE=100%FREE
-CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker
-VG=dockervg
-EOF
-</code></pre></div></div>
-
-<p>Start and enable Docker</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl start docker
-systemctl enable docker
-</code></pre></div></div>
-
-<h3 id="additional-prerequisites">Additional prerequisites</h3>
-
-<p>In this section we continue with the required prerequistes. This is also described in the <a href="https://kubernetes.io/docs/setup/independent/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl">install kubeadm</a> kubernetes documentation.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl enable kubelet
-</code></pre></div></div>
-
-<p>This is a requirement for Flannel - pass bridged IPv4 traffic to iptables’ chains</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat &lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-
-sysctl --system
-</code></pre></div></div>
-
-<p>Temporarily disable selinux so we can run <code class="highlighter-rouge">kubeadm init</code></p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>setenforce 0
-</code></pre></div></div>
-
-<p>And let’s also permanently disable selinux - yes I know. If this isn’t done once you reboot your node kubernetes won’t start and then you will be wondering what happened :)</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat &lt;&lt;EOF &gt; /etc/selinux/config
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-#     enforcing - SELinux security policy is enforced.
-#     permissive - SELinux prints warnings instead of enforcing.
-#     disabled - No SELinux policy is loaded.
-SELINUX=disabled
-# SELINUXTYPE= can take one of three two values:
-#     targeted - Targeted processes are protected,
-#     minimum - Modification of targeted policy. Only selected processes are protected.
-#     mls - Multi Level Security protection.
-SELINUXTYPE=targeted
-EOF
-</code></pre></div></div>
-
-<h2 id="initialize-cluster">Initialize cluster</h2>
-
-<p>Now we are ready to <a href="https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/">create our cluster</a> starting with the first and only master.</p>
-
-<blockquote>
-  <p><strong>Note</strong></p>
-
-  <p><code class="highlighter-rouge">--pod-network-cidr</code> is required for Flannel</p>
-</blockquote>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm init --pod-network-cidr=10.244.0.0/16
-
-...output...
-
-mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-</code></pre></div></div>
-
-<p>There are multiple CNI providers in this example environment just going to use Flannel since its simple to deploy and configure.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
-</code></pre></div></div>
-
-<p>After Flannel is deployed join the nodes to the cluster.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm join --token 045c1c.04765c236e1bd8da 172.31.50.221:6443 \
-             --discovery-token-ca-cert-hash sha256:redacted
-</code></pre></div></div>
-
-<p>Once all the nodes have been joined check the status.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get node
-NAME                  STATUS    ROLES     AGE       VERSION
-km1.virtomation.com   Ready     master    11m       v1.9.4
-kn1.virtomation.com   Ready     &lt;none&gt;    10m       v1.9.4
-kn2.virtomation.com   Ready     &lt;none&gt;    10m       v1.9.4
-</code></pre></div></div>
-
-<h2 id="additional-components">Additional Components</h2>
-
-<h3 id="kubevirt"><a href="http://www.kubevirt.io">KubeVirt</a></h3>
-<hr />
-
-<p>The recommended installation method is to use <a href="https://github.com/kubevirt/kubevirt-ansible">kubevirt-ansible</a>. For this example I don’t require storage so just deploying using <code class="highlighter-rouge">kubectl create</code>.</p>
-
-<p>For additional information regarding KubeVirt install see the <a href="http://www.kubevirt.io/user-guide/#/installation/README">installation readme</a>.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/v0.4.1/kubevirt.yaml
-serviceaccount "kubevirt-apiserver" created
-
-... output ...
-
-customresourcedefinition "offlinevirtualmachines.kubevirt.io" created
-</code></pre></div></div>
-
-<p>Let’s make sure that all the pods are running.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get pod -n kube-system -l 'kubevirt.io'
-NAME                               READY     STATUS    RESTARTS   AGE
-virt-api-747745669-62cww           1/1       Running   0          4m
-virt-api-747745669-qtn7f           1/1       Running   0          4m
-virt-controller-648945bbcb-dfpwm   0/1       Running   0          4m
-virt-controller-648945bbcb-tppgx   1/1       Running   0          4m
-virt-handler-xlfc2                 1/1       Running   0          4m
-virt-handler-z5lsh                 1/1       Running   0          4m
-</code></pre></div></div>
-
-<h3 id="skydive">Skydive</h3>
-
-<p>I have used <a href="https://github.com/skydive-project/skydive">Skydive</a> in the past. It is a great tool to understand the topology of software-defined-networking. The only caveat is that Skydive doesn’t create a complete topology when using Flannel but there is still a good picture of what is going on. So with that let’s go ahead and install.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl create ns skydive
-kubectl create -n skydive -f https://raw.githubusercontent.com/skydive-project/skydive/master/contrib/kubernetes/skydive.yaml
-</code></pre></div></div>
-
-<p>Check the status of Skydive agent and analyzer</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get pod -n skydive
-NAME                                READY     STATUS    RESTARTS   AGE
-skydive-agent-5hh8k                 1/1       Running   0          5m
-skydive-agent-c29l7                 1/1       Running   0          5m
-skydive-analyzer-5db567b4bc-m77kq   2/2       Running   0          5m
-</code></pre></div></div>
-
-<h3 id="ingress-nginx">ingress-nginx</h3>
-
-<p>To provide external access our example NodeJS application we need to an ingress controller. For this example we are going to using <a href="https://github.com/kubernetes/ingress-nginx/tree/master/deploy">ingress-nginx</a></p>
-
-<p>I created a simple script <code class="highlighter-rouge">ingress.sh</code> that follows the installation documentation for ingress-nginx with a couple minor modifications:</p>
-
-<ul>
-  <li>
-    <p>Patch the <code class="highlighter-rouge">nginx-configuration</code> ConfigMap to enable vts status</p>
-  </li>
-  <li>
-    <p>Add an additional <code class="highlighter-rouge">containerPort</code> to the deployment and an additional port to the service.</p>
-  </li>
-  <li>
-    <p>Create an ingress to access nginx status page</p>
-  </li>
-</ul>
-
-<p>The script and additional files are available in the github repo listed below.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/jcpowermac/kubevirt-network-deepdive
-cd kubevirt-network-deepdive/kubernetes/ingress
-bash ingress.sh
-</code></pre></div></div>
-
-<p>After the script is complete confirm that ingress-nginx pods are running.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get pod -n ingress-nginx
-NAME                                        READY     STATUS    RESTARTS   AGE
-default-http-backend-55c6c69b88-jpl95       1/1       Running   0          1m
-nginx-ingress-controller-85c8787886-vf5tp   1/1       Running   0          1m
-</code></pre></div></div>
-
-<h1 id="kubevirt-virtual-machines">KubeVirt Virtual Machines</h1>
-
-<p>Now we are at a point where we can deploy our first KubeVirt virtual machines. These instances are where we will install our simple NodeJS and MongoDB application.</p>
-
-<h2 id="create-objects">Create objects</h2>
-
-<p>Let’s create a clean new namespace to use.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl create ns nodejs-ex
-namespace "nodejs-ex" created
-</code></pre></div></div>
-
-<p>The <code class="highlighter-rouge">nodejs-ex.yaml</code> contains multiple objects. The definitions for our two virtual machines - mongodb and nodejs. Two Kubernetes <code class="highlighter-rouge">Services</code> and a one Kubernetes <code class="highlighter-rouge">Ingress</code> object. These instances will be created as offline virtual machines so after <code class="highlighter-rouge">kubectl create</code> we will start them up.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl create -f https://raw.githubusercontent.com/jcpowermac/kubevirt-network-deepdive/master/kubernetes/nodejs-ex.yaml -n nodejs-ex
-offlinevirtualmachine "nodejs" created
-offlinevirtualmachine "mongodb" created
-service "mongodb" created
-service "nodejs" created
-ingress "nodejs" created
-</code></pre></div></div>
-
-<p>Start the nodejs virtual machine</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl patch offlinevirtualmachine nodejs --type merge -p '{"spec":{"running":true}}' -n nodejs-ex
-offlinevirtualmachine "nodejs" patched
-</code></pre></div></div>
-
-<p>Start the mongodb virtual machine</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl patch offlinevirtualmachine mongodb --type merge -p '{"spec":{"running":true}}' -n nodejs-ex
-offlinevirtualmachine "mongodb" patched
-</code></pre></div></div>
-
-<p>Review kubevirt virtual machine objects</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get ovms -n nodejs-ex
-NAME      AGE
-mongodb   7m
-nodejs    7m
-
-$ kubectl get vms -n nodejs-ex
-NAME      AGE
-mongodb   4m
-nodejs    5m
-</code></pre></div></div>
-
-<p>Where are the virtual machines and what is their IP address?</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get pod -o wide -n nodejs-ex
-NAME                          READY     STATUS    RESTARTS   AGE       IP           NODE
-virt-launcher-mongodb-qdpmg   2/2       Running   0          4m        10.244.2.7   kn2.virtomation.com
-virt-launcher-nodejs-5r59c    2/2       Running   0          4m        10.244.1.8   kn1.virtomation.com
-</code></pre></div></div>
-
-<blockquote>
-  <p><strong>Note</strong></p>
-
-  <p>To test virtual machine to virtual machine network connectivity I purposely set the host where which instance would run by using a <code class="highlighter-rouge">nodeSelector</code>.</p>
-</blockquote>
-
-<h2 id="installing-the-nodejs-example-application">Installing the NodeJS Example Application</h2>
-
-<p>To quickly deploy our example application Ansible project is included in the repository. Two inventory files need to be modified before executing <code class="highlighter-rouge">ansible-playbook</code>. Within <code class="highlighter-rouge">all.yml</code> change the <code class="highlighter-rouge">analyzers</code> IP address to what is listed in the command below.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl get endpoints -n skydive
-NAME               ENDPOINTS                                                      AGE
-skydive-analyzer   10.244.1.2:9200,10.244.1.2:12379,10.244.1.2:8082 + 1 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/KubeVirt-Network-Deep-Dive.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-22.html" class="posts-title">This Week In Kube Virt 22</h2>
-            <div class="posts-date">April 06, 2018</div>
-            <!-- <p>This is a close-to weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a close-to weekly update from the KubeVirt team.</p>
-
-<p>In general there is now 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-22.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-21.html" class="posts-title">This Week In Kube Virt 21</h2>
-            <div class="posts-date">March 20, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>In general there is now 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-21.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-20.html" class="posts-title">This Week In Kube Virt 20</h2>
-            <div class="posts-date">March 08, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-20.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-19.html" class="posts-title">This Week In Kube Virt 19</h2>
-            <div class="posts-date">February 23, 2018</div>
-            <!-- <p>This is a bi-weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a bi-weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Building a solid user-story around KubeVirt</p>
-  </li>
-  <li>
-    <p>Caring about end-to-end (backend, core, ui)</p>
-  </li>
-  <li>
-    <p>Getting dependencies into shape (storage)</p>
-  </li>
-  <li>
-    <p>Improve the user-experience for users (UI, deployment)</p>
-  </li>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-19.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-18.html" class="posts-title">This Week In Kube Virt 18</h2>
-            <div class="posts-date">February 10, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-18.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-17.html" class="posts-title">This Week In Kube Virt 17</h2>
-            <div class="posts-date">January 30, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Building a solid user-story around KubeVirt</p>
-  </li>
-  <li>
-    <p>Caring about end-to-end (backend, core, ui)</p>
-  </li>
-  <li>
-    <p>Rework our architecture</p>
-  </li>
-  <li>
-    <p>Getting dependencies into shape (storage)</p>
-  </li>
-  <li>
-    <p>Improve the user-experience for users (UI, deployment)</p>
-  </li>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-17.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-16-size-XL.html" class="posts-title">This Week In Kube Virt 16 Size Xl</h2>
-            <div class="posts-date">January 19, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team - including the holiday
-backlog update.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team - including the holiday
-backlog update.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Building a solid user-story around KubeVirt</p>
-  </li>
-  <li>
-    <p>Caring about end-to-end (backend, core, ui)</p>
-  </li>
-  <li>
-    <p>Rework out architecture</p>
-  </li>
-  <li>
-    <p>Getting dependencies into shape (storage)</p>
-  </li>
-  <li>
-    <p>Improve the user-experience for users (UI, deployment)</p>
-  </li>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-16-size-XL.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-16-Holiday-Wrap-Up-Edition.html" class="posts-title">This Week In Kube Virt 16 Holiday Wrap Up Edition</h2>
-            <div class="posts-date">January 19, 2018</div>
-            <!-- <p>This is a weekly update from the KubeVirt team - including the holiday
-backlog update.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team - including the holiday
-backlog update.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Rework out architecture</p>
-  </li>
-  <li>
-    <p>Getting dependencies into shape (storage)</p>
-  </li>
-  <li>
-    <p>Improve the user-experience for users (UI, deployment)</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-16-Holiday-Wrap-Up-Edition.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Some-notes-on-some-highlights-of-v020.html" class="posts-title">Some Notes On Some Highlights Of V020</h2>
-            <div class="posts-date">January 05, 2018</div>
-            <!-- <p>The very first KubeVirt release of KubeVirt in the new year
-(<a href="https://github.com/kubevirt/kubevirt/releases/v0.2.0">https://github.com/kubevirt/kubevirt/releases/v0.2.0</a>) had a few
-notable highlights which were brewing over the last few weeks.</p>
-
- -->
-            <!-- 
-              <p>The very first KubeVirt release of KubeVirt in the new year
-(<a href="https://github.com/kubevirt/kubevirt/releases/v0.2.0">https://github.com/kubevirt/kubevirt/releases/v0.2.0</a>) had a few
-notable highlights which were brewing over the last few weeks.</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Some-notes-on-some-highlights-of-v020.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/Kube-Virt-v020.html" class="posts-title">Kube Virt V020</h2>
-            <div class="posts-date">January 05, 2018</div>
-            <!-- <p>This release follows v0.1.0 and consists of 131 changes, contributed by
-6 people, leading to 148 files changed, 9096 insertions(+), 5871
-deletions(-).</p>
-
- -->
-            <!-- 
-              <p>This release follows v0.1.0 and consists of 131 changes, contributed by
-6 people, leading to 148 files changed, 9096 insertions(+), 5871
-deletions(-).</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/Kube-Virt-v020.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-15.html" class="posts-title">This Week In Kube Virt 15</h2>
-            <div class="posts-date">December 15, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Streamlining and improving the Kubernetes experience</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-15.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-14.html" class="posts-title">This Week In Kube Virt 14</h2>
-            <div class="posts-date">December 08, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-14.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/Kube-Virt-v020.html" class="posts-title">Kube Virt V020</h2>
-            <div class="posts-date">December 08, 2017</div>
-            <!-- <p>This release follows v0.1.0 and consists of 131 changes, contributed by
-6 people, leading to 148 files changed, 9096 insertions(+), 5871
-deletions(-).</p>
-
- -->
-            <!-- 
-              <p>This release follows v0.1.0 and consists of 131 changes, contributed by
-6 people, leading to 148 files changed, 9096 insertions(+), 5871
-deletions(-).</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/Kube-Virt-v020.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/Kube-Virt-v010.html" class="posts-title">Kube Virt V010</h2>
-            <div class="posts-date">December 08, 2017</div>
-            <!-- <p>This release follows v0.0.4 and consists of 115 changes, contributed by
-11 people, leading to 121 files changed, 5278 insertions(+), 1916
-deletions(-).</p>
-
- -->
-            <!-- 
-              <p>This release follows v0.0.4 and consists of 115 changes, contributed by
-11 people, leading to 121 files changed, 5278 insertions(+), 1916
-deletions(-).</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/Kube-Virt-v010.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-13.html" class="posts-title">This Week In Kube Virt 13</h2>
-            <div class="posts-date">December 04, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-13.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-12.html" class="posts-title">This Week In Kube Virt 12</h2>
-            <div class="posts-date">November 25, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-12.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-11.html" class="posts-title">This Week In Kube Virt 11</h2>
-            <div class="posts-date">November 21, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-11.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-10-base-10.html" class="posts-title">This Week In Kube Virt 10 Base 10</h2>
-            <div class="posts-date">November 10, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-10-base-10.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/Kube-Virt-v004.html" class="posts-title">Kube Virt V004</h2>
-            <div class="posts-date">November 07, 2017</div>
-            <!-- <p>This release follows v0.0.3 and consists of 133 changes, contributed by
-14 people, leading to 109 files changed, 7093 insertions(+), 2437
-deletions(-).</p>
-
- -->
-            <!-- 
-              <p>This release follows v0.0.3 and consists of 133 changes, contributed by
-14 people, leading to 109 files changed, 7093 insertions(+), 2437
-deletions(-).</p>
-
-<p>The source code and selected binaries are available for download at:
-<a href="https://github.com/kubevirt/kubevirt/releases/tag/v0.0.4">https://github.com/kubevirt/kubevirt/releases/tag/v0.0.4</a>.</p>
-
-<p>The primary release artifact of KubeVirt is the git tree. The release
-tag is signed and can be verified using [git-evtag][git-evtag].</p>
-
-<p>Pre-built containers are published on Docker Hub and can be viewed at:
-<a href="https://hub.docker.com/u/kubevirt/">https://hub.docker.com/u/kubevirt/</a>.</p>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/Kube-Virt-v004.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-9.html" class="posts-title">This Week In Kube Virt 9</h2>
-            <div class="posts-date">November 06, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-9.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-8.html" class="posts-title">This Week In Kube Virt 8</h2>
-            <div class="posts-date">October 28, 2017</div>
-            <!-- <p>This is a weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is a weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-8.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-7.html" class="posts-title">This Week In Kube Virt 7</h2>
-            <div class="posts-date">October 24, 2017</div>
-            <!-- <p>This is the seventh weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the seventh weekly update from the KubeVirt team.</p>
-
-<p>This week you can read 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-7.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-6.html" class="posts-title">This Week In Kube Virt 6</h2>
-            <div class="posts-date">October 15, 2017</div>
-            <!-- <p>This is the sixth weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the sixth weekly update from the KubeVirt team.</p>
-
-<p>This week you could watch us at:</p>
-
-<ul>
-  <li>
-    <p>Kubernetes Community Meeting introducing and demoing KubeVirt:
-<a href="https://www.youtube.com/watch?v=oBhu1MeGbss">https://www.youtube.com/watch?v=oBhu1MeGbss</a></p>
-  </li>
-  <li>
-    <p>Or follow us at our new blog: <a href="https://kubevirt.github.io/blog/">https://kubevirt.github.io/blog/</a></p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-6.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-5.html" class="posts-title">This Week In Kube Virt 5</h2>
-            <div class="posts-date">October 06, 2017</div>
-            <!-- <p>This is the fith weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the fith weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-5.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-4.html" class="posts-title">This Week In Kube Virt 4</h2>
-            <div class="posts-date">September 29, 2017</div>
-            <!-- <p>This is the fourth weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the fourth weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-4.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-3.html" class="posts-title">This Week In Kube Virt 3</h2>
-            <div class="posts-date">September 22, 2017</div>
-            <!-- <p>This is the third weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the third weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-  <li>
-    <p>Node Isolator use-case (
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-3.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-2.html" class="posts-title">This Week In Kube Virt 2</h2>
-            <div class="posts-date">September 15, 2017</div>
-            <!-- <p>This is the second weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the second weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>
-    <p>Being easier to be used on Kubernetes and OpenShift</p>
-  </li>
-  <li>
-    <p>Enabling people to contribute</p>
-  </li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-2.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2017/This-Week-in-Kube-Virt-1.html" class="posts-title">This Week In Kube Virt 1</h2>
-            <div class="posts-date">September 08, 2017</div>
-            <!-- <p>This is the first weekly update from the KubeVirt team.</p>
-
- -->
-            <!-- 
-              <p>This is the first weekly update from the KubeVirt team.</p>
-
-<p>We are currently driven by</p>
-
-<ul>
-  <li>Being easier to consume on Kubernetes and OpenShift</li>
-</ul>
-
-<!-- 
-             -->
-            
-            <div class="readmore">
-  <a href="
-              /2017/This-Week-in-Kube-Virt-1.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
       </ul>
     </div>
-  </div>
+    <!--
+
+<div class="pagination align-items-center">
+  
+    <span class="btn btn-disabled mr-2">
+      <i class="fas fa-angle-left"></i> Newer Posts
+    </span>
+  
+
+  
+    
+      <span class="font-weight-bold mr-2">1</span>
+    
+  
+    
+      <a href="/blogs/page2" class="mr-2">
+        2
+      </a>
+    
+  
+    
+      <a href="/blogs/page3" class="mr-2">
+        3
+      </a>
+    
+  
+    
+      <a href="/blogs/page4" class="mr-2">
+        4
+      </a>
+    
+  
+    
+      <a href="/blogs/page5" class="mr-2">
+        5
+      </a>
+    
+  
+    
+      <a href="/blogs/page6" class="mr-2">
+        6
+      </a>
+    
+  
+    
+      <a href="/blogs/page7" class="mr-2">
+        7
+      </a>
+    
+  
+    
+      <a href="/blogs/page8" class="mr-2">
+        8
+      </a>
+    
+  
+    
+      <a href="/blogs/page9" class="mr-2">
+        9
+      </a>
+    
+  
+
+  
+    <a href="/blogs/page2" class="btn btn-light">
+      Older Posts  <i class="fas fa-angle-right"></i>
+    </a>
+  
 </div>
 
-<!-- <h1 class="post-title">Blogs</h1> -->
-<!-- <div class="row">
-  
-    <div class="col-4">
-      <span class="btn btn-light disabled"> &lt; Older Posts</span>
-    </div>
-  
-  <div class="col-4" style="text-align: center;">
-    <span class="page_number" style="display: inline-table; margin-top: 6px;">Page: 1 of </span>
-  </div>
-  
-  <div class="col-4">
-    <span class="btn btn-light disabled" style="float: right;">Newer Posts &gt; </span>
-  </div>
-  
-</div>
-<hr/>
+-->
 
-<div id="blog" class="blogContentPreview">
-  <ul class="post-list">
-     -->
-  <!-- </ul> -->
-  <!-- <div class="row">
+
+<div class="pagination align-items-center">
   
-    <div class="col-4">
-      <span class="btn btn-light disabled"> &lt; Older Posts</span>
-    </div>
+    <span class="btn btn-outline-light mr-2">
+      <i class="fas fa-angle-left"></i> New
+    </span>
   
-  <div class="col-4" style="text-align: center;">
-    <span class="page_number" style="display: inline-table; margin-top: 6px;">Page: 1 of </span>
-  </div>
+
   
-  <div class="col-4">
-    <span class="btn btn-light disabled" style="float: right;">Newer Posts &gt; </span>
-  </div>
+      
+        <strong class="font-weight-bold">1</strong>
+      
   
+      
+  
+      
+  
+      
+  
+      
+  
+      
+  
+      
+  
+      
+  
+      
+  
+  <strong>of 9</strong>
+
+  
+    <a href="/blogs/page2" class="btn btn-outline-secondary btn-light ml-2">
+      Old <i class="fas fa-angle-right"></i>
+    </a>
+  
+
 </div>
-<hr/>
- -->
-  <!-- <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p> -->
-<!-- </div> -->
+
+  </div>
+</div>
 
     </main>
 
