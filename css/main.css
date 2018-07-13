@@ -184,6 +184,9 @@ pre {
         border-left: 3px solid #00aab2;
         color: #4a4a4a; }
 
+.kubevirt-intro {
+  background-color: #f5f5f5; }
+
 .row-community-title {
   min-height: 10vh; }
 .row-community-buttons {
@@ -199,35 +202,69 @@ pre {
 .page-title {
   margin-bottom: 30px; }
 
+.page-subtitle--spacer_top {
+  margin-top: 60px; }
+
+.page-subtitle--spacer_bottom {
+  margin-bottom: 40px; }
+
+.page-paragraph--spacer_bottom {
+  margin-bottom: 60px; }
+
 .community-page .page-title {
   margin-bottom: 0; }
-
-.posts {
-  list-style: none; }
-  .posts-date {
-    margin-top: .5rem;
-    margin-bottom: 1.5rem;
-    color: #72767b;
-    font-size: 12px; }
-
-.post-title {
-  margin-bottom: 30px; }
-.post-info {
-  margin-bottom: 10px; }
-.post-author, .post-meta, .post-category-name {
-  color: #72767b; }
-
-.readmore {
-  margin-top: .5rem;
-  margin-bottom: 5rem; }
-  .readmore i.fas.fa-angle-right {
-    font-weight: 300; }
 
 .doc-intro-text {
   max-width: 85%;
   height: 7.8rem;
   overflow: hidden;
   text-overflow: ellipsis; }
+
+.kubevirt-can-do .card {
+  border: none; }
+  .kubevirt-can-do .card-footer {
+    background-color: transparent;
+    border: none;
+    border-radius: 0; }
+
+.kv-btn {
+  margin-top: 5px;
+  margin-bottom: 6px;
+  padding-bottom: 2rem;
+  color: #006166;
+  font-size: 16px;
+  background: #fed476;
+  /* Old browsers */
+  background: linear-gradient(to bottom, #ffe986 0%, #fa742b 100%);
+  border: 1px solid #ffe986;
+  border-radius: 0;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0s, box-shadow 0s; }
+  .kv-btn:hover, .kv-btn:active, .kv-btn:focus {
+    color: #006166;
+    background: #fed476;
+    /* Old browsers */
+    background: linear-gradient(to bottom, #fcdc4b 0%, #fd5900 100%);
+    background-color: #fa742b !important;
+    border-color: #fa742b !important; }
+  .kv-btn:focus {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8) !important; }
+  .kv-btn-primary {
+    height: 33px;
+    width: 156px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8); }
+  .kv-btn-community {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;
+    width: 220px;
+    padding: .5rem 1rem;
+    box-shadow: none; }
+
+.card-body {
+  display: flex;
+  margin: auto;
+  height: 8rem; }
 
 .hero {
   background-image: linear-gradient(to top, #3accc5, #00aab2);
@@ -266,17 +303,26 @@ pre {
       border-top: none;
       border-radius: 0; }
 
-.kubevirt-can-do .card {
-  border: none; }
-  .kubevirt-can-do .card-footer {
-    background-color: transparent;
-    border: none;
-    border-radius: 0; }
+.posts {
+  list-style: none; }
+  .posts-date {
+    margin-top: .5rem;
+    margin-bottom: 1.5rem;
+    color: #72767b;
+    font-size: 12px; }
 
-.footer-licensing {
-  font-size: .8rem; }
-  .footer-licensing a {
-    font-size: .8rem; }
+.post-title {
+  margin-bottom: 30px; }
+.post-info {
+  margin-bottom: 10px; }
+.post-author, .post-meta, .post-category-name {
+  color: #72767b; }
+
+.readmore {
+  margin-top: .5rem;
+  margin-bottom: 5rem; }
+  .readmore i.fas.fa-angle-right {
+    font-weight: 300; }
 
 .timeline-Widget.timeline-Widget--edge {
   max-width: 100% !important;
@@ -351,6 +397,10 @@ pre {
       color: #00aab2; }
     .footer a:hover {
       text-decoration: none; }
+  .footer-licensing {
+    font-size: .8rem; }
+    .footer-licensing a {
+      font-size: .8rem; }
 
 /**
  * Syntax highlighting styles
@@ -490,37 +540,3 @@ pre {
     color: #008080; }
   .highlight .il {
     color: #099; }
-
-.kv-btn {
-  margin-top: 5px;
-  margin-bottom: 6px;
-  padding-bottom: 2rem;
-  color: #006166;
-  font-size: 16px;
-  background: #fed476;
-  /* Old browsers */
-  background: linear-gradient(to bottom, #ffe986 0%, #fa742b 100%);
-  border: 1px solid #ffe986;
-  border-radius: 0;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0s, box-shadow 0s; }
-  .kv-btn:hover, .kv-btn:active, .kv-btn:focus {
-    color: #006166;
-    background: #fed476;
-    /* Old browsers */
-    background: linear-gradient(to bottom, #fcdc4b 0%, #fd5900 100%);
-    background-color: #fa742b !important;
-    border-color: #fa742b !important; }
-  .kv-btn:focus {
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8) !important; }
-  .kv-btn-primary {
-    height: 33px;
-    width: 156px;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8); }
-  .kv-btn-community {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70px;
-    width: 220px;
-    padding: .5rem 1rem;
-    box-shadow: none; }

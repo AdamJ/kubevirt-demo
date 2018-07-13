@@ -121,19 +121,19 @@
     </header>
 
     <main role="main">
-      <section style="background-color: #f5f5f5;">
+      <section class="kubevirt-intro">
   <div class="wrapper">
     <div class="container-fluid">
       <div id="why" class="row">
         <div class="col-md-5 offset-md-1 align-self-start">
-          <h2 style="margin-top: 60px;">Why KubeVirt?</h2>
+          <h2 class="page-subtitle--spacer_top">Why KubeVirt?</h2>
           <p>
             KubeVirt technology addresses the needs of development teams that have adopted or want to adopt <a href="https://kubernetes.io/">Kubernetes</a> but
             possess existing Virtual Machine-based workloads that cannot be easily containerized. More specifically, the
             technology provides a unified development platform where developers can build, modify, and deploy applications
             residing in both Application Containers as well as Virtual Machines in a common, shared environment.
           </p>
-          <p style="margin-bottom: 60px;">
+          <p class="page-paragraph--spacer_bottom">
             Benefits are broad and significant. Teams with a reliance on existing virtual machine-based workloads are
             empowered to rapidly containerize applications. With virtualized workloads placed directly in development workflows,
             teams can decompose them over time while still leveraging remaining virtualized components as is comfortably desired.
@@ -151,13 +151,13 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col offset-md-1 align-self-start">
-        <h2 style="margin-top: 60px; margin-bottom: 40px;">What can I do with KubeVirt?</h2>
+        <h2 class="page-subtitle--spacer_top page-subtitle--spacer_bottom">What can I do with KubeVirt?</h2>
       </div>
     </div>
     <div class="row justify-content-center">
-      <div class="card-group" style="justify-content: center;">
+      <div class="card-group justify-content-center">
         <div class="card col-md-3 text-center">
-          <div class="card-body" style="display: flex; margin: auto; height: 8rem;">
+          <div class="card-body">
             <img src="./../assets/images/home-image-col1.svg" class="img-fluid" alt="KubeVirt and Kubernetes">
           </div>
           <div class="card-footer">
@@ -167,7 +167,7 @@
           </div>
         </div>
         <div class="card col-md-3 text-center">
-          <div class="card-body" style="display: flex; margin: auto; height: 8rem;">
+          <div class="card-body">
             <img src="./../assets/images/home-image-col2.svg" class="img-fluid" alt="KubeVirt and VMs">
           </div>
           <div class="card-footer">
@@ -177,7 +177,7 @@
           </div>
         </div>
         <div class="card col-md-3 text-center">
-          <div class="card-body" style="display: flex; margin: auto; height: 8rem;">
+          <div class="card-body">
             <img src="./../assets/images/home-image-col3.svg" class="img-fluid" alt="Containerized Applications">
           </div>
           <div class="card-footer">
@@ -190,121 +190,6 @@
     </div>
   </div>
 </section>
-
-<!-- <div class="demoBG1">
-  <span style="text-align: center; font-size: 28px;">KubeVirt Demo </span>
-  <span style="text-align: center;">Get Started with KubeVirt v0.7.0-alpha.2</span>
-</div>
-<div class="demoBG2">
-  <div class="wrapper">
-    <div class="container">
-      <div class="row">
-        <a href="get_kubevirt#minikube" class="col-sm" style="padding-top: 25px; padding-bottom: 25px;">
-          <div class="tryit_box">
-            <div>KubeVirt on<br/><b>minikube</b></div>
-            <div><img src="./../assets/images/img_minicube.png"></div>
-          </div>
-        </a>
-        <a href="get_kubevirt#kubernetes_cluster" class="col-sm" style="padding-top: 25px; padding-bottom: 25px;">
-          <div class="tryit_box">
-            <div>KubeVirt on an<br/><b>existing Kubernetes cluster</b></div>
-            <div><img src="./../assets/images/img_kubernetes_cluster.png"></div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="usecases" class="page-content">
-  <div class="wrapper">
-    <div class="container">
-      <h1> Use Cases </h1>
-      <p>Leverage KubeVirt and Kubernetes to manage virtual machines for applications that are impractical to containerize due to technical limitations or lack of resources.</p>
-      <hr/>
-      <p>Combining existing virtualized workloads with new container workloads on the same platform, thereby making it easier to decompose monolithic virtualized workloads into containers over time.</p>
-      <hr/>
-      <p>Supporting development of new microservice applications in containers that interact with existing virtualized applications.</p>
-      <hr/>
-    </div>
-  </div>
-</div> -->
-
-<!-- <div id="blog" class="page-content">
-  <div class="wrapper">
-    <div class="container">
-      <h1>Blog</h1>
-      <ul class="post-list">
-        
-          <li>
-            <div class="blogTitle"><a href="/2018/KVM-Using-Device-Plugins.html">Kvm Using Device Plugins</a></div>
-            <span class="blogAuthor">by stu-gott - </span><span class="post-meta">Jun 20, 2018</span>
-            <article class="post-content blogContentPreview">
-            <p>As of Kubernetes 1.10, the Device Plugins API is now in beta! KubeVirt is now using this framework to provide hardware acceleration and network devices to virtual machines. The motivation...
-              
-              <div class="readmore">
-  <a href="
-                /2018/KVM-Using-Device-Plugins.html
-              " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-            </article>
-          </li>
-        
-          <li>
-            <div class="blogTitle"><a href="/2018/Proxy-vm-conclusion.html">Proxy VM Conclusion</a></div>
-            <span class="blogAuthor">by SchSeba - </span><span class="post-meta">Jun 13, 2018</span>
-            <article class="post-content blogContentPreview">
-            <p>This blog post follow my previous reseach on how to allow vms inside a k8s cluster tp play nice with istio and other sidecars.</p> <h1 id="research-conclusions-and-network-roadmap">Research conclusions and network roadmap</h1>...
-              
-              <div class="readmore">
-  <a href="
-                /2018/Proxy-vm-conclusion.html
-              " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-            </article>
-          </li>
-        
-          <li>
-            <div class="blogTitle"><a href="/2018/Non-Dockerized-Build.html">Non Dockerized Build</a></div>
-            <span class="blogAuthor">by yuvalif - </span><span class="post-meta">Jun 7, 2018</span>
-            <article class="post-content blogContentPreview">
-            <p>In this post we will set up an alternative to the existing containerized build system used in KubeVirt.</p> <p>A <a href="../assets/2018-06-07-Non-Dockerized-Build/Makefile.nocontainer">new makefile</a> will be presented here, which you can for...
-              
-              <div class="readmore">
-  <a href="
-                /2018/Non-Dockerized-Build.html
-              " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-            </article>
-          </li>
-        
-      </ul>
-      <h5><a href="/blog">Read all BLOGS</a></h5><hr/>
-      <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-    </div>
-  </div>
-</div> -->
-
-<!-- <div class="page-content">
-  <div class="wrapper">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6" style="padding-bottom: 30px;">
-          <h1>Red Hat Summit</h1>
-          <h5>Come and visit us at Red Hat Summit. We will be at the community central booth.</h5>
-          <img src="./../assets/images/redhat_summit.jpg">
-        </div>
-        <div class="col-md-6">
-          <h1>Twitter Feeds</h1>
-          <a class="twitter-timeline" data-width="560" data-height="500" href="https://twitter.com/kubevirt?ref_src=twsrc%5Etfw">Tweets by kubevirt</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->
 
     </main>
 
