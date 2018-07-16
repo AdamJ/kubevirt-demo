@@ -22,7 +22,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="canonical" href="https://www.kubevirt.io//2018/KubeVirt-Network-Deep-Dive.html">
+    <link rel="canonical" href="http://localhost:4000/2018/KubeVirt-Network-Deep-Dive.html">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 </head>
 
@@ -449,7 +449,7 @@ address=/.ingress.virtomation.com/172.31.50.231
 
 <p>Now that we shown that kubernetes, kubevirt, ingress-nginx and flannel work together how is it accomplished? First let’s go over what is going on in kubevirt specifically.</p>
 
-<p><img src="https://www.kubevirt.io//assets/images/diagram.png" alt="KubeVirt networking" /></p>
+<p><img src="http://localhost:4000/assets/images/diagram.png" alt="KubeVirt networking" /></p>
 
 <h2 id="virt-launcher---virtwrap">virt-launcher - <a href="https://github.com/kubevirt/kubevirt/tree/master/pkg/virt-launcher/virtwrap">virtwrap</a></h2>
 
@@ -735,7 +735,7 @@ nameserver 10.96.0.10
 
 <p>The virtual machines are on differnet hosts. This was done purposely to show that connectivity between virtual machine and hosts. Here we finally get to use Skydive. The real-time topology below along with arrows annotate the flow of packets between the host, pod and virtual machine network devices.</p>
 
-<p><img src="https://www.kubevirt.io//assets/images/kubevirt-skydive-vm-to-vm.png" alt="vm-to-vm" /></p>
+<p><img src="http://localhost:4000/assets/images/kubevirt-skydive-vm-to-vm.png" alt="vm-to-vm" /></p>
 
 <h3 id="connectivity-tests">Connectivity Tests</h3>
 
@@ -776,7 +776,7 @@ Apr 18 20:07:37 nodejs.localdomain node[4303]: Connected to MongoDB at: mongodb:
 
 <p>The topology image below shows the packet flow when using a ingress kubernetes object. The commands below the image will provide additional details.</p>
 
-<p><img src="https://www.kubevirt.io//assets/images/skydive-ingress-path.png" alt="skydive-ingress-path" /></p>
+<p><img src="http://localhost:4000/assets/images/skydive-ingress-path.png" alt="skydive-ingress-path" /></p>
 
 <p>The <a href="https://kubernetes.io/docs/reference/generated/kube-proxy/">kube-proxy</a> has port 30000 open that was defined by the <code class="highlighter-rouge">nodePort</code> of the <code class="highlighter-rouge">ingress-nginx</code> service. Additional details on kube-proxy and iptables role is available from <a href="https://kubernetes.io/docs/concepts/services-networking/service/#ips-and-vips">Service - IPs and VIPs</a> in the Kubernetes documentation.</p>
 
@@ -809,7 +809,7 @@ KUBE-SEP-BKJT4JXHZ3TCOTKA  all  --  0.0.0.0/0            0.0.0.0/0            /*
 
 <p>ingress-nginx provides an optional setting to enable traffic status - which we already enabled. The screenshot below shows the requests that Nginx is receiving for <code class="highlighter-rouge">nodejs.ingress.virtomation.com</code>.</p>
 
-<p><img src="https://www.kubevirt.io//assets/images/nginx-vts.png" alt="nginx-vts" /></p>
+<p><img src="http://localhost:4000/assets/images/nginx-vts.png" alt="nginx-vts" /></p>
 
 <h4 id="service-nodeport-to-nginx-pod">Service NodePort to Nginx Pod</h4>
 
@@ -859,7 +859,7 @@ ingress-nginx   nginx-ingress-controller-85c8787886-vf5tp     1/1       Running 
 ...output...
 </code></pre></div></div>
 
-<p><img src="https://www.kubevirt.io//assets/images/skydive-ingress-vm.png" alt="ingress-vm" /></p>
+<p><img src="http://localhost:4000/assets/images/skydive-ingress-vm.png" alt="ingress-vm" /></p>
 
 <h1 id="final-thoughts">Final Thoughts</h1>
 <p>We have went through quite a bit in this deep dive from installation, KubeVirt specific networking details and kubernetes, host, pod and virtual machine level configurations. Finishing up with the packet flow between virtual machine to virtual machine and ingress to virtual machine.</p>
