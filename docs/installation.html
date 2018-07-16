@@ -127,11 +127,176 @@
     </ul>
     
   
+    
+    <ul class="docs-navigation">
+      <!-- <h3></h3> -->
+      
+        <li class="docs-navigation--item">
+          <a href="https://kubevirt.io/user-guide/#/"  class="docs-navigation--item_link" >
+            User Guide
+          </a>
+          
+        </li>
+      
+    </ul>
+    
+  
 
 
           </div>
           <div class="col-sm-12 col-md-9 docs">
             <p>KubeVirt is a virtualization add-on to Kubernetes and this guide assumes that a Kubernetes cluster is already installed.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>A few requirements need to be met before you can begin:</p>
+
+<ul>
+  <li><a href="https://kubernetes.io">Kubernetes</a> cluster (<a href="https://github.com/openshift/origin">OpenShift</a>, Tectonic)</li>
+  <li><code class="highlighter-rouge">kubectl</code> client utility</li>
+  <li><code class="highlighter-rouge">git</code></li>
+</ul>
+
+<h3 id="minimum-cluster-requirements">Minimum Cluster Requirements</h3>
+
+<p>Kubernetes 1.10 or later is required to run KubeVirt.</p>
+
+<p>In addition it can be that feature gates need to be opened.</p>
+
+<h4 id="runtime">Runtime</h4>
+
+<p>KubeVirt is currently support on the following container runtimes:</p>
+
+<ul>
+  <li>docker</li>
+  <li>crio (with runv)</li>
+</ul>
+
+<h3 id="virtualization-support">Virtualization support</h3>
+
+<p>There are several distributions of Kubernetes, you need to decide on one and deploy it.</p>
+
+<p>Hardware with virtualization support is recommended. You can use virt-host-validate to ensure that your hosts are capable of running virtualization workloads:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>virt-host-validate qemu
+  QEMU: Checking <span class="k">for </span>hardware virtualization                                 : PASS
+  QEMU: Checking <span class="k">if </span>device /dev/kvm exists                                   : PASS
+  QEMU: Checking <span class="k">if </span>device /dev/kvm is accessible                            : PASS
+  QEMU: Checking <span class="k">if </span>device /dev/vhost-net exists                             : PASS
+  QEMU: Checking <span class="k">if </span>device /dev/net/tun exists                               : PASS
+...
+</code></pre></div></div>
+
+<h4 id="software-emulation">Software emulation</h4>
+
+<p>If hardware virtualization is not available, then a <a href="https://github.com/kubevirt/kubevirt/blob/master/docs/software-emulation.md">software emulation fallback</a> can be enabled using:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ kubectl configmap -n kube-system kubevirt-config \
+    --from-literal debug.allowEmulation=true
+</code></pre></div></div>
+
+<p>This ConfigMap needs to be created before deployment or the virt-controller deployment has to be restarted.</p>
+
+<h3 id="hugepages-support">Hugepages support</h3>
+
+<p>For hugepages support you need at least Kubernetes version <code class="highlighter-rouge">1.9</code>.</p>
+
+<h4 id="enable-feature-gate">Enable feature-gate</h4>
+
+<p>To enable hugepages on Kubernetes, check the <a href="https://v1-9.docs.kubernetes.io/docs/tasks/manage-hugepages/scheduling-hugepages/#before-you-begin">official documentation</a>.</p>
+
+<p>To enable hugepages on OpenShift, check the <a href="https://docs.openshift.org/3.9/scaling_performance/managing_hugepages.html#huge-pages-prerequisites">official documentation</a>.</p>
+
+<h4 id="pre-allocate-hugepages-on-a-node">Pre-allocate hugepages on a node</h4>
+
+<p>To pre-allocate hugepages on boot time, you will need to specify hugepages under kernel boot parameters <code class="highlighter-rouge">hugepagesz=2M hugepages=64</code> and restart your machine.</p>
+
+<p>You can find more about hugepages under <a href="https://www.kernel.org/doc/Documentation/vm/hugetlbpage.txt">official documentation</a>.</p>
+
+<h2 id="cluster-side-add-on-deployment">Cluster side add-on deployment</h2>
+
+<h3 id="core-components">Core components</h3>
+
+<p>Once Kubernetes is deployed, you will need to deploy the KubeVirt add-on. The add-on is deployed to a cluster using the <code class="highlighter-rouge">kubectl</code> tool and manifest file:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ RELEASE</span><span class="o">=</span>v0.4.0
+<span class="nv">$ </span>kubectl apply <span class="nt">-f</span> https://github.com/kubevirt/kubevirt/releases/download/<span class="k">${</span><span class="nv">RELEASE</span><span class="k">}</span>/kubevirt.yaml
+</code></pre></div></div>
+
+<p>This command will deploy the most recent stable version of KubeVirt to your cluster. The new components will be deployed in the <code class="highlighter-rouge">kube-system</code> namespace:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get pods <span class="nt">-n</span> kube-system
+NAME                                           READY     STATUS        RESTARTS   AGE
+libvirt-9zmtl                                  2/2       Running       0          28m
+virt-controller-5d9fc8cf8b-n5trt               0/1       Running       0          27m
+virt-handler-vwdjx                             1/1       Running       0          28m
+</code></pre></div></div>
+
+<h2 id="client-side-virtctl-deployment">Client side <code class="highlighter-rouge">virtctl</code> deployment</h2>
+
+<p>Basic VirtualMachineInstance operations can be performed with the stock <code class="highlighter-rouge">kubectl</code> utility. However, the <code class="highlighter-rouge">virtctl</code> binary utility is required to use advanced features such as:</p>
+
+<ul>
+  <li>Serial and graphical console access</li>
+</ul>
+
+<p>It also provides convenience commands for:</p>
+
+<ul>
+  <li>Starting and stopping VirtualMachineInstances</li>
+  <li>Live migrating VirtualMachineInstances</li>
+</ul>
+
+<p>The most recent version of the tool can be retrieved from the <a href="https://github.com/kubevirt/kubevirt/releases">official release page</a>.</p>
+
+<h2 id="deploying-on-openshift">Deploying on OpenShift</h2>
+
+<p>There are three ways to deploy KubeVirt on OpenShift.</p>
+
+<h3 id="using-command-line-interface">Using command line interface</h3>
+
+<p>The following <a href="https://docs.openshift.com/container-platform/3.7/admin_guide/manage_scc.html">SCCs</a> need to be added prior <code class="highlighter-rouge">kubevirt.yaml</code> deployment:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>oc adm policy add-scc-to-user privileged <span class="nt">-n</span> kube-system <span class="nt">-z</span> kubevirt-privileged
+oc adm policy add-scc-to-user privileged <span class="nt">-n</span> kube-system <span class="nt">-z</span> kubevirt-controller
+oc adm policy add-scc-to-user privileged <span class="nt">-n</span> kube-system <span class="nt">-z</span> kubevirt-apiserver
+</code></pre></div></div>
+
+<p>Once privileges are granted, the <code class="highlighter-rouge">kubevirt.yaml</code> can be deployed:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://github.com/kubevirt/kubevirt/releases/download/<span class="k">${</span><span class="nv">RELEASE</span><span class="k">}</span>/kubevirt.yaml
+</code></pre></div></div>
+
+<h3 id="from-service-catalog-as-an-apb">From Service Catalog as an APB</h3>
+
+<p>You can find KubeVirt in the OpenShift Service Catalog and install it from there. In order to do that please follow the documentation in the <a href="https://github.com/ansibleplaybookbundle/kubevirt-apb">KubeVirt APB repository</a>.</p>
+
+<h3 id="using-ansible-playbooks">Using Ansible playbooks</h3>
+
+<p>The <a href="https://github.com/kubevirt/kubevirt-ansible">kubevirt-ansible</a> project provides a collection of playbooks that installs KubeVirt and it’s related components on top of OpenShift or Kubernetes clusters.</p>
+
+<h2 id="deploying-from-source">Deploying from Source</h2>
+
+<p>See the <a href="https://github.com/kubevirt/kubevirt/blob/master/docs/getting-started.md">Developer Getting Started Guide</a> to understand how to build and deploy KubeVirt from source.</p>
+
+<h2 id="update">Update</h2>
+
+<blockquote>
+  <p>Note: Updates are not yet supported.</p>
+</blockquote>
+
+<p>Usually it is sufficient to re-apply the manifests for performing a rolling update:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ RELEASE</span><span class="o">=</span>v0.4.0
+<span class="nv">$ </span>kubectl apply <span class="nt">-f</span> https://github.com/kubevirt/kubevirt/releases/download/<span class="k">${</span><span class="nv">RELEASE</span><span class="k">}</span>/kubevirt.yaml
+</code></pre></div></div>
+
+<h2 id="additional-installation-steps">Additional Installation Steps</h2>
+
+<ul>
+  <li><a href="https://kubevirt.io/user-guide/#/installation/api-validation">Admission Controllers</a></li>
+  <li><a href="https://kubevirt.io/user-guide/#/installation/feature-matrix">Feature Matrix</a></li>
+</ul>
 
           </div>
         </div>
