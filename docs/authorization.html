@@ -65,7 +65,7 @@
     <main role="main" style="margin-top: 60px;">
       <div class="container">
         <div class="row">
-          <h1 class="page-title">Authorization</h1>
+          <h1 class="page-title">Docs</h1>
         </div>
         <div class="row">
           <div class="col-sm-12 col-md-3">
@@ -217,9 +217,9 @@ resources that do not exist in the Kubernetes core.</p>
 KubeVirt resources, we need to add the following labels to the KubeVirt
 ClusterRoles.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl label clusterrole kubevirt.io:admin rbac.authorization.k8s.io/aggregate-to-admin=true
-kubectl label clusterrole kubevirt.io:edit rbac.authorization.k8s.io/aggregate-to-edit=true
-kubectl label clusterrole kubevirt.io:view rbac.authorization.k8s.io/aggregate-to-view=true
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl label clusterrole kubevirt.io:admin rbac.authorization.k8s.io/aggregate-to-admin<span class="o">=</span><span class="nb">true
+</span>kubectl label clusterrole kubevirt.io:edit rbac.authorization.k8s.io/aggregate-to-edit<span class="o">=</span><span class="nb">true
+</span>kubectl label clusterrole kubevirt.io:view rbac.authorization.k8s.io/aggregate-to-view<span class="o">=</span><span class="nb">true</span>
 </code></pre></div></div>
 
 <p>By adding these labels, any user with a RoleBinding or ClusterRoleBinding
@@ -279,6 +279,10 @@ rules:
       - get
       - patch
 </code></pre></div></div>
+
+<hr />
+
+<p>View on <a href="https://kubevirt.io/user-guide/#/authorization">docs.kubevirt.io</a></p>
 
           </div>
         </div>

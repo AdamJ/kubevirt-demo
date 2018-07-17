@@ -114,16 +114,28 @@ pre {
 .nav-item {
   margin-bottom: -8px;
   border-bottom: 3px solid transparent; }
+  @media (max-width: 992px) {
+    .nav-item {
+      margin-bottom: 0; } }
+  .nav-item a.nav-link {
+    opacity: .8; }
   .nav-item:hover {
     margin-bottom: -8px;
     border-bottom: 3px solid #fed476; }
     .nav-item:hover a.nav-link {
-      color: rgba(255, 255, 255, 0.75); }
+      color: rgba(255, 255, 255, 0.75);
+      opacity: 1; }
+    @media (max-width: 992px) {
+      .nav-item:hover {
+        margin-bottom: 0; } }
   .nav-item.active {
     margin-bottom: -8px;
     border-bottom: 3px solid #00aab2; }
     .nav-item.active:hover {
       border-bottom-color: #fed476; }
+    @media (max-width: 992px) {
+      .nav-item.active {
+        margin-bottom: 0; } }
 
 .navbar-expand-lg {
   background-image: linear-gradient(to top, #3accc5, #00aab2);
@@ -141,12 +153,15 @@ pre {
       padding: 20px 40px; }
       .navbar-expand-lg.navbar-home.scroll-collapse {
         background-image: linear-gradient(to top, #3accc5, #00aab2) !important;
-        opacity: .8; } }
-  .navbar-expand-lg.navbar-home .navbar-collapse.collapse ul, .navbar-expand-lg.navbar-home .navbar-collapse.collapsing ul, .navbar-expand-lg.navbar-home .navbar-collapse.collapse.show ul {
+        opacity: .95; } }
+  .navbar-expand-lg .navbar-collapse.collapse ul, .navbar-expand-lg .navbar-collapse.collapsing ul, .navbar-expand-lg .navbar-collapse.collapse.show ul {
     align-items: flex-start; }
   .navbar-expand-lg .navbar-collapse {
     align-self: flex-end;
     justify-content: flex-end; }
+
+.navbar-dark .navbar-toggler:focus {
+  outline: 5px auto #0099a0; }
 
 .blogs-navigation,
 .video-navigation,
@@ -200,7 +215,8 @@ pre {
     background-color: #f5f5f5; }
 
 .page-title {
-  margin-bottom: 30px; }
+  padding-top: 60px;
+  margin-bottom: 40px; }
 
 .page-subtitle--spacer_top {
   margin-top: 60px; }
@@ -247,13 +263,15 @@ pre {
   background: linear-gradient(to bottom, #ffe986 0%, #fa742b 100%);
   border: 1px solid #ffe986;
   border-radius: 0;
+  box-shadow: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0s, box-shadow 0s; }
   .kv-btn:hover, .kv-btn:active, .kv-btn:focus {
     color: #006166;
     background: #fed476;
     /* Old browsers */
     background: linear-gradient(to bottom, #fcdc4b 0%, #fd5900 100%);
-    background-color: #fa742b !important;
+    background-color: #fa742b !important; }
+  .kv-btn:focus {
     border-color: #fa742b !important; }
   .kv-btn:focus {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8) !important; }
