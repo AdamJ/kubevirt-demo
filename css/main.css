@@ -163,39 +163,83 @@ pre {
 .navbar-dark .navbar-toggler:focus {
   outline: 5px auto #0099a0; }
 
+.docs-title--item {
+  display: flex;
+  flex: 1;
+  font-size: 18px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 6px;
+  border-left: 3px solid transparent;
+  color: #4a4a4a;
+  opacity: .85; }
+  .docs-title--item:hover {
+    background-color: #f5f5f5;
+    color: #4a4a4a; }
+  .docs-title--item.active {
+    border-left: 3px solid #00aab2;
+    color: #4a4a4a; }
+
 .blogs-navigation,
 .video-navigation,
 .docs-navigation {
-  padding-left: 0;
-  list-style: none; }
-  .blogs-navigation--item,
-  .video-navigation--item,
-  .docs-navigation--item {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding-top: 10px;
-    padding-bottom: 10px; }
-    .blogs-navigation--item:hover,
-    .video-navigation--item:hover,
-    .docs-navigation--item:hover {
+  list-style: none;
+  margin-bottom: 0; }
+  .blogs-navigation--item a,
+  .video-navigation--item a,
+  .docs-navigation--item a {
+    display: flex;
+    flex: 1; }
+    .blogs-navigation--item a:hover,
+    .video-navigation--item a:hover,
+    .docs-navigation--item a:hover {
       background-color: #f5f5f5; }
-    .blogs-navigation--item_link,
-    .video-navigation--item_link,
-    .docs-navigation--item_link {
-      padding-top: 10px;
-      padding-bottom: 10px;
+  .blogs-navigation--item_link,
+  .video-navigation--item_link,
+  .docs-navigation--item_link {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 6px;
+    border-left: 3px solid transparent;
+    font-size: 18px;
+    color: #4d5258;
+    opacity: .85; }
+    .blogs-navigation--item_link:hover,
+    .video-navigation--item_link:hover,
+    .docs-navigation--item_link:hover {
+      color: #4a4a4a; }
+    .blogs-navigation--item_link.active,
+    .video-navigation--item_link.active,
+    .docs-navigation--item_link.active {
+      border-left: 3px solid #00aab2;
+      color: #4a4a4a; }
+  .blogs-navigation_sub,
+  .video-navigation_sub,
+  .docs-navigation_sub {
+    list-style: none; }
+    .blogs-navigation_sub--item a:hover,
+    .video-navigation_sub--item a:hover,
+    .docs-navigation_sub--item a:hover {
+      background-color: #f5f5f5; }
+    .blogs-navigation_sub--item_link,
+    .video-navigation_sub--item_link,
+    .docs-navigation_sub--item_link {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      padding-top: 5px;
+      padding-bottom: 5px;
       padding-left: 6px;
       border-left: 3px solid transparent;
       font-size: 18px;
       color: #4d5258;
       opacity: .85; }
-      .blogs-navigation--item_link:hover,
-      .video-navigation--item_link:hover,
-      .docs-navigation--item_link:hover {
+      .blogs-navigation_sub--item_link:hover,
+      .video-navigation_sub--item_link:hover,
+      .docs-navigation_sub--item_link:hover {
         color: #4a4a4a; }
-      .blogs-navigation--item_link.active,
-      .video-navigation--item_link.active,
-      .docs-navigation--item_link.active {
+      .blogs-navigation_sub--item_link.active,
+      .video-navigation_sub--item_link.active,
+      .docs-navigation_sub--item_link.active {
         border-left: 3px solid #00aab2;
         color: #4a4a4a; }
 
@@ -217,6 +261,10 @@ pre {
 .page-title {
   padding-top: 60px;
   margin-bottom: 40px; }
+  @media (max-width: 992px) {
+    .page-title {
+      padding-top: 20px;
+      padding-left: 15px; } }
 
 .page-subtitle--spacer_top {
   margin-top: 60px; }
@@ -238,6 +286,10 @@ pre {
 
 .community-page .page-title {
   margin-bottom: 0; }
+  @media (max-width: 992px) {
+    .community-page .page-title {
+      padding-left: 0;
+      margin-bottom: 10px; } }
 
 .doc-intro-text {
   max-width: 85%;
@@ -248,6 +300,7 @@ pre {
 .kubevirt-can-do .card {
   border: none; }
   .kubevirt-can-do .card-footer {
+    min-height: 8rem;
     background-color: transparent;
     border: none;
     border-radius: 0; }
@@ -287,6 +340,9 @@ pre {
     width: 220px;
     padding: .5rem 1rem;
     box-shadow: none; }
+    @media (max-width: 992px) {
+      .kv-btn-community {
+        margin-bottom: 20px; } }
 
 .card-body {
   display: flex;
@@ -305,6 +361,9 @@ pre {
     background-position: top center;
     min-height: 60vh;
     padding-top: 50px; }
+    @media (max-width: 992px) {
+      .hero-overlay {
+        padding-top: 75px; } }
     .hero-overlay .row {
       min-height: 12rem; }
     .hero-overlay-text {

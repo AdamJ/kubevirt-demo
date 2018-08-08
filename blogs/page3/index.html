@@ -2,12 +2,10 @@
 <html lang="en">
 
   <head>
-    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
-    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
     <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta name="go-import" content="kubevirt.io/containerized-data-importer git https://github.com/kubevirt/containerized-data-importer">
     <meta name="description" content="Virtual Machine Management on Kubernetes
 ">
     <title>Blogs</title>
@@ -49,7 +47,7 @@
         </li>
       
         <li  class="nav-item" >
-          <a class="nav-link text-uppercase" href="https://kubevirt.io/user-guide/#/">Docs</a>
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
         </li>
       
         <li  class="nav-item" >
@@ -147,14 +145,35 @@
       <ul class="posts">
         
           <li>
+            <h2 href="/2018/Use-GlusterFS-Cloning-with-KubeVirt.html" class="posts-title">Use Glusterfs Cloning With Kubevirt</h2>
+            <div class="posts-date">May 16, 2018</div>
+            A first look at using gluster cloning with kubevirt
+            
+            <div class="readmore">
+  <a href="
+              /2018/Use-GlusterFS-Cloning-with-KubeVirt.html
+            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
+</div>
+
+          </li>
+        
+          <li>
+            <h2 href="/2018/KubeVirt-API-Access-Control.html" class="posts-title">Kubevirt Api Access Control</h2>
+            <div class="posts-date">May 16, 2018</div>
+            How User Access Control works in KubeVirt
+            
+            <div class="readmore">
+  <a href="
+              /2018/KubeVirt-API-Access-Control.html
+            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
+</div>
+
+          </li>
+        
+          <li>
             <h2 href="/2018/KubeVirt-objects.html" class="posts-title">Kubevirt Objects</h2>
             <div class="posts-date">May 08, 2018</div>
             In this post we will go over the objects provided by KubeVirt
-            <!-- The KubeVirt project provides extensions to Kubernetes via custom resources.
-These resources are a collection a API objects that defines
-a virtual machine within Kubernetes.
-
- -->
             
             <div class="readmore">
   <a href="
@@ -168,7 +187,6 @@ a virtual machine within Kubernetes.
             <h2 href="/2018/Deploying-VMs-on-Kubernetes-GlusterFS-KubeVirt.html" class="posts-title">Deploying Vms On Kubernetes Glusterfs Kubevirt</h2>
             <div class="posts-date">May 07, 2018</div>
             Deploying Virtual Machines on Kubernetes with GlusterFS+Heketi and KubeVirt
-            <!-- Kubernetes is traditionally used to deploy and manage containerized applications. Did you know Kubernetes can also be used to deploy and manage virtual machines? This guide will walk you through installing a Kubernetes environment backed by GlusterFS for storage and the KubeVirt add-on to enable deployment and management of VMs.... -->
             
             <div class="readmore">
   <a href="
@@ -182,7 +200,6 @@ a virtual machine within Kubernetes.
             <h2 href="/2018/Deploying-KubeVirt-on-a-Single-oVirt-VM.html" class="posts-title">Deploying Kubevirt On A Single Ovirt Vm</h2>
             <div class="posts-date">May 04, 2018</div>
             Deploying KubeVirt on a single oVirt VM
-            <!-- In this blog post we are exploring the possibilities of deploying Kube Virt on top of Open Shift which is running inside an oVirt VM. First we must prepare the environment. In my testing I created a VM with 4 cpus, 14G memory and a 100G disk. I then installed... -->
             
             <div class="readmore">
   <a href="
@@ -192,113 +209,9 @@ a virtual machine within Kubernetes.
 
           </li>
         
-          <li>
-            <h2 href="/2018/This-Week-in-Kube-Virt-23.html" class="posts-title">This Week In Kube Virt 23</h2>
-            <div class="posts-date">April 27, 2018</div>
-            This is a close-to weekly update from the KubeVirt team.
-            <!-- This is a close-to weekly update from the KubeVirt team.
-
- -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/This-Week-in-Kube-Virt-23.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
-          <li>
-            <h2 href="/2018/KubeVirt-Network-Deep-Dive.html" class="posts-title">Kubevirt Network Deep Dive</h2>
-            <div class="posts-date">April 25, 2018</div>
-            In this post we will research and discover how KubeVirt networking functions
-            <!-- In this post we will research and discover how KubeVirt networking functions along with Kubernetes objects services and ingress. This should also provide enough technical details to start troubleshooting your own environment if a problem should arise. So with that let’s get started.
-
- -->
-            
-            <div class="readmore">
-  <a href="
-              /2018/KubeVirt-Network-Deep-Dive.html
-            " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
-</div>
-
-          </li>
-        
       </ul>
     </div>
-    <!--
-
-<div class="pagination align-items-center">
-  
-    <a href="/blogs/page2" class="btn btn-light mr-2">
-      <i class="fas fa-angle-left"></i> Newer Posts
-    </a>
-  
-
-  
     
-      <a href="/blogs" class="mr-2">
-        1
-      </a>
-    
-  
-    
-      <a href="/blogs/page2" class="mr-2">
-        2
-      </a>
-    
-  
-    
-      <span class="font-weight-bold mr-2">3</span>
-    
-  
-    
-      <a href="/blogs/page4" class="mr-2">
-        4
-      </a>
-    
-  
-    
-      <a href="/blogs/page5" class="mr-2">
-        5
-      </a>
-    
-  
-    
-      <a href="/blogs/page6" class="mr-2">
-        6
-      </a>
-    
-  
-    
-      <a href="/blogs/page7" class="mr-2">
-        7
-      </a>
-    
-  
-    
-      <a href="/blogs/page8" class="mr-2">
-        8
-      </a>
-    
-  
-    
-      <a href="/blogs/page9" class="mr-2">
-        9
-      </a>
-    
-  
-
-  
-    <a href="/blogs/page4" class="btn btn-light">
-      Older Posts  <i class="fas fa-angle-right"></i>
-    </a>
-  
-</div>
-
--->
-
-
 <div class="pagination align-items-center">
   
     <a href="/blogs/page2" class="btn btn-outline-secondary btn-light mr-2">
@@ -385,10 +298,5 @@ a virtual machine within Kubernetes.
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     <script id="dsq-count-scr" src="//kubevirt-io.disqus.com/count.js" async></script>
     <script src="/js/kubevirt-io.js"></script>
-    <script type="text/javascript">
-        if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
-            _satellite.pageBottom();
-        }
-    </script>
   </body>
 </html>

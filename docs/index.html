@@ -2,12 +2,10 @@
 <html lang="en">
 
   <head>
-    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
-    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
     <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta name="go-import" content="kubevirt.io/containerized-data-importer git https://github.com/kubevirt/containerized-data-importer">
     <meta name="description" content="Virtual Machine Management on Kubernetes
 ">
     <title>Introduction</title>
@@ -49,7 +47,7 @@
         </li>
       
         <li  class="nav-item active" >
-          <a class="nav-link text-uppercase" href="https://kubevirt.io/user-guide/#/">Docs</a>
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
         </li>
       
         <li  class="nav-item" >
@@ -63,21 +61,42 @@
     </nav>
 
     <main role="main" style="margin-top: 60px;">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
-          <h1 class="page-title">Docs</h1>
+          <h1 class="page-title offset-lg-1">Docs</h1>
         </div>
         <div class="row">
-          <div class="col-sm-12 col-md-3">
+          <div class="col-sm-12 col-md-4 col-lg-3 offset-lg-1">
+            <!-- <div class="search-bar">
+              <form action="/search.html" method="get">
+                <label for="search-box">Search</label>
+                <input type="text" id="search-box" name="query">
+                <input type="submit" value="search">
+              </form>
+            </div> -->
             
   
+    <h3 class="docs-title">
+      <a href="/docs"  class="docs-title--item active" >Introduction</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/installation.html"  class="docs-title--item" >Installation</a>
+    </h3>
     
     <ul class="docs-navigation">
-      <!-- <h3></h3> -->
       
         <li class="docs-navigation--item">
-          <a href="/docs"  class="docs-navigation--item_link active" >
-            Introduction
+          <a href="/docs/installation/admission-controllers.html"  class="docs-navigation--item_link" >
+            Admission Controllers
+          </a>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/installation/feature-matrix.html"  class="docs-navigation--item_link" >
+            Feature Matrix
           </a>
           
         </li>
@@ -85,41 +104,150 @@
     </ul>
     
   
+    <h3 class="docs-title">
+      <a href="/docs/usage.html"  class="docs-title--item" >Usage</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/authorization.html"  class="docs-title--item" >Authorization</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/workloads.html"  class="docs-title--item" >Workloads</a>
+    </h3>
     
     <ul class="docs-navigation">
-      <!-- <h3></h3> -->
       
         <li class="docs-navigation--item">
-          <a href="/docs/installation.html"  class="docs-navigation--item_link" >
-            Installation
+          <a href="/docs/workloads/virtual-machines.html"  class="docs-navigation--item_link" >
+            Virtual Machines
+          </a>
+          
+            <ul class="docs-navigation_sub">
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/creation.html"  class="docs-navigation_sub--item_link" >
+                    Creation
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/node-eviction.html"  class="docs-navigation_sub--item_link" >
+                    Node Eviction
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/presets.html"  class="docs-navigation_sub--item_link" >
+                    Presets
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/life-cycle.html"  class="docs-navigation_sub--item_link" >
+                    Life-cycle
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/dns-for-services.html"  class="docs-navigation_sub--item_link" >
+                    DNS for Services and VirtualMachineInstances
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/expose-vm-services.html"  class="docs-navigation_sub--item_link" >
+                    Expose VirtualMachineInstances as Services
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/create-networkpolicy.html"  class="docs-navigation_sub--item_link" >
+                    Create Networkpolicy
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/graphical-and-console-access.html"  class="docs-navigation_sub--item_link" >
+                    Graphical and Console Access
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/disks-and-volumes.html"  class="docs-navigation_sub--item_link" >
+                    Disks and Volumes
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/interfaces-networks.html"  class="docs-navigation_sub--item_link" >
+                    Interfaces and Networks
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/startup-scripts.html"  class="docs-navigation_sub--item_link" >
+                    Startup Scripts
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/guest-os-info.html"  class="docs-navigation_sub--item_link" >
+                    Guest Operating System Information
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/virtual-hardware-config.html"  class="docs-navigation_sub--item_link" >
+                    Virtualized Hardware Configuration
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/vms-to-nodes.html"  class="docs-navigation_sub--item_link" >
+                    Assigning VMs to Nodes
+                  </a>
+                </li>
+            
+            </ul>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/controllers.html"  class="docs-navigation--item_link" >
+            Controllers
+          </a>
+          
+            <ul class="docs-navigation_sub">
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/controllers/virtualmachine.html"  class="docs-navigation_sub--item_link" >
+                    VirtualMachine
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/controllers/virtual-machine-replica-set.html"  class="docs-navigation_sub--item_link" >
+                    VirtualMachineInstanceReplicaSet
+                  </a>
+                </li>
+            
+            </ul>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/templates.html"  class="docs-navigation--item_link" >
+            Templates
           </a>
           
         </li>
       
         <li class="docs-navigation--item">
-          <a href="/docs/usage.html"  class="docs-navigation--item_link" >
-            Usage
-          </a>
-          
-        </li>
-      
-        <li class="docs-navigation--item">
-          <a href="/docs/authorization.html"  class="docs-navigation--item_link" >
-            Authorization
-          </a>
-          
-        </li>
-      
-        <li class="docs-navigation--item">
-          <a href="/docs/workloads.html"  class="docs-navigation--item_link" >
-            Workloads
-          </a>
-          
-        </li>
-      
-        <li class="docs-navigation--item">
-          <a href="/docs/additional-resources.html"  class="docs-navigation--item_link" >
-            Additional Resources
+          <a href="/docs/workloads/annotations-labels.html"  class="docs-navigation--item_link" >
+            Annotations and Labels
           </a>
           
         </li>
@@ -127,25 +255,18 @@
     </ul>
     
   
-    
-    <ul class="docs-navigation">
-      <!-- <h3></h3> -->
-      
-        <li class="docs-navigation--item">
-          <a href="https://kubevirt.io/user-guide/#/"  class="docs-navigation--item_link" >
-            User Guide <i class="fas fa-external-link-alt"></i>
-          </a>
-          
-        </li>
-      
-    </ul>
+    <h3 class="docs-title">
+      <a href="/docs/additional-resources.html"  class="docs-title--item" >Additional Resources</a>
+    </h3>
     
   
 
 
           </div>
-          <div class="col-sm-12 col-md-9 docs">
-            <p>KubeVirt is a Kubernetes add-on to run virtual machines (VirtualMachineInstances) on a Kubernetes cluster.</p>
+          <div class="col-sm-12 col-md-8 col-lg-8 docs">
+            <h1 id="introduction">Introduction</h1>
+
+<p>KubeVirt is a Kubernetes add-on to run virtual machines (VirtualMachineInstances) on a Kubernetes cluster.</p>
 
 <p>This document is intended for users, and will guide you through installation and various features.</p>
 
@@ -197,10 +318,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     <script id="dsq-count-scr" src="//kubevirt-io.disqus.com/count.js" async></script>
     <script src="/js/kubevirt-io.js"></script>
-    <script type="text/javascript">
-        if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
-            _satellite.pageBottom();
-        }
-    </script>
   </body>
 </html>

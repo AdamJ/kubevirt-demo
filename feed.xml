@@ -6,10 +6,191 @@
 </description>
     <link>https://www.kubevirt.io//</link>
     <atom:link href="https://www.kubevirt.io//feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 17 Jul 2018 19:05:13 -0400</pubDate>
-    <pubYear>Tue, 17 Jul 2018 19:05:13 -0400</pubYear>
-    <lastBuildDate>Tue, 17 Jul 2018 19:05:13 -0400</lastBuildDate>
+    <pubDate>Wed, 08 Aug 2018 11:51:32 -0400</pubDate>
+    <pubYear>Wed, 08 Aug 2018 11:51:32 -0400</pubYear>
+    <lastBuildDate>Wed, 08 Aug 2018 11:51:32 -0400</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>Kubevirt V0.7.0</title>
+        <description>&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Kubevirt v0.7.0 was released a few weeks ago and brings a bunch of new features that this blog post will detail.&lt;/p&gt;
+
+&lt;p&gt;the full list is visible &lt;a href=&quot;https://github.com/kubevirt/kubevirt/releases/tag/v0.7.0&quot;&gt;here&lt;/a&gt; but we will pick the ones oriented to the end user&lt;/p&gt;
+
+&lt;h1 id=&quot;features&quot;&gt;Features&lt;/h1&gt;
+
+&lt;h2 id=&quot;hugepages-support&quot;&gt;hugepages support&lt;/h2&gt;
+
+&lt;p&gt;To use hugepages as backing memory, we need to indicate a desired amount of memory (&lt;code class=&quot;highlighter-rouge&quot;&gt;resources.requests.memory&lt;/code&gt;) and size of hugepages to use (&lt;code class=&quot;highlighter-rouge&quot;&gt;memory.hugepages.pageSize&lt;/code&gt;)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: kubevirt.io/v1alpha1
+kind: VirtualMachine
+metadata:
+  name: myvm
+spec:
+  domain:
+    resources:
+      requests:
+        memory: &quot;64Mi&quot;
+    memory:
+      hugepages:
+        pageSize: &quot;2Mi&quot;
+    disks:
+    - name: myimage
+      volumeName: myimage
+      disk: {}
+  volumes:
+    - name: myimage
+      persistentVolumeClaim:
+        claimname: myclaim
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;a node must have pre-allocated hugepages&lt;/li&gt;
+  &lt;li&gt;hugepages size cannot be bigger than requested memory&lt;/li&gt;
+  &lt;li&gt;requested memory must be divisible by hugepages size&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;setting-network-interface-model-and-mac-address&quot;&gt;setting network interface model and MAC address&lt;/h2&gt;
+
+&lt;p&gt;the following syntax within interfaces section allows us to set both a mac address and network  model&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kind: VM
+spec:
+  domain:
+    devices:
+      interfaces:
+        - name: red
+          macAddress: de:ad:00:00:be:af
+          model: e1000
+          bridge: {}
+  networks:
+  - name: red
+    pod: {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;alternative network models can be&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;e1000&lt;/li&gt;
+  &lt;li&gt;e1000e&lt;/li&gt;
+  &lt;li&gt;ne2k_pci&lt;/li&gt;
+  &lt;li&gt;pcnet&lt;/li&gt;
+  &lt;li&gt;rtl8139&lt;/li&gt;
+  &lt;li&gt;virtio&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;setting-a-disks-serial-number&quot;&gt;setting a disks serial number&lt;/h2&gt;
+
+&lt;p&gt;The new keyword &lt;code class=&quot;highlighter-rouge&quot;&gt;serial&lt;/code&gt; in the disks section allows us to specify a serial number&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: kubevirt.io/v1alpha1
+kind: VirtualMachine
+metadata:
+  name: myvm
+spec:
+  domain:
+    resources:
+      requests:
+        memory: &quot;64Mi&quot;
+    disks:
+    - name: myimage
+      volumeName: myimage
+      serial: sn-11223344
+      disk: {}
+  volumes:
+    - name: myimage
+      persistentVolumeClaim:
+        claimname: myclaim
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;specifying-the-cpu-model&quot;&gt;specifying the CPU model&lt;/h2&gt;
+
+&lt;p&gt;Setting the CPU model is possible via &lt;code class=&quot;highlighter-rouge&quot;&gt;spec.domain.cpu.model&lt;/code&gt;. The following VM will have a CPU with the Conroe model:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;metadata:
+  name: myvmi
+spec:
+  domain:
+    cpu:
+      # this sets the CPU model
+      model: Conroe
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The available models are listed &lt;a href=&quot;https://github.com/libvirt/libvirt/blob/master/src/cpu/cpu_map.xml&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Additionally, we can also use&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;host-model&lt;/li&gt;
+  &lt;li&gt;host-passthrough&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;virtctl-expose&quot;&gt;virtctl expose&lt;/h2&gt;
+
+&lt;p&gt;To access services listening within vms, we can expose their ports using standard kubernetes services. Alternatively, we can make use of the &lt;em&gt;virtctl&lt;/em&gt; binary to achieve the same result:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;to expose a cluster ip service&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtctl expose virtualmachineinstance vmi-ephemeral --name vmiservice --port 27017 --target-port 22
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;to expose a node port service&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtctl expose virtualmachineinstance vmi-ephemeral --name nodeport --type NodePort --port 27017 --target-port 22 --node-port 30000
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;to expose a load balancer service&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtctl expose virtualmachineinstance vmi-ephemeral --name lbsvc --type LoadBalancer --port 27017 --target-port 3389
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;kubernetes-compatible-networking-approach-slirp&quot;&gt;Kubernetes compatible networking approach (SLIRP)&lt;/h2&gt;
+
+&lt;p&gt;In slirp mode, virtual machines are connected to the network backend using QEMU user networking mode. In this mode, QEMU allocates internal IP addresses to virtual machines and hides them behind NAT.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kind: VM
+spec:
+  domain:
+    devices:
+      interfaces:
+        - name: red
+          slirp: {} # connect using SLIRP mode
+  networks:
+  - name: red
+    pod: {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;role-aggregation-for-our-roles&quot;&gt;Role aggregation for our roles&lt;/h2&gt;
+
+&lt;p&gt;Every KubeVirt installation after version v0.5.1 comes a set of default RBAC cluster roles that can be used to grant users access to VirtualMachineInstances.&lt;/p&gt;
+
+&lt;p&gt;The kubevirt.io:admin and kubevirt.io:edit ClusterRoles have console and VNC access permissions built into them.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;This concludes our review of latest kubevirt features. Enjoy them !&lt;/p&gt;
+</description>
+        <pubDate>Mon, 23 Jul 2018 00:00:00 -0400</pubDate>
+        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
+        <link>https://www.kubevirt.io//2018/Kubevirt-v0.7.0.html</link>
+        <guid isPermaLink="true">https://www.kubevirt.io//2018/Kubevirt-v0.7.0.html</guid>
+        
+        
+        <category>news</category>
+        
+      </item>
     
       <item>
         <title>Unit Test Howto</title>
@@ -495,6 +676,178 @@ domain’s networking stack.&lt;/p&gt;
         
         
         <category>news</category>
+        
+      </item>
+    
+      <item>
+        <title>Hello Kubevirt On Minikube</title>
+        <description>&lt;p&gt;In this blog post, we will demonstrate the process for creating and managing virtual machines in Kubernetes with KubeVirt.  We will also go through the process of installing &lt;a href=&quot;https://kubernetes.io/docs/setup/minikube/&quot;&gt;Minikube&lt;/a&gt; and KubeVirt on a Fedora 28 workstation.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+&lt;h2 id=&quot;install-kvm&quot;&gt;Install KVM&lt;/h2&gt;
+
+&lt;p&gt;MiniKube will create a single node Kubernetes cluster in a KVM virtual machine on our Fedora host.  KVM is also the virtualization technology used by KubeVirt so we have to make sure that the host is configured to support nested virtual machines.  Fedora does not have that feature enabled by default.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# install packages&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;yum &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;libvirt-daemon-kvm qemu-kvm
+
+&lt;span class=&quot;c&quot;&gt;# enable nested virtualization&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# substitute 'kvm_intel' with 'kvm_amd' if your system has an AMD processor&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;modprobe &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt; kvm_intel
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;vi /etc/modprobe.d/kvm.conf
+&lt;span class=&quot;c&quot;&gt;# uncomment 'options kvm_intel nested=1' and save&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;modprobe kvm_intel
+
+&lt;span class=&quot;c&quot;&gt;#verify nested virtualization enabled&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cat&lt;/span&gt; /sys/module/kvm_intel/parameters/nested
+Y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;install-kvm2-driver-for-minikube&quot;&gt;Install KVM2 driver for Minikube&lt;/h2&gt;
+
+&lt;p&gt;Minikube requires a special driver to manage Docker Machine VMs running in KVM.  KVM2 is the latest iteration of the driver.  Read more about it &lt;a href=&quot;https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# install driver to /usr/local/bin&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-LO&lt;/span&gt; https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x docker-machine-driver-kvm2 &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo mv &lt;/span&gt;docker-machine-driver-kvm2 /usr/local/bin/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;install-minikube&quot;&gt;Install Minikube&lt;/h2&gt;
+
+&lt;p&gt;Minikube is responsible for creating and managing a local single-node Kubernetes cluster.  It is installed as a single executable.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#install minikube to /usr/local/bin&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-Lo&lt;/span&gt; minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x minikube &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo mv &lt;/span&gt;minikube /usr/local/bin/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;start-minikube&quot;&gt;Start Minikube&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;minikube start &lt;span class=&quot;nt&quot;&gt;--vm-driver&lt;/span&gt; kvm2 &lt;span class=&quot;nt&quot;&gt;--network-plugin&lt;/span&gt; cni
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;install-kubectl&quot;&gt;Install kubectl&lt;/h2&gt;
+
+&lt;p&gt;Now that we have a Kubernetes cluster running, we need some way to communicate with it.  That is where the kubectl CLI comes in.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# install kubectl to /usr/local/bin&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-Lo&lt;/span&gt; kubectl https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubectl &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x kubectl &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo mv &lt;/span&gt;kubectl /usr/local/bin/
+
+&lt;span class=&quot;c&quot;&gt;# try out the cli&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# should see similar output&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get all
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;S&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;   AGE
+kubernetes   ClusterIP   10.96.0.1    &amp;lt;none&amp;gt;        443/TCP   5m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You may be wondering how kubectl knows where to look for the Kubernetes API endpoint.  &lt;code class=&quot;highlighter-rouge&quot;&gt;minikube start&lt;/code&gt; actually takes care of creating the kubectl configuration file.  Take a look at &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.kube/config&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;deploy-kubevirt&quot;&gt;Deploy KubeVirt&lt;/h2&gt;
+
+&lt;p&gt;Get KubeVirt components running on the Kubernetes cluster.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl create &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; https://github.com/kubevirt/kubevirt/releases/download/v0.7.0/kubevirt.yaml
+
+&lt;span class=&quot;c&quot;&gt;# watch for Kubevirt components to start (bebin with 'virt-')&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# may take awhile as containers are downloaded and started&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;watch kubectl get &lt;span class=&quot;nt&quot;&gt;--all-namespaces&lt;/span&gt; pods
+
+&lt;span class=&quot;c&quot;&gt;# eventually output should look something like this (everything with Running status)&lt;/span&gt;
+NAMESPACE     NAME                                    READY     STATUS    RESTARTS   AGE
+kube-system   etcd-minikube                           1/1	Running   0          16m
+kube-system   kube-addon-manager-minikube             1/1	Running   0          15m
+kube-system   kube-apiserver-minikube                 1/1	Running   0          15m
+kube-system   kube-controller-manager-minikube        1/1	Running   0          16m
+kube-system   kube-dns-86f4d74b45-ppp5p               3/3	Running   0          16m
+kube-system   kube-proxy-rjkxl                        1/1	Running   0          16m
+kube-system   kube-scheduler-minikube                 1/1	Running   0          16m
+kube-system   kubernetes-dashboard-5498ccf677-8zmnk   1/1	Running   0          16m
+kube-system   storage-provisioner                     1/1	Running   0          16m
+kube-system   virt-api-7797f95869-dwrrc               1/1	Running   0          2m
+kube-system   virt-api-7797f95869-fqnhk               1/1	Running   1          2m
+kube-system   virt-controller-69cc6b4897-nlffm        1/1	Running   0          2m
+kube-system   virt-controller-69cc6b4897-xsxmt        1/1	Running   0          2m
+kube-system   virt-handler-f7str                      1/1	Running   0          2m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;install-virtctl&quot;&gt;Install virtctl&lt;/h2&gt;
+
+&lt;p&gt;Virtctl is the CLI for creating and managing KubeVirt virtual machines.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# install virtctl to /usr/local/bin&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-Lo&lt;/span&gt; virtctl https://github.com/kubevirt/kubevirt/releases/download/v0.7.0/virtctl-v0.7.0-linux-amd64 &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x virtctl &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo mv &lt;/span&gt;virtctl /usr/local/bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;create-a-vm&quot;&gt;Create a VM&lt;/h2&gt;
+
+&lt;p&gt;Apply manifest for VM.  If you’re curious, download the manifest file locally and take a look.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
+
+&lt;span class=&quot;c&quot;&gt;# check that VM successfully created&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vms 
+NAME      AGE
+testvm    7s
+&lt;span class=&quot;c&quot;&gt;# for more detailed info, run&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vms &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; yaml testvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;start-a-vm&quot;&gt;Start a VM&lt;/h2&gt;
+
+&lt;p&gt;Time to try out virtctl.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;virtctl start testvm
+
+&lt;span class=&quot;c&quot;&gt;# wait for VM to be running&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;watch kubectl get pods
+
+&lt;span class=&quot;c&quot;&gt;# confirm with kubectl&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vmis
+NAME      AGE
+testvm    4s
+
+&lt;span class=&quot;c&quot;&gt;# for more detailed info&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vmis &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; yaml testvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;connect-to-vm&quot;&gt;Connect to VM&lt;/h2&gt;
+
+&lt;p&gt;The VM is running CirrOS, which is “a Tiny OS that specializes in running on a cloud.”  Don’t expect anything fancy.  Look &lt;a href=&quot;https://launchpad.net/cirros&quot;&gt;here&lt;/a&gt; for more info on CirrOS&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;virtctl console testvm
+
+&lt;span class=&quot;c&quot;&gt;# note escape sequence of '^]'&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# login with creds provided and poke around&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# you are connected to a VM running in Kubernetes!  Pretty cool!&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 'exit' to logout&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# quit virtctl by providing escape sequence '^]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;stop-a-vm&quot;&gt;Stop a VM&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;virtctl stop testvm
+
+&lt;span class=&quot;c&quot;&gt;# wait for termination to complete&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;watch kubectl get pods
+
+&lt;span class=&quot;c&quot;&gt;# confirm with kubectl&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vmis
+No resources found.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;delete-a-vm&quot;&gt;Delete a VM&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl delete vms testvm
+
+&lt;span class=&quot;c&quot;&gt;# confirm with kubectl&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;kubectl get vms
+No resources found.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;nest-steps&quot;&gt;Nest Steps&lt;/h2&gt;
+
+&lt;p&gt;Take a look at the &lt;a href=&quot;https://kubevirt.io/user-guide/#/&quot;&gt;user guide&lt;/a&gt; and get involved with the &lt;a href=&quot;http://kubevirt.io/community/&quot;&gt;community&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate></pubDate>
+        <pubYear></pubYear>
+        <link>https://www.kubevirt.io//2018/Hello-KubeVirt-on-Minikube.html</link>
+        <guid isPermaLink="true">https://www.kubevirt.io//2018/Hello-KubeVirt-on-Minikube.html</guid>
+        
         
       </item>
     
@@ -1995,370 +2348,6 @@ with OVN and Kubetron installed. On top of that it describes how to create netwo
         <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
         <link>https://www.kubevirt.io//2018/ovn-multi-network-plugin-for-kubernetes-kubetron.html</link>
         <guid isPermaLink="true">https://www.kubevirt.io//2018/ovn-multi-network-plugin-for-kubernetes-kubetron.html</guid>
-        
-        
-        <category>uncategorized</category>
-        
-      </item>
-    
-      <item>
-        <title>Use Glusterfs Cloning With Kubevirt</title>
-        <description>&lt;p&gt;Gluster seems like a good fit for storage in kubernetes and in particular in kubevirt. Still, as for other storage backends, we will likely need to use a golden set of images and deploy vms from them.&lt;/p&gt;
-
-&lt;p&gt;That’s where cloning feature of gluster comes at rescue!&lt;/p&gt;
-
-&lt;h2 id=&quot;contents&quot;&gt;Contents&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Prerequisites&lt;/li&gt;
-  &lt;li&gt;Installing Gluster provisioner&lt;/li&gt;
-  &lt;li&gt;Using The cloning feature&lt;/li&gt;
-  &lt;li&gt;Conclusion&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
-
-&lt;p&gt;I assume you already have a running instance of openshift and kubevirt along with gluster and an already existing pvc where you copied a base operating system ( you can get those from &lt;a href=&quot;https://docs.openstack.org/image-guide/obtain-images.html&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;For reference, I used the following components and versions:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;3 baremetal servers with Rhel 7.4 as base OS&lt;/li&gt;
-  &lt;li&gt;Openshift and Cns 3.9&lt;/li&gt;
-  &lt;li&gt;KubeVirt latest&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;installing-gluster-provisioner&quot;&gt;Installing Gluster provisioner&lt;/h2&gt;
-
-&lt;h3 id=&quot;initial-deployment&quot;&gt;initial deployment&lt;/h3&gt;
-
-&lt;p&gt;We will deploy the custom provisioner using &lt;a href=&quot;../assets/2018-05-16-use-glustercloning-with-kubevirt/glusterfile-provisioner-template.yml&quot;&gt;this template&lt;/a&gt;, along with cluster rules located in &lt;a href=&quot;../assets/2018-05-16-use-glustercloning-with-kubevirt/openshift-clusterrole.yaml&quot;&gt;this file&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Note that we also patch the image to use an existing one from gluster org located at docker.io instead of quay.io, as the corresponding repository is private by the time of this writing, and the heketi one, to make sure it has the code required to handle cloning&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NAMESPACE=&quot;app-storage&quot;
-oc create -f openshift-clusterrole.yaml
-oc process -f glusterfile-provisioner-template.yml | oc apply -f - -n $NAMESPACE
-oc adm policy add-cluster-role-to-user cluster-admin -z glusterfile-provisioner -n $NAMESPACE
-oc adm policy add-scc-to-user privileged -z glusterfile-provisioner
-oc set image dc/heketi-storage heketi=gluster/heketiclone:latest  -n $NAMESPACE
-oc set image dc/glusterfile-provisioner glusterfile-provisioner=gluster/glusterfileclone:latest  -n $NAMESPACE
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And you will see something similar to this in your storage namespace&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[root@master01 ~]# NAMESPACE=&quot;app-storage&quot;
-[root@master01 ~]# kubectl get pods -n $NAMESPACE
-NAME                              READY     STATUS    RESTARTS   AGE
-glusterfile-provisioner-3-vhkx6   1/1       Running   0          1d
-glusterfs-storage-b82x4           1/1       Running   1          23d
-glusterfs-storage-czthc           1/1       Running   0          23d
-glusterfs-storage-z68hm           1/1       Running   0          23d
-heketi-storage-2-qdrks            1/1       Running   0          6h
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;additional-configuration&quot;&gt;additional configuration&lt;/h3&gt;
-
-&lt;p&gt;for the custom provisioner to work, we need two additional things:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;a storage class pointing to it, but also containing the details of the current heketi installation&lt;/li&gt;
-  &lt;li&gt;a secret similar to the one used by the current heketi installation, but using a different &lt;em&gt;type&lt;/em&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;You can use the following&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NAMESPACE=&quot;app-storage&quot;
-oc get sc glusterfs-storage -o yaml
-oc get secret heketi-storage-admin-secret -n $NAMESPACE-o yaml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;then, create the following objects:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;glustercloning-heketi-secret secret in your storage namespace&lt;/li&gt;
-  &lt;li&gt;glustercloning storage class&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;for reference, here are samples of those files.&lt;/p&gt;
-
-&lt;p&gt;Note how we change the type for the secret and add extra options for our storage class (in particular, enabling smartclone).&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: v1
-data:
-  key: eEt0NUJ4cklPSmpJb2RZcFpqVExSSjUveFV5WHI4L0NxcEtMME1WVlVjQT0=
-kind: Secret
-metadata:
-  name: glustercloning-heketi-secret
-  namespace: app-storage
-type: gluster.org/glusterfile
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: glustercloning
-parameters:
-  restsecretname: glustercloning-heketi-secret
-  restsecretnamespace: app-storage
-  resturl: http://heketi-storage.192.168.122.10.xip.io
-  restuser: admin
-  smartclone: &quot;true&quot;
-  snapfactor: &quot;10&quot;
-  volumeoptions: group virt
-provisioner: gluster.org/glusterfile
-reclaimPolicy: Delete
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;The full set of supported parameters can be found &lt;a href=&quot;https://github.com/kubernetes-incubator/external-storage/blob/master/gluster/file/README.md&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;using-the-cloning-feature&quot;&gt;Using the cloning feature&lt;/h2&gt;
-
-&lt;p&gt;Once deployed, you can now provision pvcs from a base origin&lt;/p&gt;
-
-&lt;h3 id=&quot;cloning-single-pvcs&quot;&gt;Cloning single pvcs&lt;/h3&gt;
-
-&lt;p&gt;For instance, provided you have an existing pvc named &lt;em&gt;cirros&lt;/em&gt; containing this base operating system, and that this PVC contains an annotion of the following&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(...)
-metadata:
- annotations:
-  gluster.org/heketi-volume-id: f0cbbb29ef4202c5226f87708da57e5c
-(...)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;you can create a cloned pvc with the following yaml ( note that we simply indicate a clone request in the annotations)&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: testclone1
-  namespace: default
-  annotations:
-    k8s.io/CloneRequest: cirros
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: glustercloning
-status:
-  accessModes:
-  - ReadWriteOnce
-  capacity:
-    storage: 1Gi
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Once provisioned, the pvc will contain this additional annotation created by the provisioner&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(...)
-metadata:
- annotations:
-      k8s.io/CloneOf: cirros
-
-(...)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;leveraging-the-feature-in-openshift-templates&quot;&gt;Leveraging the feature in openshift templates&lt;/h3&gt;
-
-&lt;p&gt;We can make direct use of the feature in &lt;a href=&quot;../assets/2018-05-16-use-glustercloning-with-kubevirt/template.yml&quot;&gt;this openshift template&lt;/a&gt; which would create the following objects:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;a persistent volume claim as a clone of an existing pvc (cirros by default)&lt;/li&gt;
-  &lt;li&gt;an offline virtual machine object&lt;/li&gt;
-  &lt;li&gt;additional services for ssh and http access&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;you can use it with something like&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;oc process -f template.yml -p Name=myvm | oc process -f - -n default
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;cloning features in the storage backend allow us to simply use a given set of pvcs as base os for the deployment of our vms. this feature is growing in gluster, worth giving it a try!&lt;/p&gt;
-</description>
-        <pubDate>Wed, 16 May 2018 00:00:00 -0400</pubDate>
-        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
-        <link>https://www.kubevirt.io//2018/Use-GlusterFS-Cloning-with-KubeVirt.html</link>
-        <guid isPermaLink="true">https://www.kubevirt.io//2018/Use-GlusterFS-Cloning-with-KubeVirt.html</guid>
-        
-        
-        <category>uncategorized</category>
-        
-      </item>
-    
-      <item>
-        <title>Kubevirt Api Access Control</title>
-        <description>&lt;p&gt;Access to KubeVirt resources are controlled entirely by Kubernete’s Resource
-Based Access Control (RBAC) system. This system allows KubeVirt to tie directly
-into the existing authentication and authorization mechanisms Kubernetes
-already provides to its core api objects.&lt;/p&gt;
-
-&lt;h2 id=&quot;kubevirt-rbac-role-basics&quot;&gt;KubeVirt RBAC Role Basics&lt;/h2&gt;
-
-&lt;p&gt;Typically when people think of Kubernetes RBAC system, they’re thinking about
-granting users access to create/delete kubernetes objects (like Pods,
-deployments, etc), however those same RBAC mechanisms work naturally with
-KubeVirt objects as well.&lt;/p&gt;
-
-&lt;p&gt;When we look at KubeVirt’s objects, we can see they are structured just like
-the objects that come predefined in the Kubernetes core.&lt;/p&gt;
-
-&lt;p&gt;For example, look here’s an example of a VirtualMachine spec.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: kubevirt.io/v1alpha1
-kind: VirtualMachine
-metadata:
-  name: vm-ephemeral
-spec:
-  domain:
-    devices:
-      disks:
-      - disk:
-          bus: virtio
-        name: registrydisk
-        volumeName: registryvolume
-    resources:
-      requests:
-        memory: 64M
-  volumes:
-  - name: registryvolume
-    registryDisk:
-      image: kubevirt/cirros-registry-disk-demo:devel
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;In the spec above, we see the KubeVirt VirtualMachine object has an &lt;em&gt;apiVersion&lt;/em&gt;
-field and a &lt;em&gt;kind&lt;/em&gt; field just like a Pod spec does. The &lt;strong&gt;kubevirt.io&lt;/strong&gt; portion
-of the apiVersion field represents KubeVirt apiGroup the resource is a part of.
-The &lt;strong&gt;kind&lt;/strong&gt; field reflects the resource type.&lt;/p&gt;
-
-&lt;p&gt;Using that information, we can create an RBAC role that gives a user permission
-to create, delete, and view all VirtualMachine objects.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: vm-access
-  labels:
-    kubevirt.io: &quot;&quot;
-rules:
-  - apiGroups:
-      - kubevirt.io
-    resources:
-      - virtualmachines
-    verbs:
-      - get
-      - delete
-      - create
-      - update
-      - patch
-      - list
-      - watch
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This same logic can be applied when creating RBAC roles for other KubeVirt
-objects as well. If we wanted to extend this RBAC role to grant similar
-permissions for VirtualMachinePreset objects, we’d just have to add a second
-resource kubevirt.io resource list. The result would look like this.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: vm-access
-  labels:
-    kubevirt.io: &quot;&quot;
-rules:
-  - apiGroups:
-      - kubevirt.io
-    resources:
-      - virtualmachines
-      - virtualmachinepresets
-    verbs:
-      - get
-      - delete
-      - create
-      - update
-      - patch
-      - list
-      - watch
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;kubevirt-subresource-rbac-roles&quot;&gt;KubeVirt Subresource RBAC Roles&lt;/h2&gt;
-
-&lt;p&gt;Access to a VirtualMachines’s VNC and console stream using KubeVirt’s
-&lt;strong&gt;virtctl&lt;/strong&gt; tool is managed by the Kubernetes RBAC system as well. Permissions
-for these resources work slightly different than the other KubeVirt objects
-though.&lt;/p&gt;
-
-&lt;p&gt;Console and VNC access is performed using the KubeVirt Stream API, which has
-its own api group called &lt;strong&gt;subresources.kubevirt.io&lt;/strong&gt;. Below is an example of
-how to create a role that grants access to the VNC and console streams APIs.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: vm-vnc-access
-  labels:
-    kubevirt.io: &quot;&quot;
-rules:
-  - apiGroups:
-      - subresources.kubevirt.io
-    resources:
-      - virtualmachines/console
-      - virtualmachines/vnc
-    verbs:
-      - get
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;limiting-rbac-to-a-single-namespace&quot;&gt;Limiting RBAC To a Single Namespace.&lt;/h2&gt;
-
-&lt;p&gt;A ClusterRole can be bound to a user in two different ways.&lt;/p&gt;
-
-&lt;p&gt;When a ClusterRoleBinding is used, a user is permitted access to all resources
-defined in the ClusterRole across all namespaces in the cluster.&lt;/p&gt;
-
-&lt;p&gt;When a RoleBinding is used, a user is limited to accessing only the resources
-defined in the ClusterRole within the namespace RoleBinding exists in.&lt;/p&gt;
-
-&lt;h2 id=&quot;limiting-rbac-to-a-single-resource&quot;&gt;Limiting RBAC To a Single Resource.&lt;/h2&gt;
-
-&lt;p&gt;A user can also be limit to accessing only a single resource within a resource
-type. Below is an example that only grants VNC access to the VirtualMachine
-named ‘bobs-vm’&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: vm-vnc-access
-  labels:
-    kubevirt.io: &quot;&quot;
-rules:
-  - apiGroups:
-      - subresources.kubevirt.io
-    resources:
-      - virtualmachines/console
-      - virtualmachines/vnc
-    resourceName:
-      - bobs-vm
-    verbs:
-      - get
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;default-kubevirt-rbac-roles&quot;&gt;Default Kubevirt RBAC Roles&lt;/h2&gt;
-
-&lt;p&gt;The next release of KubeVirt is coming with three default ClusterRoles that
-admins can use to grant users access to KubeVirt resources. In most cases,
-these roles will prevent admins from ever having to create their own custom
-KubeVirt RBAC roles.&lt;/p&gt;
-
-&lt;p&gt;More information about these default roles can be found in the KubeVirt
-user guide &lt;a href=&quot;https://www.kubevirt.io/user-guide/#/authorization&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 16 May 2018 00:00:00 -0400</pubDate>
-        <pubYear>Wed, 31 Dec 1969 19:33:38 -0500</pubYear>
-        <link>https://www.kubevirt.io//2018/KubeVirt-API-Access-Control.html</link>
-        <guid isPermaLink="true">https://www.kubevirt.io//2018/KubeVirt-API-Access-Control.html</guid>
         
         
         <category>uncategorized</category>

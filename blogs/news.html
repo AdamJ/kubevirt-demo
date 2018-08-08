@@ -2,12 +2,10 @@
 <html lang="en">
 
   <head>
-    <!-- Adding Adobe Analytics, the google Analytics will be removed after abobe will be well configured -->
-    <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
     <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta name="go-import" content="kubevirt.io/containerized-data-importer git https://github.com/kubevirt/containerized-data-importer">
     <meta name="description" content="Virtual Machine Management on Kubernetes
 ">
     <title>News</title>
@@ -49,7 +47,7 @@
         </li>
       
         <li  class="nav-item" >
-          <a class="nav-link text-uppercase" href="https://kubevirt.io/user-guide/#/">Docs</a>
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
         </li>
       
         <li  class="nav-item" >
@@ -135,12 +133,24 @@
       
         
           <li>
+            <h2 href="/2018/Kubevirt-v0.7.0.html" class="posts-title">Kubevirt V0.7.0</h2>
+            <div class="posts-date">July 23, 2018</div>
+              KubeVirt 0.7.0 Highlights
+              
+              <div class="readmore">
+  <a href="
+                /2018/Kubevirt-v0.7.0.html
+              " aria-label="Read more about this blog post">Read More <i class="fas fa-angle-right"></i></a>
+</div>
+
+          </li>
+        
+      
+        
+          <li>
             <h2 href="/2018/Unit-Test-Howto.html" class="posts-title">Unit Test Howto</h2>
             <div class="posts-date">July 3, 2018</div>
               This post tries to demystify some of our unit test mechanism, hopefully will make it easier to write more tests and increase our code coverage!
-              <!-- There are way too many reasons to write unit tests, but my favorite one is: the freedom to hack, modify and improve the code without fear, and get quick feedback that you are on the right track.
-
- -->
               
               <div class="readmore">
   <a href="
@@ -156,9 +166,6 @@
             <h2 href="/2018/Run-Istio-with-kubevirt.html" class="posts-title">Run Istio With Kubevirt</h2>
             <div class="posts-date">June 21, 2018</div>
               Use Istio with KubeVirt
-              <!-- On this blog post, we are going to deploy virtual machines with the KubeVirt project and insert them into the Istio service mesh.
-
- -->
               
               <div class="readmore">
   <a href="
@@ -174,7 +181,6 @@
             <h2 href="/2018/KVM-Using-Device-Plugins.html" class="posts-title">Kvm Using Device Plugins</h2>
             <div class="posts-date">June 20, 2018</div>
               KubeVirt Using Device Plugins For KVM
-              <!-- As of Kubernetes 1.10, the Device Plugins API is now in beta! KubeVirt is now using this framework to provide hardware acceleration and network devices to virtual machines. The motivation behind this is that virt-launcher pods are no longer responsible for creating their own device nodes. Or stated another way:... -->
               
               <div class="readmore">
   <a href="
@@ -183,6 +189,8 @@
 </div>
 
           </li>
+        
+      
         
       
         
@@ -315,10 +323,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     <script id="dsq-count-scr" src="//kubevirt-io.disqus.com/count.js" async></script>
     <script src="/js/kubevirt-io.js"></script>
-    <script type="text/javascript">
-        if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
-            _satellite.pageBottom();
-        }
-    </script>
   </body>
 </html>

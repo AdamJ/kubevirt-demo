@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1, shrink-to-fit=no" />
+    <meta name="go-import" content="kubevirt.io/kubevirt git https://github.com/kubevirt/kubevirt">
+    <meta name="go-import" content="kubevirt.io/containerized-data-importer git https://github.com/kubevirt/containerized-data-importer">
+    <meta name="description" content="Virtual Machine Management on Kubernetes
+">
+    <title>Admission Controllers</title>
+
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#00aba9">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="https://www.kubevirt.io//docs/installation/admission-controllers">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+</head>
+
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation">
+        <a class="navbar-brand" href="/">
+    <img src="/assets/images/KubeVirt_logo_color.svg" class="navbar-brand-image d-inline-block align-top" alt="KubeVirt.io">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-th-large"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav">
+      
+
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/blogs/">Blogs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/videos/">Videos</a>
+        </li>
+      
+        <li  class="nav-item active" >
+          <a class="nav-link text-uppercase" href="/docs/">Docs</a>
+        </li>
+      
+        <li  class="nav-item" >
+          <a class="nav-link text-uppercase" href="/community/">Community</a>
+        </li>
+      
+
+    </ul>
+  </div>
+
+    </nav>
+
+    <main role="main" style="margin-top: 60px;">
+      <div class="container-fluid">
+        <div class="row">
+          <h1 class="page-title offset-lg-1">Docs</h1>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-4 col-lg-3 offset-lg-1">
+            <!-- <div class="search-bar">
+              <form action="/search.html" method="get">
+                <label for="search-box">Search</label>
+                <input type="text" id="search-box" name="query">
+                <input type="submit" value="search">
+              </form>
+            </div> -->
+            
+  
+    <h3 class="docs-title">
+      <a href="/docs"  class="docs-title--item" >Introduction</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/installation.html"  class="docs-title--item" >Installation</a>
+    </h3>
+    
+    <ul class="docs-navigation">
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/installation/admission-controllers.html"  class="docs-navigation--item_link active" >
+            Admission Controllers
+          </a>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/installation/feature-matrix.html"  class="docs-navigation--item_link" >
+            Feature Matrix
+          </a>
+          
+        </li>
+      
+    </ul>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/usage.html"  class="docs-title--item" >Usage</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/authorization.html"  class="docs-title--item" >Authorization</a>
+    </h3>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/workloads.html"  class="docs-title--item" >Workloads</a>
+    </h3>
+    
+    <ul class="docs-navigation">
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/virtual-machines.html"  class="docs-navigation--item_link" >
+            Virtual Machines
+          </a>
+          
+            <ul class="docs-navigation_sub">
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/creation.html"  class="docs-navigation_sub--item_link" >
+                    Creation
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/node-eviction.html"  class="docs-navigation_sub--item_link" >
+                    Node Eviction
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/presets.html"  class="docs-navigation_sub--item_link" >
+                    Presets
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/life-cycle.html"  class="docs-navigation_sub--item_link" >
+                    Life-cycle
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/dns-for-services.html"  class="docs-navigation_sub--item_link" >
+                    DNS for Services and VirtualMachineInstances
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/expose-vm-services.html"  class="docs-navigation_sub--item_link" >
+                    Expose VirtualMachineInstances as Services
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/create-networkpolicy.html"  class="docs-navigation_sub--item_link" >
+                    Create Networkpolicy
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/graphical-and-console-access.html"  class="docs-navigation_sub--item_link" >
+                    Graphical and Console Access
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/disks-and-volumes.html"  class="docs-navigation_sub--item_link" >
+                    Disks and Volumes
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/interfaces-networks.html"  class="docs-navigation_sub--item_link" >
+                    Interfaces and Networks
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/startup-scripts.html"  class="docs-navigation_sub--item_link" >
+                    Startup Scripts
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/guest-os-info.html"  class="docs-navigation_sub--item_link" >
+                    Guest Operating System Information
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/virtual-hardware-config.html"  class="docs-navigation_sub--item_link" >
+                    Virtualized Hardware Configuration
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/vms/vms-to-nodes.html"  class="docs-navigation_sub--item_link" >
+                    Assigning VMs to Nodes
+                  </a>
+                </li>
+            
+            </ul>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/controllers.html"  class="docs-navigation--item_link" >
+            Controllers
+          </a>
+          
+            <ul class="docs-navigation_sub">
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/controllers/virtualmachine.html"  class="docs-navigation_sub--item_link" >
+                    VirtualMachine
+                  </a>
+                </li>
+            
+                <li class="docs-navigation_sub--item">
+                  <a href="/docs/workloads/controllers/virtual-machine-replica-set.html"  class="docs-navigation_sub--item_link" >
+                    VirtualMachineInstanceReplicaSet
+                  </a>
+                </li>
+            
+            </ul>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/templates.html"  class="docs-navigation--item_link" >
+            Templates
+          </a>
+          
+        </li>
+      
+        <li class="docs-navigation--item">
+          <a href="/docs/workloads/annotations-labels.html"  class="docs-navigation--item_link" >
+            Annotations and Labels
+          </a>
+          
+        </li>
+      
+    </ul>
+    
+  
+    <h3 class="docs-title">
+      <a href="/docs/additional-resources.html"  class="docs-title--item" >Additional Resources</a>
+    </h3>
+    
+  
+
+
+          </div>
+          <div class="col-sm-12 col-md-8 col-lg-8 docs">
+            <h1 id="admission-controllers">Admission Controllers</h1>
+
+<h2 id="kubevirt-api-validation">KubeVirt API Validation</h2>
+
+<p>The KubeVirt VirtualMachineInstance API is implemented using a Kubernetes Custom
+Resource Definition (CRD). Because of this, KubeVirt is able to leverage a
+couple of features Kubernetes provides in order to perform validation checks on
+our API as objects created and updated on the cluster.</p>
+
+<h2 id="how-api-validation-works">How API Validation Works</h2>
+
+<h3 id="crd-openapiv3-schema">CRD OpenAPIv3 Schema</h3>
+
+<p>The KubeVirt API is registered with Kubernetes at install time through a series
+of CRD definitions. KubeVirt includes an OpenAPIv3 schema in these definitions
+which indicates to the Kubernetes Apiserver some very basic information about
+our API, such as what fields are required and what type of data is expected for
+each value.</p>
+
+<p>This OpenAPIv3 schema validation is installed automatically and requires no
+thought on the users part to enable.</p>
+
+<h3 id="admission-control-webhooks">Admission Control Webhooks</h3>
+
+<p>The OpenAPIv3 schema validation is limited. It only validates the general
+structure of a KubeVirt object looks correct. It does not however verify that
+the contents of that object make sense.</p>
+
+<p>With OpenAPIv3 validation alone, users can easily make simple mistakes (like
+not referencing a volumeName correctly with a disk) and the cluster will still
+accept the object. However, the VirtualMachineInstance will of course not start if
+these errors in the API exist. Ideally we’d like to catch configuration issues
+as early as possible and not allow an object to even be posted to the cluster
+if we can detect there’s a problem with the object’s Spec.</p>
+
+<p>In order to perform this advanced validation, KubeVirt implements its own
+admission controller which is registered with kubernetes as an admission
+controller webhook. This webhook is registered with Kubernetes at install time.
+As KubeVirt objects are posted to the cluster, the Kubernetes API server
+forwards Creation requests to our webhook for validation before persisting the
+object into storage.</p>
+
+<p>Note however that the KubeVirt admission controller requires features to be
+enabled on the cluster in order to be enabled.</p>
+
+<h2 id="enabling-kubevirt-admission-controller-on-kubernetes">Enabling KubeVirt Admission Controller on Kubernetes</h2>
+
+<p>When provisioning a new Kubernetes cluster, ensure that both the
+<strong>MutatingAdmissionWebhook</strong> and <strong>ValidatingAdmissionWebhook</strong> values are
+present in the Apiserver’s <strong>–admission-control</strong> cli argument.</p>
+
+<p>Below is an example of the <strong>–admission-control</strong> values we use during
+development</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>--admission-control='Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota'
+</code></pre></div></div>
+
+<h2 id="enabling-kubevirt-admission-controller-on-openshift">Enabling KubeVirt Admission Controller on OpenShift</h2>
+
+<p>OpenShift also requires the admission control webhooks to be enabled at install
+time. The process is slightly different though. With OpenShift, we enable
+webhooks using an admission plugin.</p>
+
+<p>These admission control plugins can be configured in openshift-ansible by
+setting the following value in ansible inventory file.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openshift_master_admission_plugin_config={"ValidatingAdmissionWebhook":{"configuration":{"kind": "DefaultAdmissionConfig","apiVersion": "v1","disable": false}},"MutatingAdmissionWebhook":{"configuration":{"kind": "DefaultAdmissionConfig","apiVersion": "v1","disable": false}}}
+</code></pre></div></div>
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer" role="footer">
+      <div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-sm-12 col-md-5">
+      <p class="privacy-statement text-sm-left" style="text-align: center;">
+        &copy; <script type="text/javascript"> document.write(new Date().getFullYear()); </script> KubeVirt | <a href="/privacy" class="privacy-statement-link">Privacy Statement</a>
+      </p>
+    </div>
+    <div class="col-sm-12 col-md-5" style="text-align: center;">
+      <p class="text-md-right">
+        <a href="https://twitter.com/kubevirt" aria-label="Visit us on Twitter" class="link-social-twitter">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+        <a href="https://github.com/kubevirt" aria-label="View our repo on GitHub" class="link-social-github">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
+        <a href="https://groups.google.com/forum/#!forum/kubevirt-dev" aria-label="Send us an email" class="link-social-mail">
+          <i class="fas fa-envelope fa-lg"></i>
+        </a>
+        <a href="https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT"
+            aria-label="See our calendar"
+            class="link-social-calendar">
+          <i class="fas fa-calendar fa-lg"></i>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col offset-md-1 text-sm-left footer-licensing" style="text-align: center;">
+      Code licensed under <a href="https://github.com/kubevirt/kubevirt/blob/master/LICENSE">Apache 2.0</a>,
+      site under <a href="https://github.com/kubevirt/kubevirt.github.io/blob/master/LICENSE">MIT</a>.
+    </div>
+  </div>
+</div>
+
+    </footer>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script id="dsq-count-scr" src="//kubevirt-io.disqus.com/count.js" async></script>
+    <script src="/js/kubevirt-io.js"></script>
+  </body>
+</html>
